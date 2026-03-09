@@ -722,11 +722,23 @@
 
         /* Responsive */
         @media (max-width: 1024px) {
+            .hero {
+                height: 90vh;
+                background-position: center center;
+                background-size: cover;
+            }
             .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
             .editorial-split { flex-direction: column; padding: 4rem 2rem; gap: 3rem; }
             .editorial-split .text-block { padding: 0; }
         }
         @media (max-width: 768px) {
+            .hero {
+                height: auto;
+                min-height: 85vh;
+                background-position: center top;
+                background-size: cover;
+                padding: 8rem 1.5rem 4rem; /* Added padding to ensure text doesn't hit edges since height is auto */
+            }
             nav { padding: 1.5rem; }
             .nav-links.left { display: none; }
             .hero h1 { font-size: 3rem; }

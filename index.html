@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VYARA | Modern Heirlooms</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +27,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
         body {
             background-color: var(--ivory);
@@ -78,7 +77,7 @@
             position: fixed;
             top: 0;
             width: 100%;
-            padding: max(2rem, env(safe-area-inset-top)) 4rem 2rem 4rem;
+            padding: 2rem 4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -100,31 +99,7 @@
             letter-spacing: 0.2em;
             text-transform: uppercase;
             cursor: pointer;
-            position: relative;
-            z-index: 102;
         }
-        .hamburger {
-            display: none;
-            cursor: pointer;
-            z-index: 102;
-            width: 24px;
-            height: 16px;
-            position: relative;
-        }
-        .hamburger span {
-            display: block;
-            position: absolute;
-            height: 1px;
-            width: 100%;
-            background: var(--navy);
-            transition: all 0.3s ease;
-        }
-        .hamburger span:nth-child(1) { top: 0; }
-        .hamburger span:nth-child(2) { top: 7px; }
-        .hamburger span:nth-child(3) { top: 14px; }
-        .hamburger.active span:nth-child(1) { top: 7px; transform: rotate(45deg); }
-        .hamburger.active span:nth-child(2) { opacity: 0; }
-        .hamburger.active span:nth-child(3) { top: 7px; transform: rotate(-45deg); }
 
         /* View Container */
         .view-section {
@@ -158,7 +133,6 @@
         .hero-content {
             position: relative;
             z-index: 2;
-            padding: 0 1.5rem;
         }
         .hero h1 {
             font-size: 4.5rem;
@@ -183,7 +157,6 @@
             background: transparent;
             color: var(--navy);
             cursor: pointer;
-            text-decoration: none;
         }
         .btn:hover {
             background: var(--navy);
@@ -219,7 +192,9 @@
             background: url('sarin.png') center/cover fixed;
         }
 
-        /* Shop Grid */
+        /* ==================================================
+           SHOP GRID & LISTING STYLES 
+           ================================================== */
         .grid-3 {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -233,6 +208,7 @@
         }
         .product-card { cursor: pointer; }
         
+        /* Image Hover Swap */
         .img-wrap {
             position: relative;
             overflow: hidden;
@@ -245,19 +221,18 @@
             top: 0; left: 0; width: 100%; height: 100%;
             transition: opacity 0.6s ease, transform 1.2s ease;
         }
-        .img-wrap .img-hover { opacity: 0; }
-        
-        /* Disable hover effects on touch devices for smoother experience */
-        @media (hover: hover) {
-            .product-card:hover .img-hover {
-                opacity: 1;
-                transform: scale(1.03);
-            }
-            .product-card:hover .img-primary {
-                opacity: 0;
-            }
+        .img-wrap .img-hover {
+            opacity: 0;
+        }
+        .product-card:hover .img-hover {
+            opacity: 1;
+            transform: scale(1.03);
+        }
+        .product-card:hover .img-primary {
+            opacity: 0;
         }
 
+        /* Grid Typography & Pricing */
         .product-meta {
             display: flex;
             flex-direction: column;
@@ -291,17 +266,19 @@
             margin-top: 0.15rem;
         }
 
-        /* Product Detail Page */
+        /* ==================================================
+           PRODUCT DETAIL PAGE STYLES 
+           ================================================== */
         .product-layout {
             display: flex;
-            padding-top: max(8rem, calc(6rem + env(safe-area-inset-top)));
+            padding-top: 8rem;
             gap: 6rem;
             min-height: 100vh;
             padding-left: 4rem;
             padding-right: 4rem;
-            padding-bottom: 4rem;
         }
         
+        /* Horizontal Scrolling Gallery */
         .product-gallery-container {
             flex: 1;
             position: relative;
@@ -319,7 +296,9 @@
             -ms-overflow-style: none; 
             width: 100%;
         }
-        .product-gallery::-webkit-scrollbar { display: none; }
+        .product-gallery::-webkit-scrollbar {
+            display: none; 
+        }
         .product-gallery .zoom-wrap {
             flex: 0 0 100%;
             scroll-snap-align: start;
@@ -335,6 +314,7 @@
             height: auto;
         }
 
+        /* Minimal Gallery Arrows */
         .gallery-arrow {
             position: absolute;
             top: 50%;
@@ -368,8 +348,10 @@
             position: sticky;
             top: 8rem;
             height: fit-content;
+            padding-bottom: 4rem;
         }
 
+        /* Back Navigation */
         .back-link {
             display: inline-flex;
             align-items: center;
@@ -396,6 +378,7 @@
             margin-bottom: 2rem;
         }
         
+        /* Pricing & Value Framing (Detail Page) */
         .detail-pricing-block {
             display: flex;
             align-items: center;
@@ -407,8 +390,15 @@
             align-items: baseline;
             gap: 0.5rem;
         }
-        .detail-price-current { font-size: 1.35rem; font-weight: 400; }
-        .detail-price-original { font-size: 1rem; color: #a0a0a0; text-decoration: line-through; }
+        .detail-price-current {
+            font-size: 1.35rem;
+            font-weight: 400;
+        }
+        .detail-price-original {
+            font-size: 1rem;
+            color: #a0a0a0;
+            text-decoration: line-through;
+        }
         .detail-value-frame {
             font-size: 0.7rem;
             text-transform: uppercase;
@@ -418,6 +408,7 @@
             padding-left: 1rem;
         }
         
+        /* Delivery Estimate */
         .delivery-estimate {
             font-size: 0.75rem;
             color: var(--navy);
@@ -427,6 +418,7 @@
             gap: 0.5rem;
         }
 
+        /* Size Selection */
         .size-section { margin-bottom: 2rem; }
         .size-header {
             display: flex;
@@ -443,10 +435,9 @@
             text-decoration-thickness: 1px;
             text-underline-offset: 4px;
         }
-        .size-grid { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .size-grid { display: flex; gap: 0.5rem; }
         .size-btn {
             flex: 1;
-            min-width: calc(20% - 0.4rem);
             padding: 0.75rem 0;
             background: transparent;
             border: 1px solid var(--border);
@@ -457,8 +448,13 @@
             text-transform: uppercase;
         }
         .size-btn:hover { border-color: var(--navy); }
-        .size-btn.active { background: var(--navy); color: var(--ivory); border-color: var(--navy); }
+        .size-btn.active {
+            background: var(--navy);
+            color: var(--ivory);
+            border-color: var(--navy);
+        }
 
+        /* Error Toast for required size */
         .btn-wrapper { position: relative; }
         .size-error {
             position: absolute;
@@ -476,6 +472,7 @@
         }
         .size-error.show { opacity: 1; }
 
+        /* Trust Strip */
         .trust-strip {
             display: flex;
             flex-wrap: wrap;
@@ -489,6 +486,7 @@
             text-align: center;
         }
 
+        /* Scarcity */
         .scarcity-indicator {
             font-size: 0.75rem;
             text-transform: uppercase;
@@ -528,6 +526,7 @@
             line-height: 1.7;
         }
 
+        /* Reviews Section */
         .reviews-section {
             margin-top: 4rem;
             border-top: 1px solid var(--border);
@@ -566,10 +565,11 @@
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            padding-bottom: max(4rem, env(safe-area-inset-bottom));
         }
 
-        /* Cart Drawer */
+        /* ==================================================
+           CART DRAWER & STICKY MOBILE BAR
+           ================================================== */
         #cart-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -579,7 +579,10 @@
             opacity: 0;
             transition: opacity 0.4s ease;
         }
-        #cart-overlay.active { display: block; opacity: 1; }
+        #cart-overlay.active {
+            display: block;
+            opacity: 1;
+        }
 
         #cart-drawer {
             position: fixed;
@@ -591,9 +594,11 @@
             transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             flex-direction: column;
-            padding: max(2.5rem, env(safe-area-inset-top)) 2.5rem max(2.5rem, env(safe-area-inset-bottom)) 2.5rem;
+            padding: 2.5rem;
         }
-        #cart-drawer.active { right: 0; }
+        #cart-drawer.active {
+            right: 0;
+        }
 
         .cart-header {
             display: flex;
@@ -629,17 +634,37 @@
             padding-right: 0.5rem;
             scrollbar-width: thin;
         }
-        .cart-item { display: flex; gap: 1.5rem; }
+        .cart-item {
+            display: flex;
+            gap: 1.5rem;
+        }
         .cart-item img {
             width: 90px;
             height: 120px;
             object-fit: cover;
             background: #f4f3f0;
         }
-        .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .cart-item-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; margin-bottom: 0.35rem; }
-        .cart-item-meta { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
-        .cart-item-price { font-size: 0.85rem; }
+        .cart-item-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .cart-item-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+            margin-bottom: 0.35rem;
+        }
+        .cart-item-meta {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+        }
+        .cart-item-price {
+            font-size: 0.85rem;
+        }
         .cart-item-remove {
             text-decoration: underline;
             color: var(--muted);
@@ -657,7 +682,12 @@
             border-top: 1px solid var(--border);
             padding-top: 2rem;
         }
-        .cart-total-row { display: flex; justify-content: space-between; font-size: 1.1rem; margin-bottom: 1.5rem; }
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
         
         /* Sticky Mobile Bar */
         #mobile-sticky-bar {
@@ -669,120 +699,70 @@
             background: rgba(250, 249, 246, 0.95);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            padding: 1rem 1.5rem max(1rem, env(safe-area-inset-bottom)) 1.5rem;
+            padding: 1rem 1.5rem;
             border-top: 1px solid var(--border);
             z-index: 90;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
             transform: translateY(100%);
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        #mobile-sticky-bar.visible { transform: translateY(0); }
-        .mobile-sticky-content { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; }
-        .mobile-sticky-price { font-size: 1.1rem; font-weight: 400; }
-
-        /* ==================================================
-           RESPONSIVE QUERIES
-           ================================================== */
-           
-        /* Tablet Landscape & Below */
-        @media (max-width: 1024px) {
-            .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
-            .editorial-split { flex-direction: column; padding: 4rem 2rem; gap: 3rem; text-align: center; }
-            .editorial-split .text-block { padding: 0; }
-            .section { padding: 4rem 2rem; }
-            .product-layout { padding: 8rem 2rem 4rem 2rem; gap: 3rem; }
-            .product-info { width: 45%; }
+        #mobile-sticky-bar.visible {
+            transform: translateY(0);
+        }
+        .mobile-sticky-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .mobile-sticky-price {
+            font-size: 1.1rem;
+            font-weight: 400;
         }
 
-        /* Mobile Devices */
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .editorial-split { flex-direction: column; padding: 4rem 2rem; gap: 3rem; }
+            .editorial-split .text-block { padding: 0; }
+        }
         @media (max-width: 768px) {
-            nav { padding: max(1.5rem, env(safe-area-inset-top)) 1.5rem 1.5rem 1.5rem; }
-            
-            /* Mobile Navigation Drawer */
-            .hamburger { display: block; }
-            .nav-links.left {
-                position: fixed;
-                top: 0;
-                left: -100%;
-                width: 70%;
-                height: 100vh;
-                background: var(--ivory);
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                gap: 2.5rem;
-                font-size: 1.1rem;
-                transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-                z-index: 100;
-                box-shadow: 2px 0 15px rgba(0,0,0,0.05);
-            }
-            .nav-links.left.active { left: 0; }
-            .brand-logo { position: absolute; left: 50%; transform: translateX(-50%); font-size: 1.25rem;}
-            .nav-links.right { margin-left: auto; }
-
-            .hero h1 { font-size: 2.8rem; }
-            .hero p { font-size: 1.1rem; margin-bottom: 2.5rem; }
-            .btn { padding: 1rem 2rem; }
-            
-            .editorial-split h2 { font-size: 2.2rem; }
-            .section-title { font-size: 2rem; }
-            
-            .grid-3, .grid-4 { grid-template-columns: 1fr; gap: 2rem; row-gap: 3.5rem; }
+            nav { padding: 1.5rem; }
+            .nav-links.left { display: none; }
+            .hero h1 { font-size: 3rem; }
+            .grid-3, .grid-4 { grid-template-columns: 1fr; }
             .section { padding: 4rem 1.5rem; }
-            
-            .shop-header {
-                flex-direction: column;
-                align-items: flex-start !important;
-                gap: 1.5rem;
-            }
-            .shop-header h1 { font-size: 2.2rem !important; }
-
-            /* Product Detail Mobile Adjustments */
-            .product-layout { 
-                flex-direction: column; 
-                padding: max(5rem, calc(4rem + env(safe-area-inset-top))) 0 6rem 0; 
-                gap: 2rem; 
-            }
-            .product-info { 
-                width: 100%; 
-                position: static; 
-                padding: 0 1.5rem;
-            }
+            .product-layout { flex-direction: column; padding: 6rem 1.5rem; gap: 3rem; }
+            .product-info { width: 100%; position: static; }
             .gallery-arrow { display: none; }
-            
-            #cart-drawer { width: 100%; right: -100%; padding: max(2rem, env(safe-area-inset-top)) 1.5rem max(2rem, env(safe-area-inset-bottom)) 1.5rem; }
+            #cart-drawer { width: 100%; right: -100%; padding: 2rem 1.5rem; }
             #mobile-sticky-bar { display: block; }
-
-            footer { flex-direction: column; text-align: center; gap: 1.5rem; padding: 3rem 1.5rem max(3rem, env(safe-area-inset-bottom)) 1.5rem; }
         }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="hamburger" onclick="toggleMobileMenu()">
-            <span></span><span></span><span></span>
-        </div>
-        <div class="nav-links left" id="mobile-nav">
-            <a onclick="navigateTo('shop'); toggleMobileMenu();">Shop</a>
-            <a onclick="navigateTo('home'); toggleMobileMenu();">About</a>
-            <a onclick="navigateTo('home'); toggleMobileMenu();">Contact</a>
+        <div class="nav-links left">
+            <a onclick="navigateTo('shop')">Shop</a>
+            <a onclick="navigateTo('home')">About</a>
+            <a onclick="navigateTo('home')">Contact</a>
         </div>
         <div class="brand-logo" onclick="navigateTo('home')">VYARA</div>
         <div class="nav-links right">
-            <a class="hide-mobile">Account</a>
+            <a>Account</a>
             <a onclick="toggleCart()">Cart (<span id="cart-count">0</span>)</a>
         </div>
     </nav>
 
-    <div id="cart-overlay" onclick="closeAllDrawers()"></div>
-
+    <div id="cart-overlay" onclick="toggleCart()"></div>
     <div id="cart-drawer">
         <div class="cart-header">
             <h2>Your Bag</h2>
             <span class="close-cart" onclick="toggleCart()">×</span>
         </div>
-        <div id="cart-items"></div>
+        <div id="cart-items">
+            </div>
         <div class="cart-footer">
             <div class="cart-total-row">
                 <span>Total</span>
@@ -800,6 +780,7 @@
     </div>
 
     <main id="app">
+
         <div id="home" class="view-section active">
             <header class="hero">
                 <div class="hero-content reveal">
@@ -822,7 +803,8 @@
 
             <section class="section">
                 <h2 class="section-title reveal">Featured Archive</h2>
-                <div class="grid-3" id="featured-grid"></div>
+                <div class="grid-3" id="featured-grid">
+                    </div>
                 <div class="reveal" style="text-align: center; margin-top: 5rem;">
                     <button class="btn" onclick="navigateTo('shop')">Discover All Pieces</button>
                 </div>
@@ -830,8 +812,8 @@
 
             <div class="full-width-image reveal"></div>
 
-            <section class="section" style="text-align: center; max-width: 900px; margin: 0 auto; padding: 8rem 2rem;">
-                <h3 class="reveal" style="font-size: clamp(1.5rem, 4vw, 2.2rem); line-height: 1.5; font-style: italic;">
+            <section class="section" style="text-align: center; max-width: 900px; margin: 0 auto; padding: 10rem 2rem;">
+                <h3 class="reveal" style="font-size: 2.2rem; line-height: 1.5; font-style: italic;">
                     "We do not chase seasons. We build architecture for the human form, honoring our heritage through a lens of uncompromising modern restraint."
                 </h3>
             </section>
@@ -839,19 +821,21 @@
 
         <div id="shop" class="view-section">
             <section class="section">
-                <div class="reveal shop-header" style="padding-top: max(6rem, env(safe-area-inset-top)); padding-bottom: 4rem; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--border); margin-bottom: 4rem;">
+                <div class="reveal" style="padding-top: 6rem; padding-bottom: 4rem; display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid var(--border); margin-bottom: 4rem;">
                     <h1 style="font-size: 3rem; margin: 0;">The Complete Archive.</h1>
                     <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; gap: 2rem;">
                         <span>Filters [+]</span>
-                        <span class="hide-mobile">View: Grid</span>
+                        <span>View: Grid</span>
                     </div>
                 </div>
                 
-                <div class="grid-4" id="shop-grid"></div>
+                <div class="grid-4" id="shop-grid">
+                    </div>
             </section>
         </div>
 
-        <div id="product" class="view-section"></div>
+        <div id="product" class="view-section">
+            </div>
 
     </main>
 
@@ -861,15 +845,308 @@
     </footer>
 
     <script>
+        // Clean, scalable, individually defined product database
         const productDB = [
-            { index: 0, num: "01", name: "Emerald Court", currentPrice: 999, originalPrice: 2097, valueFrame: "Limited Launch Price", scarcity: "Only 7 pieces left.", images: ["IMG_8677.jpg", "IMG_8674.jpg", "IMG_8676.jpg"] },
-            { index: 1, num: "02", name: "Midnight Silk", currentPrice: 1199, originalPrice: null, valueFrame: "Special Drop Pricing", scarcity: "Small Batch Drop.", images: ["IMG_8679.jpg", "IMG_8680.jpg", "IMG_8678.jpg", "IMG_8681.jpg"] },
-            { index: 2, num: "03", name: "Ivory Pillar", currentPrice: 1299, originalPrice: null, valueFrame: "Introductory Release", scarcity: "Restock Not Guaranteed.", images: ["IMG_8684.jpg", "IMG_8685.jpg", "IMG_8686.jpg", "IMG_8688.jpg"] },
-            { index: 3, num: "04", name: "Obsidian Drape", currentPrice: 1499, originalPrice: 3147, valueFrame: "Premium Craft. Accessible Price.", scarcity: "Only 7 pieces left.", images: ["images/04-1.jpg", "images/04-2.jpg", "images/04-3.jpg"] },
-            { index: 4, num: "05", name: "Alabaster Shift", currentPrice: 999, originalPrice: null, valueFrame: "Limited Launch Price", scarcity: "Small Batch Drop.", images: ["images/05-1.jpg", "images/05-2.jpg", "images/05-3.jpg"] },
-            { index: 5, num: "06", name: "Ochre Monument", currentPrice: 1199, originalPrice: null, valueFrame: "Special Drop Pricing", scarcity: "Restock Not Guaranteed.", images: ["images/06-1.jpg", "images/06-2.jpg", "images/06-3.jpg"] },
-            { index: 6, num: "07", name: "Indigo Lineage", currentPrice: 1299, originalPrice: 2727, valueFrame: "Introductory Release", scarcity: "Only 7 pieces left.", images: ["images/07-1.jpg", "images/07-2.jpg", "images/07-3.jpg"] },
-            { index: 7, num: "08", name: "Slate Architecture", currentPrice: 1499, originalPrice: null, valueFrame: "Premium Craft. Accessible Price.", scarcity: "Small Batch Drop.", images: ["images/08-1.jpg", "images/08-2.jpg", "images/08-3.jpg"] }
+            {
+                index: 0,
+                num: "01",
+                name: "Emerald Court",
+                currentPrice: 999,
+                originalPrice: 2097,
+                valueFrame: "Limited Launch Price",
+                scarcity: "Only 7 pieces left.",
+                images: ["IMG_8677.jpg", "IMG_8674.jpg", "IMG_8676.jpg"]
+            },
+            {
+                index: 1,
+                num: "02",
+                name: "Midnight Silk",
+                currentPrice: 1199,
+                originalPrice: null,
+                valueFrame: "Special Drop Pricing",
+                scarcity: "Small Batch Drop.",
+                images: ["IMG_8679.jpg", "IMG_8680.jpg", "IMG_8678.jpg", "IMG_8681.jpg"]
+            },
+            {
+                index: 2,
+                num: "03",
+                name: "Ivory Pillar",
+                currentPrice: 1299,
+                originalPrice: null,
+                valueFrame: "Introductory Release",
+                scarcity: "Restock Not Guaranteed.",
+                images: ["IMG_8684.jpg", "IMG_8685.jpg", "IMG_8686.jpg", "IMG_8688.jpg"]
+            },
+            {
+                index: 3,
+                num: "04",
+                name: "Obsidian Drape",
+                currentPrice: 1499,
+                originalPrice: 3147,
+                valueFrame: "Premium Craft. Accessible Price.",
+                scarcity: "Only 7 pieces left.",
+                images: ["images/04-1.jpg", "images/04-2.jpg", "images/04-3.jpg"]
+            },
+            {
+                index: 4,
+                num: "05",
+                name: "Alabaster Shift",
+                currentPrice: 999,
+                originalPrice: null,
+                valueFrame: "Limited Launch Price",
+                scarcity: "Small Batch Drop.",
+                images: ["images/05-1.jpg", "images/05-2.jpg", "images/05-3.jpg"]
+            },
+            {
+                index: 5,
+                num: "06",
+                name: "Ochre Monument",
+                currentPrice: 1199,
+                originalPrice: null,
+                valueFrame: "Special Drop Pricing",
+                scarcity: "Restock Not Guaranteed.",
+                images: ["images/06-1.jpg", "images/06-2.jpg", "images/06-3.jpg"]
+            },
+            {
+                index: 6,
+                num: "07",
+                name: "Indigo Lineage",
+                currentPrice: 1299,
+                originalPrice: 2727,
+                valueFrame: "Introductory Release",
+                scarcity: "Only 7 pieces left.",
+                images: ["images/07-1.jpg", "images/07-2.jpg", "images/07-3.jpg"]
+            },
+            {
+                index: 7,
+                num: "08",
+                name: "Slate Architecture",
+                currentPrice: 1499,
+                originalPrice: null,
+                valueFrame: "Premium Craft. Accessible Price.",
+                scarcity: "Small Batch Drop.",
+                images: ["images/08-1.jpg", "images/08-2.jpg", "images/08-3.jpg"]
+            },
+            {
+                index: 8,
+                num: "09",
+                name: "Terracotta Form",
+                currentPrice: 999,
+                originalPrice: null,
+                valueFrame: "Limited Launch Price",
+                scarcity: "Restock Not Guaranteed.",
+                images: ["images/09-1.jpg", "images/09-2.jpg", "images/09-3.jpg"]
+            },
+            {
+                index: 9,
+                num: "10",
+                name: "Pearl Arch",
+                currentPrice: 1199,
+                originalPrice: 2517,
+                valueFrame: "Special Drop Pricing",
+                scarcity: "Only 7 pieces left.",
+                images: ["images/10-1.jpg", "images/10-2.jpg", "images/10-3.jpg"]
+            },
+            {
+                index: 10,
+                num: "11",
+                name: "Cobalt Horizon",
+                currentPrice: 1299,
+                originalPrice: null,
+                valueFrame: "Introductory Release",
+                scarcity: "Small Batch Drop.",
+                images: ["images/11-1.jpg", "images/11-2.jpg", "images/11-3.jpg"]
+            },
+            {
+                index: 11,
+                num: "12",
+                name: "Ash Symmetry",
+                currentPrice: 1499,
+                originalPrice: null,
+                valueFrame: "Premium Craft. Accessible Price.",
+                scarcity: "Restock Not Guaranteed.",
+                images: ["images/12-1.jpg", "images/12-2.jpg", "images/12-3.jpg"]
+            },
+            {
+                index: 12,
+                num: "13",
+                name: "Bronze Vertex",
+                currentPrice: 999,
+                originalPrice: 2097,
+                valueFrame: "Limited Launch Price",
+                scarcity: "Only 7 pieces left.",
+                images: ["images/13-1.jpg", "images/13-2.jpg", "images/13-3.jpg"]
+            },
+            {
+                index: 13,
+                num: "14",
+                name: "Sandstone Flow",
+                currentPrice: 1199,
+                originalPrice: null,
+                valueFrame: "Special Drop Pricing",
+                scarcity: "Small Batch Drop.",
+                images: ["images/14-1.jpg", "images/14-2.jpg", "images/14-3.jpg"]
+            },
+            {
+                index: 14,
+                num: "15",
+                name: "Malachite Edge",
+                currentPrice: 1299,
+                originalPrice: null,
+                valueFrame: "Introductory Release",
+                scarcity: "Restock Not Guaranteed.",
+                images: ["images/15-1.jpg", "images/15-2.jpg", "images/15-3.jpg"]
+            },
+            {
+                index: 15,
+                num: "16",
+                name: "Charcoal Canopy",
+                currentPrice: 1499,
+                originalPrice: 3147,
+                valueFrame: "Premium Craft. Accessible Price.",
+                scarcity: "Only 7 pieces left.",
+                images: ["images/16-1.jpg", "images/16-2.jpg", "images/16-3.jpg"]
+            },
+            {
+                index: 16,
+                num: "17",
+                name: "Rosewood Vault",
+                currentPrice: 999,
+                originalPrice: null,
+                valueFrame: "Limited Launch Price",
+                scarcity: "Small Batch Drop.",
+                images: ["images/17-1.jpg", "images/17-2.jpg", "images/17-3.jpg"]
+            },
+            {
+                index: 17,
+                num: "18",
+                name: "Bone Structure",
+                currentPrice: 1199,
+                originalPrice: null,
+                valueFrame: "Special Drop Pricing",
+                scarcity: "Restock Not Guaranteed.",
+                images: ["images/18-1.jpg", "images/18-2.jpg", "images/18-3.jpg"]
+            },
+            {
+                index: 18,
+                num: "19",
+                name: "Quartz Silhouette",
+                currentPrice: 1299,
+                originalPrice: 2727,
+                valueFrame: "Introductory Release",
+                scarcity: "Only 7 pieces left.",
+                images: ["images/19-1.jpg", "images/19-2.jpg", "images/19-3.jpg"]
+            },
+            {
+                index: 19,
+                num: "20",
+                name: "Sapphire Loom",
+                currentPrice: 1499,
+                originalPrice: null,
+                valueFrame: "Premium Craft. Accessible Price.",
+                scarcity: "Small Batch Drop.",
+                images: ["images/20-1.jpg", "images/20-2.jpg", "images/20-3.jpg"]
+            },
+            {
+                index: 20,
+                num: "21",
+                name: "Crimson Contour",
+                currentPrice: 999,
+                originalPrice: null,
+                valueFrame: "Limited Launch Price",
+                scarcity: "Restock Not Guaranteed.",
+                images: ["images/21-1.jpg", "images/21-2.jpg", "images/21-3.jpg"]
+            },
+            {
+                index: 21,
+                num: "22",
+                name: "Jade Lattice",
+                currentPrice: 1199,
+                originalPrice: 2517,
+                valueFrame: "Special Drop Pricing",
+                scarcity: "Only 7 pieces left.",
+                images: ["images/22-1.jpg", "images/22-2.jpg", "images/22-3.jpg"]
+            },
+            {
+                index: 22,
+                num: "23",
+                name: "Amber Pavilion",
+                currentPrice: 1299,
+                originalPrice: null,
+                valueFrame: "Introductory Release",
+                scarcity: "Small Batch Drop.",
+                images: ["images/23-1.jpg", "images/23-2.jpg", "images/23-3.jpg"]
+            },
+            {
+                index: 23,
+                num: "24",
+                name: "Granite Finesse",
+                currentPrice: 1499,
+                originalPrice: null,
+                valueFrame: "Premium Craft. Accessible Price.",
+                scarcity: "Restock Not Guaranteed.",
+                images: ["images/24-1.jpg", "images/24-2.jpg", "images/24-3.jpg"]
+            },
+            {
+                index: 24,
+                num: "25",
+                name: "Copper Gradient",
+                currentPrice: 999,
+                originalPrice: 2097,
+                valueFrame: "Limited Launch Price",
+                scarcity: "Only 7 pieces left.",
+                images: ["images/25-1.jpg", "images/25-2.jpg", "images/25-3.jpg"]
+            },
+            {
+                index: 25,
+                num: "26",
+                name: "Onyx Column",
+                currentPrice: 1199,
+                originalPrice: null,
+                valueFrame: "Special Drop Pricing",
+                scarcity: "Small Batch Drop.",
+                images: ["images/26-1.jpg", "images/26-2.jpg", "images/26-3.jpg"]
+            },
+            {
+                index: 26,
+                num: "27",
+                name: "Brass Thread",
+                currentPrice: 1299,
+                originalPrice: null,
+                valueFrame: "Introductory Release",
+                scarcity: "Restock Not Guaranteed.",
+                images: ["images/27-1.jpg", "images/27-2.jpg", "images/27-3.jpg"]
+            },
+            {
+                index: 27,
+                num: "28",
+                name: "Silver Plinth",
+                currentPrice: 1499,
+                originalPrice: 3147,
+                valueFrame: "Premium Craft. Accessible Price.",
+                scarcity: "Only 7 pieces left.",
+                images: ["images/28-1.jpg", "images/28-2.jpg", "images/28-3.jpg"]
+            },
+            {
+                index: 28,
+                num: "29",
+                name: "Topaz Arc",
+                currentPrice: 999,
+                originalPrice: null,
+                valueFrame: "Limited Launch Price",
+                scarcity: "Small Batch Drop.",
+                images: ["images/29-1.jpg", "images/29-2.jpg", "images/29-3.jpg"]
+            },
+            {
+                index: 29,
+                num: "30",
+                name: "Ruby Facade",
+                currentPrice: 1199,
+                originalPrice: null,
+                valueFrame: "Special Drop Pricing",
+                scarcity: "Restock Not Guaranteed.",
+                images: ["images/30-1.jpg", "images/30-2.jpg", "images/30-3.jpg"]
+            }
         ];
 
         // Render Shop Grid
@@ -902,11 +1179,7 @@
             }
         });
 
-        // UI States
-        let currentOpenProductIndex = null;
-        let selectedSize = null;
-        let cart = [];
-
+        // Single Page Routing
         function navigateTo(pageId) {
             document.querySelectorAll('.view-section').forEach(section => {
                 section.classList.remove('active');
@@ -915,51 +1188,28 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
             setTimeout(initScrollAnimations, 50);
             
+            // Hide sticky bar immediately if navigating away from product page
             if(pageId !== 'product') {
                 document.getElementById('mobile-sticky-bar').classList.remove('visible');
             }
         }
 
-        function toggleMobileMenu() {
-            const nav = document.getElementById('mobile-nav');
-            const hamburger = document.querySelector('.hamburger');
-            const overlay = document.getElementById('cart-overlay');
-            
-            nav.classList.toggle('active');
-            hamburger.classList.toggle('active');
-
-            if (nav.classList.contains('active')) {
-                overlay.style.display = 'block';
-                setTimeout(() => overlay.classList.add('active'), 10);
-            } else {
-                overlay.classList.remove('active');
-                setTimeout(() => overlay.style.display = 'none', 400);
-            }
-        }
-
-        function closeAllDrawers() {
-            const drawer = document.getElementById('cart-drawer');
-            const nav = document.getElementById('mobile-nav');
-            const hamburger = document.querySelector('.hamburger');
-            const overlay = document.getElementById('cart-overlay');
-
-            drawer.classList.remove('active');
-            nav.classList.remove('active');
-            hamburger.classList.remove('active');
-            overlay.classList.remove('active');
-            setTimeout(() => overlay.style.display = 'none', 400);
-        }
+        // Commerce State
+        let currentOpenProductIndex = null;
+        let selectedSize = null;
+        let cart = [];
 
         function openProduct(index) {
             const product = productDB[index];
             currentOpenProductIndex = index;
-            selectedSize = null; 
+            selectedSize = null; // Reset size on new product load
             
             let priceDetailHTML = `<span class="detail-price-current">₹${product.currentPrice.toLocaleString()}</span>`;
             if (product.originalPrice) {
                 priceDetailHTML = `<span class="detail-price-original">₹${product.originalPrice.toLocaleString()}</span> ` + priceDetailHTML;
             }
 
+            // Generate gallery HTML dynamically from the product's images array
             let galleryHTML = '';
             product.images.forEach((imgSrc, idx) => {
                 galleryHTML += `
@@ -1065,7 +1315,14 @@
                                 <div class="review-text">Exquisite craftsmanship. The fabric falls with incredible weight and restraint. It is rare to find this level of tailoring at this price point.</div>
                                 <div class="review-author">— Meera K.</div>
                             </div>
+
+                            <div class="review-item">
+                                <div class="product-stars" style="margin-bottom: 0.5rem;">✦ ✦ ✦ ✦ ✦</div>
+                                <div class="review-text">Quiet luxury in its purest form. It moves beautifully and the fit is incredibly precise.</div>
+                                <div class="review-author">— S. Varma</div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             `;
@@ -1075,6 +1332,7 @@
             navigateTo('product');
         }
 
+        // Commerce Functions
         function selectSize(btn) {
             const buttons = btn.parentElement.querySelectorAll('.size-btn');
             buttons.forEach(b => b.classList.remove('active'));
@@ -1102,11 +1360,11 @@
                 num: product.num,
                 price: product.currentPrice,
                 size: selectedSize,
-                img: product.images[0] 
+                img: product.images[0] // Now grabs the primary image dynamically
             });
 
             updateCartUI();
-            toggleCart(); 
+            toggleCart(); // Auto open confirmation
         }
 
         function triggerAddFromSticky() {
@@ -1156,8 +1414,11 @@
                 overlay.classList.remove('active');
                 setTimeout(() => { overlay.style.display = 'none'; }, 400);
             } else {
+                // Initial render fix if cart is opened without adding items
                 if(cartItemsContainerEmptyCheck()) updateCartUI();
+                
                 overlay.style.display = 'block';
+                // Small delay to allow display:block to apply before animating opacity
                 setTimeout(() => {
                     drawer.classList.add('active');
                     overlay.classList.add('active');
@@ -1169,14 +1430,17 @@
             return document.getElementById('cart-items').innerHTML.trim() === '';
         }
 
+        // Scroll listener for Mobile Sticky Bar
         window.addEventListener('scroll', () => {
             const viewSection = document.getElementById('product');
             const stickyBar = document.getElementById('mobile-sticky-bar');
             
+            // Only evaluate if product view is active and we're on mobile
             if (viewSection.classList.contains('active') && window.innerWidth <= 768) {
                 const mainBtnContainer = document.getElementById('main-btn-container');
                 if (mainBtnContainer) {
                     const rect = mainBtnContainer.getBoundingClientRect();
+                    // If the main Add to Bag button scrolls up out of view
                     if (rect.bottom < 0) {
                         stickyBar.classList.add('visible');
                     } else {
@@ -1188,6 +1452,7 @@
             }
         });
 
+        // Helper functions
         function scrollGallery(direction) {
             const gallery = document.getElementById('prod-gallery');
             const scrollAmount = gallery.clientWidth; 
@@ -1222,7 +1487,7 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             initScrollAnimations();
-            updateCartUI(); 
+            updateCartUI(); // Initial empty cart state rendering
         });
     </script>
 </body>

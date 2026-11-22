@@ -201,12 +201,18 @@
         transform 0.18s var(--spring-snappy),
         box-shadow 0.24s ease,
         border-color 0.2s ease;
-      will-change: transform;
     }
 
     .card-tactile:active,
     .card-tactile.is-pressing {
       transform: scale(0.978) !important;
+    }
+
+    /* Stable Image Compositing — prevents iOS Safari & Chrome scroll repaint/flicker */
+    img {
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      transform: translateZ(0);
     }
 
     /* Animated Pill & Icon Spring in Bottom Navigation */
@@ -313,9 +319,9 @@
     .editorial-zoom img {
       transition: transform 0.52s var(--spring-snappy);
     }
-    @media (hover: hover) {
+    @media (hover: hover) and (pointer: fine) {
       .editorial-zoom:hover img {
-        transform: scale(1.04);
+        transform: scale(1.04) translateZ(0);
       }
     }
 
@@ -829,6 +835,31 @@
     // 1. PWA MANIFEST (CANVAS PNG ICONS), INSTALL PROMPT & OFFLINE RESILIENCE
     // -----------------------------------------------------------------------
     let deferredInstallPrompt = null;
+    const loadedImageUrls = new Set();
+
+    function markImageLoaded(imgEl) {
+      if (!imgEl || !imgEl.src) return;
+      loadedImageUrls.add(imgEl.src);
+      imgEl.dataset.loaded = 'true';
+    }
+
+    function stabilizeRenderedImages(container = document) {
+      const imgs = container.querySelectorAll('img');
+      imgs.forEach(img => {
+        if (img.dataset.stabilized) return;
+        img.dataset.stabilized = 'true';
+        img.decoding = 'async';
+
+        const currentSrc = img.getAttribute('src') || '';
+        if (loadedImageUrls.has(currentSrc) || (img.complete && img.naturalWidth > 0)) {
+          img.removeAttribute('loading');
+          loadedImageUrls.add(img.src || currentSrc);
+          img.dataset.loaded = 'true';
+        } else {
+          img.addEventListener('load', () => markImageLoaded(img), { once: true });
+        }
+      });
+    }
 
     function generatePngIconDataUrl(size) {
       const canvas = document.createElement('canvas');
@@ -1781,16 +1812,14 @@
             </svg>
           </button>
           <div class="min-w-0 leading-tight">
-            <span class="font-editorial font-extrabold text-[15px] xs:text-[16px] text-brand-ink block truncate">
-              ${title}
-            </span>
-            <span class="text-[10px] font-semibold text-brand-muted block truncate">
-              ${subtitle}
-            </span>
+            <span class="font-editorial font-extrabold text-sm xs:text-base text-brand-ink block truncate">${escapeAttr(title)}</span>
+            <span class="text-[10px] font-bold text-brand-muted block truncate">${escapeAttr(subtitle)}</span>
           </div>
         </div>
       `;
     }
+
+    let lastMobileScrolledState = null;
 
     function syncMobileScrollChrome() {
       const searchRow = document.getElementById('mobile-search-row');
@@ -1799,6 +1828,9 @@
 
       const allowFullSearchRow = state.view === 'home' || state.view === 'stores';
       const isScrolled = window.scrollY > 56;
+      const stateKey = `${allowFullSearchRow}:${isScrolled}`;
+      if (stateKey === lastMobileScrolledState) return;
+      lastMobileScrolledState = stateKey;
 
       if (!allowFullSearchRow) {
         searchRow.classList.add('is-collapsed');
@@ -1815,7 +1847,15 @@
       }
     }
 
-    window.addEventListener('scroll', syncMobileScrollChrome, { passive: true });
+    let scrollRafPending = false;
+    window.addEventListener('scroll', () => {
+      if (scrollRafPending) return;
+      scrollRafPending = true;
+      requestAnimationFrame(() => {
+        scrollRafPending = false;
+        syncMobileScrollChrome();
+      });
+    }, { passive: true });
 
     function updateGlobalChrome() {
       const bill = calculateBill(state.cart);
@@ -3715,9 +3755,15 @@
     function startHeroAutoSlide() {
       stopHeroAutoSlide();
       heroAutoTimer = setInterval(() => {
-        if (state.view === 'home' && !isAnyModalOpen()) {
+        if (state.view === 'home' && !isAnyModalOpen() && window.scrollY < 180) {
           state.heroIndex = (state.heroIndex + 1) % HERO_SLIDES.length;
-          renderApp();
+          const heroImg = document.querySelector('#hero-slider-viewport img');
+          const nextSlide = HERO_SLIDES[state.heroIndex];
+          if (heroImg && nextSlide) {
+            heroImg.src = nextSlide.image;
+            heroImg.alt = nextSlide.title;
+            stabilizeRenderedImages(document.getElementById('hero-slider-viewport'));
+          }
         }
       }, 5400);
     }
@@ -3799,6 +3845,7 @@
       }
       state.transitionType = 'fade';
 
+      stabilizeRenderedImages(root);
       updateGlobalChrome();
     }
 

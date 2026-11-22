@@ -756,13 +756,41 @@
   ====================================================================== -->
   <script>
     // -----------------------------------------------------------------------
-    // 0. REUSABLE HAPTIC CLICK FEEDBACK UTILITY (navigator.vibrate(10))
-    //    - Triggers directly on user tap/click interactions
+    // 0. REUSABLE HAPTIC CLICK FEEDBACK UTILITY
+    //    - Android / Chromium: preserves exact navigator.vibrate(10) behavior
+    //    - iOS 17.4+ Safari & PWA: uses WebKit's native <input type="checkbox" switch>
+    //      tactile feedback during direct user gestures (no-op on older iOS)
     //    - Prevents duplicate vibration events within 60ms
     //    - Skips disabled buttons/controls
-    //    - Gracefully handles unsupported browsers/devices (e.g. iOS Safari)
     // -----------------------------------------------------------------------
     let lastHapticTimestamp = 0;
+    let iosSwitchLabel = null;
+
+    const isIOSDevice =
+      typeof navigator !== 'undefined' &&
+      (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+
+    function ensureIosHapticSwitch() {
+      if (iosSwitchLabel || typeof document === 'undefined' || !document.body) return iosSwitchLabel;
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.setAttribute('switch', '');
+      input.id = 'ztg-ios-haptic-switch';
+      input.tabIndex = -1;
+      input.setAttribute('aria-hidden', 'true');
+      input.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;';
+
+      const label = document.createElement('label');
+      label.htmlFor = input.id;
+      label.setAttribute('aria-hidden', 'true');
+      label.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;';
+
+      document.body.appendChild(input);
+      document.body.appendChild(label);
+      iosSwitchLabel = label;
+      return iosSwitchLabel;
+    }
 
     function triggerHaptic(sourceEl = null) {
       try {
@@ -775,11 +803,21 @@
         if (now - lastHapticTimestamp < 60) return;
         lastHapticTimestamp = now;
 
+        // 1. Android / supported browsers — preserved unchanged
         if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
           navigator.vibrate(10);
+          return;
+        }
+
+        // 2. iOS Safari & installed PWA (iOS 17.4+ WebKit switch haptic)
+        if (isIOSDevice) {
+          const label = ensureIosHapticSwitch();
+          if (label) {
+            label.click();
+          }
         }
       } catch (_) {
-        // Graceful no-op on unsupported devices (such as iOS Safari)
+        // Graceful no-op on unsupported iOS versions/devices
       }
     }
 

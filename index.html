@@ -596,19 +596,19 @@
        CART SLIDE-OVER DRAWER
   ====================================================================== -->
   <div id="cart-drawer-overlay" onclick="closeCartDrawer()" class="fixed inset-0 z-50 bg-brand-ink/50 backdrop-blur-xs ios-backdrop hidden opacity-0"></div>
-  <aside id="cart-drawer" aria-label="Shopping Bag" class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-white shadow-2xl ios-drawer-panel transform translate-x-full flex flex-col">
-    <div class="px-5 py-4 border-b border-brand-hairline flex items-center justify-between pt-safe">
-      <div>
-        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brand-purple">Radhanpur 385340 • ₹0 Delivery</span>
-        <h2 class="font-editorial font-extrabold text-xl text-brand-ink">Your Bag</h2>
+  <aside id="cart-drawer" aria-label="Shopping Bag" style="height: 100dvh; max-height: 100dvh;" class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-white shadow-2xl ios-drawer-panel transform translate-x-full flex flex-col overflow-hidden">
+    <div style="padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);" class="px-5 pb-4 border-b border-brand-hairline flex items-center justify-between gap-3 shrink-0 bg-white">
+      <div class="min-w-0">
+        <span class="block text-[10px] font-extrabold uppercase tracking-widest text-brand-purple leading-tight truncate">Radhanpur 385340 • ₹0 Delivery</span>
+        <h2 class="font-editorial font-extrabold text-xl text-brand-ink leading-tight mt-0.5">Your Bag</h2>
       </div>
-      <button onclick="closeCartDrawer()" aria-label="Close Bag" class="w-10 h-10 rounded-full bg-brand-canvas hover:bg-brand-hairline flex items-center justify-center text-brand-ink btn-tactile">
+      <button onclick="closeCartDrawer()" aria-label="Close Bag" class="w-10 h-10 rounded-full bg-brand-canvas hover:bg-brand-hairline flex items-center justify-center text-brand-ink shrink-0 btn-tactile">
         ✕
       </button>
     </div>
 
-    <div id="cart-drawer-body" class="flex-1 overflow-y-auto px-5 py-5 space-y-5"></div>
-    <div id="cart-drawer-footer" class="p-5 border-t border-brand-hairline bg-white pb-safe"></div>
+    <div id="cart-drawer-body" class="flex-1 min-h-0 overflow-y-auto px-5 py-5 space-y-5 flex flex-col"></div>
+    <div id="cart-drawer-footer" class="p-5 border-t border-brand-hairline bg-white shrink-0 pb-safe"></div>
   </aside>
 
   <!-- =====================================================================
@@ -1725,7 +1725,7 @@
                 Zatpat<span class="text-brand-purple">go</span>
               </span>
               <span class="text-[9px] font-bold uppercase tracking-[0.13em] text-brand-muted block mt-0.5">
-            
+                Fast Delivery
               </span>
             </div>
           </button>
@@ -3338,21 +3338,31 @@
       const bill = calculateBill(state.cart);
 
       if (bill.totalCount === 0) {
+        footer.classList.add('hidden');
+        footer.innerHTML = '';
         body.innerHTML = `
-          <div class="h-full flex flex-col items-center justify-center text-center py-12">
-            <h3 class="font-editorial font-extrabold text-xl text-brand-ink">Your bag is empty</h3>
-            <p class="text-xs text-brand-muted mt-1.5 max-w-xs">
-              Add items from Visamo, Ked's Cafe, Tandoori Tales, Pizza Junction, Sweet Street, or Fresh Basket.
-            </p>
-            <button onclick="closeCartDrawer(); navigateTo('stores')" class="mt-5 px-6 py-3 rounded-full bg-brand-purple text-white text-xs font-bold shadow-pill btn-tactile">
-              Browse Stores
-            </button>
+          <div style="padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));" class="flex-1 flex flex-col items-center justify-center text-center px-4 py-8 my-auto">
+            <div class="max-w-[290px] w-full flex flex-col items-center">
+              <div class="w-14 h-14 rounded-2xl bg-brand-purple/10 text-brand-purple flex items-center justify-center mb-4">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12l1 12H5L6 7z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 7V5a3 3 0 016 0v2"/>
+                </svg>
+              </div>
+              <h3 class="font-editorial font-extrabold text-xl text-brand-ink leading-snug">Your bag is empty</h3>
+              <p class="text-xs text-brand-muted mt-2 leading-relaxed">
+                Add items from Visamo, Ked's Cafe, Tandoori Tales, Pizza Junction, Sweet Street, or Fresh Basket.
+              </p>
+              <button onclick="closeCartDrawer(); navigateTo('stores')" class="mt-6 h-11 px-7 rounded-full bg-brand-purple hover:bg-brand-deep text-white text-xs font-extrabold shadow-pill btn-tactile">
+                Browse Stores
+              </button>
+            </div>
           </div>
         `;
-        footer.innerHTML = '';
         return;
       }
 
+      footer.classList.remove('hidden');
       body.innerHTML = `
         <div class="space-y-3.5">
           ${state.cart.map(entry => {

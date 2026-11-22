@@ -61,7 +61,7 @@
           keyframes: {
             pop: {
               '0%': { transform: 'scale(1)' },
-              '40%': { transform: 'scale(1.24)' },
+              '42%': { transform: 'scale(1.18)' },
               '100%': { transform: 'scale(1)' },
             },
             shimmer: {
@@ -69,8 +69,29 @@
               '100%': { backgroundPosition: '200% 0' },
             },
             fadeUp: {
-              '0%': { opacity: '0', transform: 'translateY(10px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' },
+              '0%': { opacity: '0', transform: 'translateY(10px) scale(0.992)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+            },
+            slidePush: {
+              '0%': { opacity: '0', transform: 'translateX(18px)' },
+              '100%': { opacity: '1', transform: 'translateX(0)' },
+            },
+            slidePop: {
+              '0%': { opacity: '0', transform: 'translateX(-18px)' },
+              '100%': { opacity: '1', transform: 'translateX(0)' },
+            },
+            sheetUp: {
+              '0%': { opacity: '0', transform: 'translateY(28px) scale(0.985)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+            },
+            modalZoom: {
+              '0%': { opacity: '0', transform: 'scale(0.94) translateY(8px)' },
+              '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+            },
+            successRing: {
+              '0%': { transform: 'scale(0.72)', opacity: '0' },
+              '65%': { transform: 'scale(1.06)', opacity: '1' },
+              '100%': { transform: 'scale(1)', opacity: '1' },
             },
             blobFloat: {
               '0%, 100%': { borderRadius: '58% 42% 65% 35% / 44% 58% 42% 56%' },
@@ -82,11 +103,16 @@
             }
           },
           animation: {
-            'pop': 'pop 0.32s cubic-bezier(0.22, 1, 0.36, 1)',
+            'pop': 'pop 0.28s cubic-bezier(0.22, 1, 0.36, 1)',
             'shimmer': 'shimmer 1.6s infinite linear',
-            'fade-up': 'fadeUp 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            'fade-up': 'fadeUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+            'slide-push': 'slidePush 0.30s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+            'slide-pop': 'slidePop 0.30s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+            'sheet-up': 'sheetUp 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+            'modal-zoom': 'modalZoom 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+            'success-ring': 'successRing 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards',
             'blob-float': 'blobFloat 9s ease-in-out infinite',
-            'check-draw': 'checkDraw 0.6s ease-out 0.12s forwards',
+            'check-draw': 'checkDraw 0.48s cubic-bezier(0.22, 1, 0.36, 1) 0.14s forwards',
           }
         }
       }
@@ -101,6 +127,8 @@
       --brand-deep: #321078;
       --brand-orange: #FF702E;
       --brand-yellow: #FFD84D;
+      --spring-snappy: cubic-bezier(0.22, 1, 0.36, 1);
+      --spring-sheet: cubic-bezier(0.32, 0.72, 0, 1);
     }
 
     * {
@@ -108,7 +136,12 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html, body {
+    html {
+      scroll-behavior: auto;
+      overflow-x: hidden;
+    }
+
+    body {
       margin: 0;
       padding: 0;
       background-color: var(--bg-canvas);
@@ -135,12 +168,73 @@
       border-radius: 64% 36% 48% 52% / 38% 62% 38% 62%;
     }
 
-    /* Tactile Gen-Z Button Microinteractions */
-    .btn-tactile {
-      transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease, box-shadow 0.2s ease;
+    /* Apple-Inspired Tactile Button & Card Microinteractions */
+    .btn-tactile,
+    button:not(:disabled),
+    a[href] {
+      transition:
+        transform 0.15s var(--spring-snappy),
+        opacity 0.15s ease,
+        filter 0.15s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+      will-change: transform;
     }
-    .btn-tactile:active {
-      transform: scale(0.95);
+
+    .btn-tactile:active:not(:disabled),
+    button:not(:disabled):active,
+    a[href]:active,
+    .is-pressing {
+      transform: scale(0.965) !important;
+      opacity: 0.92;
+    }
+
+    .card-tactile {
+      transition:
+        transform 0.18s var(--spring-snappy),
+        box-shadow 0.24s ease,
+        border-color 0.2s ease;
+      will-change: transform;
+    }
+
+    .card-tactile:active,
+    .card-tactile.is-pressing {
+      transform: scale(0.978) !important;
+    }
+
+    /* Animated Pill & Icon Spring in Bottom Navigation */
+    .mobile-nav-btn .nav-pill {
+      transition:
+        transform 0.24s var(--spring-snappy),
+        background-color 0.22s ease,
+        box-shadow 0.22s ease,
+        color 0.18s ease;
+    }
+
+    .mobile-nav-btn[aria-current="page"] .nav-pill {
+      transform: scale(1.04);
+    }
+
+    .mobile-nav-btn:active .nav-pill {
+      transform: scale(0.92);
+    }
+
+    /* Smooth Cart Row Exit */
+    .cart-item-removing {
+      opacity: 0 !important;
+      transform: translateX(24px) scale(0.96) !important;
+      transition: opacity 0.2s ease, transform 0.22s var(--spring-snappy) !important;
+    }
+
+    /* Spring Sheet & Backdrop Transitions */
+    .ios-backdrop {
+      transition: opacity 0.26s ease;
+    }
+
+    .ios-drawer-panel {
+      transition: transform 0.34s var(--spring-sheet);
+      will-change: transform;
     }
 
     .no-scrollbar::-webkit-scrollbar {
@@ -159,15 +253,15 @@
 
     .glass-nav {
       background: rgba(248, 248, 250, 0.92);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(25, 22, 34, 0.06);
     }
 
     .glass-dock {
       background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
       border: 1px solid rgba(25, 22, 34, 0.08);
     }
 
@@ -180,7 +274,7 @@
 
     /* Smooth collapsible search bar on mobile scroll */
     .mobile-search-collapse {
-      transition: max-height 0.26s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, margin-top 0.26s ease;
+      transition: max-height 0.26s var(--spring-snappy), opacity 0.2s ease, margin-top 0.26s ease;
       max-height: 56px;
       opacity: 1;
       overflow: hidden;
@@ -194,7 +288,7 @@
 
     /* Floating Cart Bar positioning aware of Mobile Dock + Safe Area */
     .floating-cart-pos {
-      bottom: calc(88px + env(safe-area-inset-bottom));
+      bottom: calc(84px + env(safe-area-inset-bottom));
     }
     @media (min-width: 1024px) {
       .floating-cart-pos {
@@ -203,17 +297,35 @@
     }
 
     .editorial-zoom img {
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.52s var(--spring-snappy);
     }
     @media (hover: hover) {
       .editorial-zoom:hover img {
-        transform: scale(1.05);
+        transform: scale(1.04);
       }
     }
 
     ::selection {
       background: #5426C8;
       color: #FFFFFF;
+    }
+
+    /* Respect Accessibility Reduced Motion Preferences */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .btn-tactile:active:not(:disabled),
+      button:not(:disabled):active,
+      .card-tactile:active,
+      .is-pressing {
+        transform: none !important;
+      }
     }
   </style>
 </head>
@@ -335,7 +447,7 @@
             <span class="text-brand-purple">385340</span>
           </div>
 
-          <button onclick="openCartDrawer()" aria-label="Open Bag" class="h-10 px-3 xs:px-3.5 rounded-full bg-brand-purple hover:bg-brand-deep text-white flex items-center gap-1.5 shadow-pill btn-tactile">
+          <button onclick="openCartDrawer()" aria-label="Open Bag" class="h-10 px-2.5 xs:px-3.5 rounded-full bg-brand-purple hover:bg-brand-deep text-white flex items-center gap-1.5 shadow-pill btn-tactile">
             <svg class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12l1 12H5L6 7z"/>
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 7V5a3 3 0 016 0v2"/>
@@ -347,7 +459,7 @@
         </div>
       </div>
 
-      <!-- Second Row: Collapsible App-Style Search Bar (auto-collapses smoothly on downward scroll) -->
+      <!-- Second Row: Collapsible App-Style Search Bar (Home & Stores only) -->
       <div id="mobile-search-row" class="mobile-search-collapse mt-2.5">
         <button onclick="openSearchModal()" class="w-full h-11 px-3.5 rounded-2xl bg-white border border-brand-hairline hover:border-brand-purple/40 flex items-center justify-between text-left shadow-2xs btn-tactile">
           <span class="flex items-center gap-2.5 text-xs font-medium text-brand-muted truncate">
@@ -368,7 +480,7 @@
   <!-- =====================================================================
        MAIN VIEWPORT CONTAINER
   ====================================================================== -->
-  <main id="app-root" class="flex-1 w-full max-w-[1440px] mx-auto px-4 tablet:px-6 desktop:px-8 pb-40 desktop:pb-20">
+  <main id="app-root" class="flex-1 w-full max-w-[1440px] mx-auto px-4 tablet:px-6 desktop:px-8 pb-44 desktop:pb-24">
     <!-- Dynamically rendered -->
   </main>
 
@@ -482,8 +594,8 @@
   <!-- =====================================================================
        CART SLIDE-OVER DRAWER
   ====================================================================== -->
-  <div id="cart-drawer-overlay" onclick="closeCartDrawer()" class="fixed inset-0 z-50 bg-brand-ink/55 backdrop-blur-xs hidden opacity-0 transition-opacity duration-300"></div>
-  <aside id="cart-drawer" aria-label="Shopping Bag" class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
+  <div id="cart-drawer-overlay" onclick="closeCartDrawer()" class="fixed inset-0 z-50 bg-brand-ink/50 backdrop-blur-xs ios-backdrop hidden opacity-0"></div>
+  <aside id="cart-drawer" aria-label="Shopping Bag" class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-white shadow-2xl ios-drawer-panel transform translate-x-full flex flex-col">
     <div class="px-5 py-4 border-b border-brand-hairline flex items-center justify-between pt-safe">
       <div>
         <span class="text-[10px] font-extrabold uppercase tracking-widest text-brand-purple">Radhanpur 385340 • ₹0 Delivery</span>
@@ -502,9 +614,9 @@
        GLOBAL SEARCH MODAL
   ====================================================================== -->
   <div id="search-modal" class="fixed inset-0 z-50 hidden">
-    <div onclick="closeSearchModal()" class="absolute inset-0 bg-brand-ink/55 backdrop-blur-xs"></div>
+    <div onclick="closeSearchModal()" class="absolute inset-0 bg-brand-ink/50 backdrop-blur-xs ios-backdrop"></div>
     <div class="relative max-w-2xl mx-auto mt-3 tablet:mt-14 px-3 tablet:px-0 pt-safe">
-      <div class="bg-white rounded-3xl shadow-2xl border border-brand-hairline overflow-hidden animate-fade-up">
+      <div class="bg-white rounded-3xl shadow-2xl border border-brand-hairline overflow-hidden animate-modal-zoom">
         <div class="p-4 border-b border-brand-hairline flex items-center gap-3">
           <svg class="w-5 h-5 text-brand-purple shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="7"></circle>
@@ -524,24 +636,24 @@
        PRODUCT DETAIL BOTTOM SHEET / MODAL
   ====================================================================== -->
   <div id="product-modal" class="fixed inset-0 z-50 hidden items-end tablet:items-center justify-center">
-    <div onclick="closeProductModal()" class="absolute inset-0 bg-brand-ink/55 backdrop-blur-xs"></div>
-    <div id="product-modal-card" class="relative w-full tablet:max-w-lg bg-white rounded-t-3xl tablet:rounded-3xl overflow-hidden shadow-2xl z-10 max-h-[90vh] flex flex-col animate-fade-up"></div>
+    <div onclick="closeProductModal()" class="absolute inset-0 bg-brand-ink/50 backdrop-blur-xs ios-backdrop"></div>
+    <div id="product-modal-card" class="relative w-full tablet:max-w-lg bg-white rounded-t-3xl tablet:rounded-3xl overflow-hidden shadow-2xl z-10 max-h-[90vh] flex flex-col animate-sheet-up tablet:animate-modal-zoom"></div>
   </div>
 
   <!-- =====================================================================
        EDITABLE STORE, OFFERS & CATALOG STUDIO MODAL
   ====================================================================== -->
   <div id="catalog-editor-modal" class="fixed inset-0 z-50 hidden items-end tablet:items-center justify-center">
-    <div onclick="closeCatalogEditor()" class="absolute inset-0 bg-brand-ink/60 backdrop-blur-xs"></div>
-    <div id="catalog-editor-card" class="relative w-full tablet:max-w-2xl bg-white rounded-t-[30px] tablet:rounded-[30px] overflow-hidden shadow-2xl z-10 max-h-[92vh] flex flex-col animate-fade-up"></div>
+    <div onclick="closeCatalogEditor()" class="absolute inset-0 bg-brand-ink/55 backdrop-blur-xs ios-backdrop"></div>
+    <div id="catalog-editor-card" class="relative w-full tablet:max-w-2xl bg-white rounded-t-[30px] tablet:rounded-[30px] overflow-hidden shadow-2xl z-10 max-h-[92vh] flex flex-col animate-sheet-up tablet:animate-modal-zoom"></div>
   </div>
 
   <!-- =====================================================================
        INDIAN MOBILE (+91) OTP LOGIN / SIGNUP MODAL (ONLY BEFORE PAYMENT)
   ====================================================================== -->
   <div id="otp-modal" class="fixed inset-0 z-50 hidden items-end tablet:items-center justify-center">
-    <div onclick="closeOtpModal()" class="absolute inset-0 bg-brand-deep/65 backdrop-blur-xs"></div>
-    <div class="relative w-full tablet:max-w-md bg-white rounded-t-3xl tablet:rounded-3xl p-6 tablet:p-8 shadow-2xl z-10 pb-safe animate-fade-up">
+    <div onclick="closeOtpModal()" class="absolute inset-0 bg-brand-deep/60 backdrop-blur-xs ios-backdrop"></div>
+    <div class="relative w-full tablet:max-w-md bg-white rounded-t-3xl tablet:rounded-3xl p-6 tablet:p-8 shadow-2xl z-10 pb-safe animate-sheet-up tablet:animate-modal-zoom">
       <div class="flex items-center justify-between mb-5">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-purple/10 text-brand-purple text-[11px] font-bold uppercase tracking-wider">
           Express +91 Verification
@@ -615,14 +727,110 @@
        ORDER DETAIL MODAL (FROM ORDERS PAGE)
   ====================================================================== -->
   <div id="order-detail-modal" class="fixed inset-0 z-50 hidden items-end tablet:items-center justify-center">
-    <div onclick="closeOrderDetailModal()" class="absolute inset-0 bg-brand-ink/55 backdrop-blur-xs"></div>
-    <div id="order-detail-card" class="relative w-full tablet:max-w-lg bg-white rounded-t-3xl tablet:rounded-3xl p-6 shadow-2xl z-10 max-h-[90vh] overflow-y-auto pb-safe animate-fade-up"></div>
+    <div onclick="closeOrderDetailModal()" class="absolute inset-0 bg-brand-ink/50 backdrop-blur-xs ios-backdrop"></div>
+    <div id="order-detail-card" class="relative w-full tablet:max-w-lg bg-white rounded-t-3xl tablet:rounded-3xl p-6 shadow-2xl z-10 max-h-[90vh] overflow-y-auto pb-safe animate-sheet-up tablet:animate-modal-zoom"></div>
   </div>
 
   <!-- =====================================================================
        PWA CONFIGURATION & FULL RESPONSIVE APPLICATION ENGINE
   ====================================================================== -->
   <script>
+    // -----------------------------------------------------------------------
+    // 0. CENTRALIZED HAPTIC FEEDBACK & TACTILE TOUCH ENGINE
+    //    - Supports Android Chrome Web Vibration API (navigator.vibrate)
+    //    - Supports native Capacitor / Cordova / WebKit haptic bridges if present
+    //    - Gracefully falls back on iOS Safari / desktop without errors
+    //    - Deduplicates rapid/bubbled triggers & ignores disabled controls
+    // -----------------------------------------------------------------------
+    let lastHapticTimestamp = 0;
+
+    function triggerHaptic(type = 'light', sourceEl = null) {
+      try {
+        // Never trigger haptics on disabled buttons or inputs
+        const target = sourceEl || document.activeElement;
+        if (target && (target.disabled || target.getAttribute('aria-disabled') === 'true')) {
+          return;
+        }
+
+        // Prevent duplicate vibration bursts from bubbled events within 45ms
+        const now = performance.now();
+        if (now - lastHapticTimestamp < 45) return;
+        lastHapticTimestamp = now;
+
+        // 1. Check Native Wrapper Bridges (Capacitor / iOS WKWebView / Android)
+        const capHaptics = window.Capacitor?.Plugins?.Haptics;
+        if (capHaptics) {
+          if (type === 'success' && capHaptics.notification) {
+            capHaptics.notification({ type: 'SUCCESS' }).catch(() => {});
+            return;
+          }
+          if (type === 'error' && capHaptics.notification) {
+            capHaptics.notification({ type: 'ERROR' }).catch(() => {});
+            return;
+          }
+          if (capHaptics.impact) {
+            const style = type === 'medium' ? 'MEDIUM' : 'LIGHT';
+            capHaptics.impact({ style }).catch(() => {});
+            return;
+          }
+        }
+
+        if (window.webkit?.messageHandlers?.haptic) {
+          window.webkit.messageHandlers.haptic.postMessage({ type });
+          return;
+        }
+
+        // 2. Web Vibration API (Supported on Android Chrome/Edge/Firefox; gracefully skipped on iOS Safari)
+        if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+          const patterns = {
+            light: 10,
+            medium: 20,
+            success: [15, 45, 28],
+            error: [30, 40, 30]
+          };
+          navigator.vibrate(patterns[type] ?? 10);
+        }
+      } catch (_) {
+        // Silent graceful fallback on restricted contexts
+      }
+    }
+
+    // Global delegated tactile touch feedback (press scale + subtle light tap)
+    (function initGlobalTactileDelegation() {
+      let activePressEl = null;
+
+      function findInteractiveTarget(el) {
+        if (!el || !(el instanceof Element)) return null;
+        return el.closest('button, a[href], [role="button"], .card-tactile, label[onclick]');
+      }
+
+      document.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        const interactive = findInteractiveTarget(e.target);
+        if (!interactive) return;
+        if (interactive.disabled || interactive.getAttribute('aria-disabled') === 'true') return;
+
+        activePressEl = interactive;
+        interactive.classList.add('is-pressing');
+
+        // Light tap for standard navigation & cards; medium/success handled in specific actions
+        if (!interactive.dataset.hapticExplicit) {
+          triggerHaptic('light', interactive);
+        }
+      }, { passive: true });
+
+      const clearPressState = () => {
+        if (activePressEl) {
+          activePressEl.classList.remove('is-pressing');
+          activePressEl = null;
+        }
+      };
+
+      document.addEventListener('pointerup', clearPressState, { passive: true });
+      document.addEventListener('pointercancel', clearPressState, { passive: true });
+      window.addEventListener('blur', clearPressState, { passive: true });
+    })();
+
     function escapeAttr(str) {
       return String(str ?? '')
         .replace(/&/g, '&amp;')
@@ -1162,16 +1370,23 @@
     ];
 
     // -----------------------------------------------------------------------
-    // 3. UNIFIED PERSISTENT STATE
+    // 3. UNIFIED PERSISTENT STATE & NAVIGATION HISTORY ENGINE
     // -----------------------------------------------------------------------
+    const PRIMARY_TABS = ['home', 'stores', 'orders', 'profile'];
+
     const state = {
-      view: 'home', // 'home' | 'stores' | 'store-detail' | 'orders' | 'profile' | 'checkout' | 'success'
+      view: 'home', // 'home' | 'stores' | 'store-detail' | 'orders' | 'order-detail' | 'profile' | 'profile-sub' | 'checkout' | 'success'
+      transitionType: 'fade', // 'fade' | 'push' | 'pop'
       activeStoreId: null,
+      activeOrderId: null,
+      activeProfileSection: 'address',
+      navStack: [],
       activeStoreCategory: 'All',
       homeMoodFilter: 'All',
       storeSearchQuery: '',
       storesDirectorySearch: '',
       storesDirectoryFilter: 'All',
+      expandedProducts: {},
       heroIndex: 0,
       offers: JSON.parse(localStorage.getItem('zatpatgo_offers_v3') || 'null') || DEFAULT_OFFERS,
       stores: JSON.parse(localStorage.getItem('zatpatgo_stores_v2') || 'null') || DEFAULT_STORES,
@@ -1189,6 +1404,35 @@
     };
 
     let heroAutoTimer = null;
+    let isHandlingPopState = false;
+
+    function createNavSnapshot(override = {}) {
+      return {
+        view: state.view,
+        activeStoreId: state.activeStoreId,
+        activeOrderId: state.activeOrderId,
+        activeProfileSection: state.activeProfileSection,
+        scrollY: typeof window !== 'undefined' ? window.scrollY : 0,
+        ...override
+      };
+    }
+
+    function getFallbackParentSnapshot(view) {
+      switch (view) {
+        case 'store-detail':
+          return { view: 'stores', activeStoreId: null, activeOrderId: null, activeProfileSection: 'address', scrollY: 0 };
+        case 'order-detail':
+          return { view: 'orders', activeStoreId: null, activeOrderId: null, activeProfileSection: 'address', scrollY: 0 };
+        case 'profile-sub':
+          return { view: 'profile', activeStoreId: null, activeOrderId: null, activeProfileSection: 'address', scrollY: 0 };
+        case 'checkout':
+          return { view: 'home', activeStoreId: null, activeOrderId: null, activeProfileSection: 'address', scrollY: 0 };
+        case 'success':
+          return { view: 'orders', activeStoreId: null, activeOrderId: null, activeProfileSection: 'address', scrollY: 0 };
+        default:
+          return { view: 'home', activeStoreId: null, activeOrderId: null, activeProfileSection: 'address', scrollY: 0 };
+      }
+    }
 
     function isAnyModalOpen() {
       const searchOpen = !document.getElementById('search-modal').classList.contains('hidden');
@@ -1204,6 +1448,89 @@
       document.body.style.overflow = isAnyModalOpen() ? 'hidden' : '';
     }
 
+    function closeTopmostOverlay() {
+      if (!document.getElementById('otp-modal').classList.contains('hidden')) {
+        closeOtpModal();
+        return true;
+      }
+      if (!document.getElementById('catalog-editor-modal').classList.contains('hidden')) {
+        closeCatalogEditor();
+        return true;
+      }
+      if (!document.getElementById('product-modal').classList.contains('hidden')) {
+        closeProductModal();
+        return true;
+      }
+      if (!document.getElementById('search-modal').classList.contains('hidden')) {
+        closeSearchModal();
+        return true;
+      }
+      if (!document.getElementById('order-detail-modal').classList.contains('hidden')) {
+        closeOrderDetailModal();
+        return true;
+      }
+      if (!document.getElementById('cart-drawer').classList.contains('translate-x-full')) {
+        closeCartDrawer();
+        return true;
+      }
+      return false;
+    }
+
+    function applyNavSnapshot(snap, restoreScroll = false, transitionType = 'pop') {
+      state.transitionType = transitionType;
+      state.view = snap.view || 'home';
+      state.activeStoreId = snap.activeStoreId ?? null;
+      state.activeOrderId = snap.activeOrderId ?? null;
+      state.activeProfileSection = snap.activeProfileSection || 'address';
+      renderApp();
+
+      const targetY = restoreScroll ? (snap.scrollY || 0) : 0;
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: targetY, left: 0, behavior: 'auto' });
+        syncMobileScrollChrome();
+      });
+    }
+
+    function navigateBack() {
+      triggerHaptic('light');
+      if (closeTopmostOverlay()) return;
+
+      if (state.navStack.length > 0) {
+        const previous = state.navStack.pop();
+        if (!isHandlingPopState) {
+          try {
+            window.history.replaceState({ navStack: state.navStack, current: previous }, '');
+          } catch (_) {}
+        }
+        applyNavSnapshot(previous, true, 'pop');
+        return;
+      }
+
+      const fallback = getFallbackParentSnapshot(state.view);
+      applyNavSnapshot(fallback, false, 'pop');
+    }
+
+    window.addEventListener('popstate', (event) => {
+      if (closeTopmostOverlay()) {
+        try {
+          window.history.pushState({ navStack: state.navStack, current: createNavSnapshot({ scrollY: window.scrollY }) }, '');
+        } catch (_) {}
+        return;
+      }
+
+      isHandlingPopState = true;
+      if (event.state && event.state.current) {
+        state.navStack = Array.isArray(event.state.navStack) ? event.state.navStack : [];
+        applyNavSnapshot(event.state.current, true, 'pop');
+      } else if (state.navStack.length > 0) {
+        const prev = state.navStack.pop();
+        applyNavSnapshot(prev, true, 'pop');
+      } else if (!PRIMARY_TABS.includes(state.view)) {
+        applyNavSnapshot(getFallbackParentSnapshot(state.view), false, 'pop');
+      }
+      isHandlingPopState = false;
+    });
+
     function persistCatalog() {
       localStorage.setItem('zatpatgo_stores_v2', JSON.stringify(state.stores));
       localStorage.setItem('zatpatgo_products_v2', JSON.stringify(state.products));
@@ -1218,14 +1545,57 @@
     }
 
     function navigateTo(view, params = {}) {
+      triggerHaptic('light');
+      const sameView =
+        state.view === view &&
+        (!params.storeId || state.activeStoreId === params.storeId) &&
+        (!params.orderId || state.activeOrderId === params.orderId) &&
+        (!params.profileSection || state.activeProfileSection === params.profileSection);
+
+      if (sameView) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+        return;
+      }
+
+      const currentSnapshot = createNavSnapshot({ scrollY: window.scrollY });
+
+      if (PRIMARY_TABS.includes(view)) {
+        state.transitionType = 'fade';
+        if (state.view !== view) {
+          state.navStack = [currentSnapshot];
+        }
+      } else {
+        state.transitionType = 'push';
+        const top = state.navStack[state.navStack.length - 1];
+        if (!top || top.view !== currentSnapshot.view || top.activeStoreId !== currentSnapshot.activeStoreId || top.activeOrderId !== currentSnapshot.activeOrderId) {
+          state.navStack.push(currentSnapshot);
+        }
+      }
+
       state.view = view;
       if (params.storeId) {
         state.activeStoreId = params.storeId;
         state.activeStoreCategory = 'All';
         state.storeSearchQuery = '';
       }
+      if (params.orderId) {
+        state.activeOrderId = params.orderId;
+      }
+      if (params.profileSection) {
+        state.activeProfileSection = params.profileSection;
+      }
+
+      const nextSnapshot = createNavSnapshot({ scrollY: 0 });
+      try {
+        window.history.pushState({ navStack: [...state.navStack], current: nextSnapshot }, '');
+      } catch (_) {}
+
       renderApp();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        syncMobileScrollChrome();
+      });
     }
 
     function getStoreNameById(storeId) {
@@ -1275,6 +1645,7 @@
 
     function addToCart(productId, event) {
       if (event) event.stopPropagation();
+      triggerHaptic('medium');
       const existing = state.cart.find(item => item.productId === productId);
       if (existing) {
         existing.qty += 1;
@@ -1289,22 +1660,47 @@
 
     function updateCartQty(productId, delta, event) {
       if (event) event.stopPropagation();
+      triggerHaptic('medium');
       const idx = state.cart.findIndex(item => item.productId === productId);
       if (idx === -1) {
         if (delta > 0) addToCart(productId);
         return;
       }
-      state.cart[idx].qty += delta;
-      if (state.cart[idx].qty <= 0) {
+      const nextQty = state.cart[idx].qty + delta;
+      if (nextQty <= 0) {
+        const rowEl = document.querySelector(`[data-cart-row="${productId}"]`);
+        if (rowEl) {
+          rowEl.classList.add('cart-item-removing');
+          setTimeout(() => {
+            state.cart = state.cart.filter(item => item.productId !== productId);
+            saveCart();
+            animateCartBadges();
+          }, 190);
+          return;
+        }
         state.cart.splice(idx, 1);
+      } else {
+        state.cart[idx].qty = nextQty;
       }
       saveCart();
       animateCartBadges();
     }
 
     function removeFromCart(productId) {
+      triggerHaptic('medium');
+      const rowEl = document.querySelector(`[data-cart-row="${productId}"]`);
+      if (rowEl) {
+        rowEl.classList.add('cart-item-removing');
+        setTimeout(() => {
+          state.cart = state.cart.filter(item => item.productId !== productId);
+          saveCart();
+          animateCartBadges();
+        }, 190);
+        return;
+      }
       state.cart = state.cart.filter(item => item.productId !== productId);
       saveCart();
+      animateCartBadges();
     }
 
     function getCartQty(productId) {
@@ -1313,7 +1709,7 @@
     }
 
     function animateCartBadges() {
-      document.querySelectorAll('[data-cart-badge]').forEach(el => {
+      document.querySelectorAll('[data-cart-badge], #float-bar-qty, #float-bar-total').forEach(el => {
         el.classList.remove('animate-pop');
         void el.offsetWidth;
         el.classList.add('animate-pop');
@@ -1335,90 +1731,106 @@
     }
 
     // -----------------------------------------------------------------------
-    // 5. MOBILE HEADER & BOTTOM NAVIGATION SYNC + SCROLL COLLAPSE
+    // 5. GLOBAL CHROME, CONTEXTUAL MOBILE HEADER & NAVIGATION SYNC
     // -----------------------------------------------------------------------
     function renderMobileHeaderLeft() {
-      const leftEl = document.getElementById('mobile-header-left');
-      if (!leftEl) return;
+      const container = document.getElementById('mobile-header-left');
+      if (!container) return;
 
-      const subViewConfigs = {
-        'store-detail': {
-          title: getStoreNameById(state.activeStoreId),
-          subtitle: 'Store Menu • ₹0 Delivery',
-          backTo: 'stores'
-        },
-        'checkout': {
-          title: 'Checkout',
-          subtitle: 'Radhanpur 385340',
-          backTo: 'home'
-        },
-        'success': {
-          title: 'Order Confirmed',
-          subtitle: 'Live Dispatch',
-          backTo: 'home'
-        }
-      };
+      const isPrimary = PRIMARY_TABS.includes(state.view);
 
-      const cfg = subViewConfigs[state.view];
-
-      if (cfg) {
-        leftEl.innerHTML = `
-          <button onclick="navigateTo('${cfg.backTo}')" aria-label="Go Back" class="w-10 h-10 rounded-full bg-white border border-brand-hairline hover:border-brand-purple/40 flex items-center justify-center text-brand-ink shrink-0 shadow-2xs btn-tactile">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-            </svg>
-          </button>
-          <div class="min-w-0 leading-tight">
-            <span class="font-editorial font-extrabold text-[16px] text-brand-ink block truncate">${cfg.title}</span>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-brand-purple block truncate">${cfg.subtitle}</span>
-          </div>
-        `;
-      } else {
-        leftEl.innerHTML = `
-          <button onclick="navigateTo('home')" class="flex items-center gap-2.5 text-left shrink-0 min-h-[44px] group btn-tactile" aria-label="Zatpatgo Home">
-            <div class="w-10 h-10 rounded-2xl bg-brand-purple group-hover:bg-brand-deep flex items-center justify-center shadow-pill transition-colors">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      if (isPrimary) {
+        container.innerHTML = `
+          <button onclick="navigateTo('home')" class="flex items-center gap-2 text-left shrink-0 min-h-[44px] group btn-tactile" aria-label="Zatpatgo Home">
+            <div class="w-9 h-9 rounded-2xl bg-brand-purple group-hover:bg-brand-deep flex items-center justify-center shadow-pill transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M5 6.5H19L8.5 17.5H19" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="18.5" cy="6.5" r="2.3" fill="#FFD84D"/>
               </svg>
             </div>
             <div class="leading-none">
-              <span class="font-editorial font-extrabold text-[19px] xs:text-[20px] tracking-tight text-brand-ink block">
+              <span class="font-editorial font-extrabold text-[18px] xs:text-[20px] tracking-tight text-brand-ink block">
                 Zatpat<span class="text-brand-purple">go</span>
               </span>
-              <span class="text-[9.5px] font-bold uppercase tracking-[0.14em] text-brand-muted block mt-0.5">
+              <span class="text-[9px] font-bold uppercase tracking-[0.13em] text-brand-muted block mt-0.5">
                 Fast Delivery
               </span>
             </div>
           </button>
         `;
+        return;
       }
+
+      let title = 'Back';
+      let subtitle = 'Radhanpur 385340';
+
+      if (state.view === 'store-detail') {
+        const store = state.stores.find(s => s.id === state.activeStoreId);
+        title = store ? store.name : 'Store Menu';
+        subtitle = store ? `${store.prepTime} • ₹0 Delivery` : 'Store Menu';
+      } else if (state.view === 'order-detail') {
+        title = state.activeOrderId ? `Order #${state.activeOrderId}` : 'Order Details';
+        subtitle = 'Receipt & Tracking';
+      } else if (state.view === 'profile-sub') {
+        const labels = {
+          address: 'Delivery Address',
+          personal: 'Personal Info',
+          support: 'WhatsApp Care',
+          app: 'Install App'
+        };
+        title = labels[state.activeProfileSection] || 'Account';
+        subtitle = 'Profile';
+      } else if (state.view === 'checkout') {
+        title = 'Checkout';
+        subtitle = 'Payment & Address';
+      } else if (state.view === 'success') {
+        title = 'Order Confirmed';
+        subtitle = 'Radhanpur 385340';
+      }
+
+      container.innerHTML = `
+        <div class="flex items-center gap-2 min-w-0">
+          <button onclick="navigateBack()" aria-label="Go Back" class="w-10 h-10 rounded-full bg-white border border-brand-hairline hover:border-brand-purple/40 flex items-center justify-center text-brand-ink shadow-2xs shrink-0 btn-tactile">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          <div class="min-w-0 leading-tight">
+            <span class="font-editorial font-extrabold text-[15px] xs:text-[16px] text-brand-ink block truncate">
+              ${title}
+            </span>
+            <span class="text-[10px] font-semibold text-brand-muted block truncate">
+              ${subtitle}
+            </span>
+          </div>
+        </div>
+      `;
     }
 
     function syncMobileScrollChrome() {
       const searchRow = document.getElementById('mobile-search-row');
-      const compactBtn = document.getElementById('mobile-compact-search-btn');
-      if (!searchRow || !compactBtn) return;
+      const compactSearchBtn = document.getElementById('mobile-compact-search-btn');
+      if (!searchRow || !compactSearchBtn) return;
 
-      const hideSearchOnViews = ['checkout', 'success'];
-      if (hideSearchOnViews.includes(state.view)) {
-        searchRow.classList.add('is-collapsed');
-        compactBtn.classList.add('hidden');
-        compactBtn.classList.remove('flex');
-        return;
-      }
+      const allowFullSearchRow = state.view === 'home' || state.view === 'stores';
+      const isScrolled = window.scrollY > 56;
 
-      const scrolledDown = window.scrollY > 56;
-      if (scrolledDown) {
+      if (!allowFullSearchRow) {
         searchRow.classList.add('is-collapsed');
-        compactBtn.classList.remove('hidden');
-        compactBtn.classList.add('flex');
+        compactSearchBtn.classList.remove('hidden');
+        compactSearchBtn.classList.add('flex');
+      } else if (isScrolled) {
+        searchRow.classList.add('is-collapsed');
+        compactSearchBtn.classList.remove('hidden');
+        compactSearchBtn.classList.add('flex');
       } else {
         searchRow.classList.remove('is-collapsed');
-        compactBtn.classList.add('hidden');
-        compactBtn.classList.remove('flex');
+        compactSearchBtn.classList.add('hidden');
+        compactSearchBtn.classList.remove('flex');
       }
     }
+
+    window.addEventListener('scroll', syncMobileScrollChrome, { passive: true });
 
     function updateGlobalChrome() {
       const bill = calculateBill(state.cart);
@@ -1427,11 +1839,9 @@
         el.textContent = bill.totalCount;
       });
 
-      // Render contextual mobile top-left header & sync search collapse
       renderMobileHeaderLeft();
       syncMobileScrollChrome();
 
-      // Floating Cart Pill Bar
       const floatBar = document.getElementById('floating-cart-bar');
       const floatQty = document.getElementById('float-bar-qty');
       const floatTotal = document.getElementById('float-bar-total');
@@ -1446,15 +1856,17 @@
         }
       }
 
-      // Hide mobile bottom dock on focused checkout screen so keyboard/CTA never collide
       const mobileBottomNav = document.getElementById('mobile-bottom-nav');
       if (mobileBottomNav) {
-        mobileBottomNav.classList.toggle('hidden', state.view === 'checkout');
+        const hideBottomDock = state.view === 'checkout';
+        mobileBottomNav.classList.toggle('hidden', hideBottomDock);
       }
 
-      const activeTab = state.view === 'store-detail' ? 'stores' : state.view;
+      let activeTab = state.view;
+      if (state.view === 'store-detail') activeTab = 'stores';
+      else if (state.view === 'order-detail') activeTab = 'orders';
+      else if (state.view === 'profile-sub') activeTab = 'profile';
 
-      // Desktop Top Nav Tabs
       document.querySelectorAll('.nav-tab-btn').forEach(btn => {
         const isCurrent = btn.dataset.navTab === activeTab;
         btn.className = `nav-tab-btn px-4 py-2 rounded-full text-xs desktop:text-sm font-bold transition-all flex items-center gap-1.5 btn-tactile ${
@@ -1462,37 +1874,33 @@
         }`;
       });
 
-      // Mobile Floating Dock Tabs
       document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
         const isCurrent = btn.dataset.mobileTab === activeTab;
         const pill = btn.querySelector('.nav-pill');
         const label = btn.querySelector('.nav-label');
         if (isCurrent) {
+          btn.setAttribute('aria-current', 'page');
           btn.classList.remove('text-brand-muted');
           btn.classList.add('text-brand-purple');
-          btn.setAttribute('aria-current', 'page');
           if (pill) {
             pill.classList.add('bg-brand-purple', 'text-white', 'shadow-pill');
           }
           if (label) {
-            label.classList.remove('font-bold');
             label.classList.add('font-extrabold');
           }
         } else {
+          btn.removeAttribute('aria-current');
           btn.classList.add('text-brand-muted');
           btn.classList.remove('text-brand-purple');
-          btn.removeAttribute('aria-current');
           if (pill) {
             pill.classList.remove('bg-brand-purple', 'text-white', 'shadow-pill');
           }
           if (label) {
-            label.classList.add('font-bold');
             label.classList.remove('font-extrabold');
           }
         }
       });
 
-      // Active order count badge on Orders tab (Desktop & Mobile)
       const activeOrderCount = state.orders.filter(o => o.status !== 'Delivered').length;
       ['desktop-active-order-badge', 'mobile-active-order-badge'].forEach(id => {
         const badge = document.getElementById(id);
@@ -1509,7 +1917,7 @@
 
       if (qty === 0) {
         return `
-          <button onclick="addToCart('${productId}', event)" class="${isCompact ? 'h-9 px-3.5 text-xs' : 'h-11 px-4 text-xs tablet:text-sm'} rounded-full bg-brand-purple hover:bg-brand-deep text-white font-editorial font-extrabold inline-flex items-center gap-1.5 shadow-pill btn-tactile">
+          <button data-haptic-explicit="true" onclick="addToCart('${productId}', event)" class="${isCompact ? 'h-9 px-3.5 text-xs' : 'h-11 px-4 text-xs tablet:text-sm'} rounded-full bg-brand-purple hover:bg-brand-deep text-white font-editorial font-extrabold inline-flex items-center gap-1.5 shadow-pill btn-tactile">
             <span>+</span>
             <span>Add</span>
           </button>
@@ -1517,10 +1925,10 @@
       }
 
       return `
-        <div onclick="event.stopPropagation()" class="inline-flex items-center ${isCompact ? 'h-9' : 'h-11'} rounded-full bg-brand-purple text-white p-1 shadow-pill">
-          <button onclick="updateCartQty('${productId}', -1, event)" aria-label="Decrease quantity" class="${isCompact ? 'w-7 h-7' : 'w-9 h-9'} rounded-full hover:bg-white/15 font-extrabold text-sm flex items-center justify-center btn-tactile">−</button>
+        <div onclick="event.stopPropagation()" class="inline-flex items-center ${isCompact ? 'h-9' : 'h-11'} rounded-full bg-brand-purple text-white p-1 shadow-pill animate-pop">
+          <button data-haptic-explicit="true" onclick="updateCartQty('${productId}', -1, event)" aria-label="Decrease quantity" class="${isCompact ? 'w-7 h-7' : 'w-9 h-9'} rounded-full hover:bg-white/15 font-extrabold text-sm flex items-center justify-center btn-tactile">−</button>
           <span class="min-w-[26px] text-center font-editorial font-extrabold text-xs tablet:text-sm">${qty}</span>
-          <button onclick="updateCartQty('${productId}', 1, event)" aria-label="Increase quantity" class="${isCompact ? 'w-7 h-7' : 'w-9 h-9'} rounded-full bg-brand-yellow text-brand-ink font-extrabold text-sm flex items-center justify-center btn-tactile">+</button>
+          <button data-haptic-explicit="true" onclick="updateCartQty('${productId}', 1, event)" aria-label="Increase quantity" class="${isCompact ? 'w-7 h-7' : 'w-9 h-9'} rounded-full bg-brand-yellow text-brand-ink font-extrabold text-sm flex items-center justify-center btn-tactile">+</button>
         </div>
       `;
     }
@@ -1632,7 +2040,7 @@
             </div>
           </section>
 
-          <!-- ADMIN-MANAGED OFFER & UPDATE IMAGE STRIP (SHAPE 1) -->
+          <!-- ADMIN-MANAGED OFFER & UPDATE IMAGE STRIP -->
           <section class="space-y-3.5">
             <div class="flex items-center justify-between gap-2">
               <div>
@@ -1649,7 +2057,7 @@
                 const badgeCls = badgeStyleMap[off.badgeStyle] || badgeStyleMap.orange;
                 const widthCls = off.cardSize === 'tall' ? 'w-[245px] tablet:w-[270px]' : 'w-[300px] tablet:w-[350px]';
                 return `
-                  <article onclick="handleOfferCardClick('${off.id}')" class="${widthCls} shrink-0 snap-start rounded-[28px] overflow-hidden bg-brand-ink text-white relative h-[215px] tablet:h-[235px] cursor-pointer shadow-editorial editorial-zoom group">
+                  <article onclick="handleOfferCardClick('${off.id}')" class="card-tactile ${widthCls} shrink-0 snap-start rounded-[28px] overflow-hidden bg-brand-ink text-white relative h-[215px] tablet:h-[235px] cursor-pointer shadow-editorial editorial-zoom group">
                     <img src="${off.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(off.title)}" loading="lazy" class="w-full h-full object-cover opacity-80" />
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/45 to-transparent"></div>
                     <div class="absolute inset-0 p-4 tablet:p-5 flex flex-col justify-between">
@@ -1692,7 +2100,7 @@
                 const blobCls = idx % 2 === 0 ? 'shape-blob-a' : 'shape-blob-b';
                 const backAccent = idx % 2 === 0 ? 'bg-brand-purple/15' : 'bg-brand-orange/15';
                 return `
-                  <article onclick="openProductModal('${prod.id}')" class="bg-white rounded-[28px] p-4 tablet:p-5 border border-brand-hairline shadow-editorial hover:border-brand-purple/40 transition-all cursor-pointer flex flex-col justify-between editorial-zoom">
+                  <article onclick="openProductModal('${prod.id}')" class="card-tactile bg-white rounded-[28px] p-4 tablet:p-5 border border-brand-hairline shadow-editorial hover:border-brand-purple/40 cursor-pointer flex flex-col justify-between editorial-zoom">
                     <div>
                       <div class="relative h-48 tablet:h-52 flex items-center justify-center mb-3">
                         <div class="absolute inset-2 ${blobCls} ${backAccent} transform rotate-3"></div>
@@ -1739,7 +2147,7 @@
 
             <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-5">
               ${filteredStores.map((store, idx) => `
-                <article onclick="navigateTo('store-detail', { storeId: '${store.id}' })" class="group bg-white rounded-[28px] overflow-hidden border border-brand-hairline shadow-editorial hover:border-brand-purple/40 transition-all cursor-pointer editorial-zoom">
+                <article onclick="navigateTo('store-detail', { storeId: '${store.id}' })" class="card-tactile group bg-white rounded-[28px] overflow-hidden border border-brand-hairline shadow-editorial hover:border-brand-purple/40 cursor-pointer editorial-zoom">
                   <div class="relative h-44 tablet:h-48 overflow-hidden bg-brand-ink">
                     <img src="${store.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(store.name)}" loading="lazy" class="w-full h-full object-cover ${idx % 3 === 1 ? 'shape-blob-c scale-105' : ''}" />
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-ink/80 via-transparent to-transparent"></div>
@@ -1786,7 +2194,7 @@
     }
 
     // -----------------------------------------------------------------------
-    // 8. VIEW 2: STORES DIRECTORY
+    // 8. VIEW 2: STORES DIRECTORY (CLEAN & FOCUSED)
     // -----------------------------------------------------------------------
     function renderStoresDirectoryView() {
       const q = state.storesDirectorySearch.trim().toLowerCase();
@@ -1803,37 +2211,37 @@
       });
 
       return `
-        <div class="pt-4 tablet:pt-7 space-y-6 tablet:space-y-8 animate-fade-up">
-          <div class="flex flex-col tablet:flex-row tablet:items-end justify-between gap-4">
+        <div class="pt-4 tablet:pt-7 space-y-5 tablet:space-y-7 animate-fade-up">
+          <div class="flex items-end justify-between gap-3">
             <div>
-              <span class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-purple">
-                Radhanpur 385340 • ₹0 Delivery
-              </span>
-              <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink mt-1">
-                Explore All Kitchens &amp; Stores
+              <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink">
+                Stores
               </h1>
+              <p class="text-xs tablet:text-sm text-brand-muted mt-0.5">
+                ${state.stores.length} kitchens in Radhanpur 385340 • ₹0 delivery
+              </p>
             </div>
 
-            <button onclick="state.editorTab = 'stores'; openCatalogEditor('${state.stores[0].id}')" class="self-start tablet:self-auto h-10 px-4 rounded-full bg-white border border-brand-hairline hover:border-brand-purple text-xs font-extrabold text-brand-purple btn-tactile">
-              ✎ Edit Stores &amp; Catalog
+            <button onclick="state.editorTab = 'stores'; openCatalogEditor('${state.stores[0].id}')" class="h-9 px-3.5 rounded-full bg-white border border-brand-hairline hover:border-brand-purple text-[11px] font-extrabold text-brand-purple btn-tactile shrink-0">
+              ✎ Manage
             </button>
           </div>
 
-          <!-- Search & Category Filter Strip -->
-          <div class="bg-white p-3.5 tablet:p-4 rounded-[26px] border border-brand-hairline space-y-3">
-            <div class="relative">
-              <input type="text" value="${escapeAttr(state.storesDirectorySearch)}" oninput="state.storesDirectorySearch = this.value; renderApp()" placeholder="Search Visamo, Ked's Cafe, Tandoori Tales, Pizza Junction, Sweet Street, Fresh Basket..." class="w-full h-11 pl-10 pr-4 rounded-full bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-xs tablet:text-sm font-medium text-brand-ink" />
+          <!-- Compact Filter Strip -->
+          <div class="space-y-2.5">
+            <div class="relative hidden desktop:block">
+              <input type="text" value="${escapeAttr(state.storesDirectorySearch)}" oninput="state.storesDirectorySearch = this.value; renderApp()" placeholder="Filter stores or dishes..." class="w-full h-11 pl-10 pr-4 rounded-full bg-white border border-brand-hairline focus:border-brand-purple focus:outline-none text-sm font-medium text-brand-ink" />
               <svg class="w-4 h-4 text-brand-purple absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="7"></circle>
                 <path stroke-linecap="round" d="M20 20l-3.5-3.5"></path>
               </svg>
             </div>
 
-            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
               ${categories.map(cat => {
                 const active = state.storesDirectoryFilter === cat;
                 return `
-                  <button onclick="state.storesDirectoryFilter = '${cat}'; renderApp()" class="h-9 px-4 rounded-full text-xs font-extrabold whitespace-nowrap transition-all btn-tactile ${active ? 'bg-brand-purple text-white shadow-pill' : 'bg-brand-canvas text-brand-ink hover:bg-brand-hairline'}">
+                  <button onclick="state.storesDirectoryFilter = '${cat}'; renderApp()" class="h-9 px-4 rounded-full text-xs font-extrabold whitespace-nowrap transition-all btn-tactile ${active ? 'bg-brand-purple text-white shadow-pill' : 'bg-white border border-brand-hairline text-brand-ink hover:border-brand-purple/30'}">
                     ${cat}
                   </button>
                 `;
@@ -1841,54 +2249,44 @@
             </div>
           </div>
 
-          <!-- Stores Grid -->
+          <!-- Clean Stores Grid -->
           ${filteredStores.length === 0 ? `
             <div class="bg-white rounded-[28px] p-10 text-center border border-brand-hairline">
-              <p class="font-editorial font-bold text-lg text-brand-ink">No matching stores found</p>
+              <p class="font-editorial font-bold text-base text-brand-ink">No matching stores found</p>
               <button onclick="state.storesDirectorySearch = ''; state.storesDirectoryFilter = 'All'; renderApp()" class="mt-3 h-10 px-5 rounded-full bg-brand-purple text-white text-xs font-bold">
-                Show All ${state.stores.length} Stores
+                Show All Stores
               </button>
             </div>
           ` : `
-            <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-5 tablet:gap-6">
-              ${filteredStores.map(store => {
-                const itemCount = state.products.filter(p => p.storeId === store.id).length;
-                return `
-                  <article onclick="navigateTo('store-detail', { storeId: '${store.id}' })" class="group bg-white rounded-[28px] overflow-hidden border border-brand-hairline shadow-editorial hover:border-brand-purple/40 transition-all cursor-pointer flex flex-col justify-between editorial-zoom">
-                    <div>
-                      <div class="relative h-48 tablet:h-52 overflow-hidden bg-brand-ink">
-                        <img src="${store.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(store.name)}" loading="lazy" class="w-full h-full object-cover opacity-95" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-brand-ink/80 via-transparent to-transparent"></div>
-                        <span class="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-white/95 text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
-                          ${store.categoryTag}
-                        </span>
-                        <span class="absolute bottom-3.5 right-3.5 px-2.5 py-1 rounded-full bg-brand-ink/80 text-brand-yellow text-xs font-extrabold">
-                          ★ ${store.rating}
-                        </span>
-                      </div>
+            <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-4 tablet:gap-6">
+              ${filteredStores.map(store => `
+                <article onclick="navigateTo('store-detail', { storeId: '${store.id}' })" class="card-tactile group bg-white rounded-[26px] overflow-hidden border border-brand-hairline shadow-editorial hover:border-brand-purple/40 cursor-pointer editorial-zoom">
+                  <div class="relative aspect-[16/9] overflow-hidden bg-brand-ink">
+                    <img src="${store.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(store.name)}" loading="lazy" class="w-full h-full object-cover" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-ink/70 via-transparent to-transparent"></div>
+                    <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/95 text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
+                      ${store.categoryTag}
+                    </span>
+                    <span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-brand-ink/85 text-brand-yellow text-xs font-extrabold">
+                      ★ ${store.rating}
+                    </span>
+                  </div>
 
-                      <div class="p-5">
-                        <h2 class="font-editorial font-extrabold text-xl tablet:text-2xl text-brand-ink group-hover:text-brand-purple transition-colors">
-                          ${store.name}
-                        </h2>
-                        <p class="text-xs text-brand-muted mt-1 line-clamp-2 leading-relaxed">
-                          ${store.tagline}
-                        </p>
-                      </div>
+                  <div class="p-4 tablet:p-5 flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                      <h2 class="font-editorial font-extrabold text-lg tablet:text-xl text-brand-ink group-hover:text-brand-purple transition-colors truncate">
+                        ${store.name}
+                      </h2>
+                      <p class="text-xs font-semibold text-brand-muted mt-0.5">
+                        ${store.prepTime} • ₹0 Delivery
+                      </p>
                     </div>
-
-                    <div class="px-5 pb-5 pt-3 border-t border-brand-canvas flex items-center justify-between">
-                      <span class="text-xs font-bold text-brand-ink">
-                        ${store.prepTime} • ${itemCount} items
-                      </span>
-                      <span class="h-9 px-4 rounded-full bg-brand-purple text-white text-xs font-extrabold inline-flex items-center gap-1 shadow-pill">
-                        <span>Enter Store</span>
-                        <span>→</span>
-                      </span>
-                    </div>
-                  </article>
-                `;
-              }).join('')}
+                    <span class="w-9 h-9 rounded-full bg-brand-canvas group-hover:bg-brand-purple group-hover:text-white text-brand-ink flex items-center justify-center font-bold text-sm transition-colors shrink-0">
+                      →
+                    </span>
+                  </div>
+                </article>
+              `).join('')}
             </div>
           `}
         </div>
@@ -1896,20 +2294,25 @@
     }
 
     // -----------------------------------------------------------------------
-    // 9. STORE DETAIL LOOKBOOK VIEW
+    // 9. STORE DETAIL VIEW (COMPACT HERO + CLEAN PRODUCT BROWSING)
     // -----------------------------------------------------------------------
+    function toggleProductDescription(productId, event) {
+      if (event) event.stopPropagation();
+      state.expandedProducts[productId] = !state.expandedProducts[productId];
+      renderApp();
+    }
+
     function renderStoreDetailView() {
       const store = state.stores.find(s => s.id === state.activeStoreId) || state.stores[0];
 
       if (state.isLoadingStore) {
         return `
-          <div class="pt-5 space-y-6">
-            <div class="h-10 w-32 rounded-full skeleton-shimmer"></div>
-            <div class="h-72 tablet:h-96 w-full rounded-[32px] skeleton-shimmer"></div>
-            <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-6">
-              <div class="h-64 rounded-3xl skeleton-shimmer"></div>
-              <div class="h-64 rounded-3xl skeleton-shimmer"></div>
-              <div class="h-64 rounded-3xl skeleton-shimmer"></div>
+          <div class="pt-5 space-y-5">
+            <div class="h-44 tablet:h-56 w-full rounded-[28px] skeleton-shimmer"></div>
+            <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-5">
+              <div class="h-56 rounded-3xl skeleton-shimmer"></div>
+              <div class="h-56 rounded-3xl skeleton-shimmer"></div>
+              <div class="h-56 rounded-3xl skeleton-shimmer"></div>
             </div>
           </div>
         `;
@@ -1925,78 +2328,81 @@
       });
 
       return `
-        <div class="pt-4 tablet:pt-6 space-y-7 tablet:space-y-9 animate-fade-up">
+        <div class="pt-3.5 tablet:pt-6 space-y-5 tablet:space-y-7 animate-fade-up">
           
-          <div class="flex items-center justify-between gap-3">
-            <button onclick="navigateTo('stores')" class="hidden desktop:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline hover:border-brand-purple/40 text-xs tablet:text-sm font-bold text-brand-ink">
+          <!-- Desktop Back Bar -->
+          <div class="hidden desktop:flex items-center justify-between gap-3">
+            <button onclick="navigateBack()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline hover:border-brand-purple/40 text-xs font-bold text-brand-ink btn-tactile">
               <span>←</span>
-              <span>All Stores</span>
+              <span>Back to Stores</span>
             </button>
 
-            <button onclick="state.editorTab = 'stores'; openCatalogEditor('${store.id}')" class="ml-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-brand-hairline hover:border-brand-purple text-xs font-extrabold text-brand-purple">
-              <span>✎ Edit Store &amp; Items</span>
+            <button onclick="state.editorTab = 'stores'; openCatalogEditor('${store.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-brand-hairline hover:border-brand-purple text-xs font-extrabold text-brand-purple btn-tactile">
+              <span>✎ Edit Menu</span>
             </button>
           </div>
 
-          <!-- Store Hero Banner -->
-          <section class="relative rounded-[28px] tablet:rounded-[36px] overflow-hidden bg-brand-ink text-white shadow-editorial">
+          <!-- Compact Store Hero Card -->
+          <section class="bg-white rounded-[26px] overflow-hidden border border-brand-hairline shadow-editorial">
             <div class="grid grid-cols-1 desktop:grid-cols-12">
-              <div class="desktop:col-span-7 relative h-56 tablet:h-72 desktop:h-[390px] overflow-hidden">
+              <div class="desktop:col-span-5 relative h-44 tablet:h-56 desktop:h-auto overflow-hidden bg-brand-ink">
                 <img src="${store.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(store.name)}" class="w-full h-full object-cover" />
-                <div class="absolute inset-0 bg-gradient-to-t from-brand-ink via-transparent to-transparent desktop:bg-gradient-to-l desktop:from-brand-ink desktop:via-brand-ink/20 desktop:to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-brand-ink/75 via-transparent to-transparent desktop:hidden"></div>
+                <span class="desktop:hidden absolute bottom-3 left-4 px-2.5 py-1 rounded-full bg-brand-purple text-brand-yellow text-xs font-extrabold">
+                  ★ ${store.rating}
+                </span>
               </div>
 
-              <div class="desktop:col-span-5 p-6 tablet:p-9 flex flex-col justify-between bg-brand-ink">
+              <div class="desktop:col-span-7 p-4 tablet:p-7 flex flex-col justify-between">
                 <div>
-                  <div class="flex flex-wrap items-center gap-2 mb-3">
-                    <span class="px-3 py-1 rounded-full bg-brand-purple text-white text-[10px] tablet:text-[11px] font-bold uppercase tracking-wider">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-brand-purple">
                       ${store.categoryTag}
                     </span>
-                    <span class="px-3 py-1 rounded-full bg-white/10 text-brand-yellow text-xs font-bold">
-                      ★ ${store.rating}
-                    </span>
+                    <div class="flex items-center gap-2">
+                      <span class="hidden desktop:inline-flex px-2.5 py-0.5 rounded-full bg-brand-purple/10 text-brand-purple text-xs font-extrabold">
+                        ★ ${store.rating}
+                      </span>
+                      <button onclick="state.editorTab = 'stores'; openCatalogEditor('${store.id}')" class="desktop:hidden text-[11px] font-extrabold text-brand-purple">
+                        ✎ Edit
+                      </button>
+                    </div>
                   </div>
-                  <h1 class="font-editorial font-extrabold text-3xl tablet:text-4xl leading-tight">
+
+                  <h1 class="font-editorial font-extrabold text-2xl tablet:text-3xl text-brand-ink mt-1">
                     ${store.name}
                   </h1>
-                  <p class="mt-2.5 text-xs tablet:text-sm text-white/80 leading-relaxed">
-                    ${store.story}
+                  <p class="text-xs tablet:text-sm text-brand-muted mt-1 line-clamp-2">
+                    ${store.tagline}
                   </p>
                 </div>
 
-                <div class="mt-6 pt-4 border-t border-white/10 grid grid-cols-3 gap-2 text-xs">
-                  <div>
-                    <span class="text-white/50 block uppercase text-[10px]">Prep Time</span>
-                    <strong class="text-white font-bold">${store.prepTime}</strong>
-                  </div>
-                  <div>
-                    <span class="text-white/50 block uppercase text-[10px]">Delivery</span>
-                    <strong class="text-brand-yellow font-extrabold">₹0 FREE</strong>
-                  </div>
-                  <div>
-                    <span class="text-white/50 block uppercase text-[10px]">PIN Code</span>
-                    <strong class="text-white font-bold">385340</strong>
-                  </div>
+                <div class="mt-4 pt-3 border-t border-brand-canvas flex items-center gap-4 text-xs font-bold text-brand-ink">
+                  <span>⏱ ${store.prepTime}</span>
+                  <span class="text-brand-hairline">•</span>
+                  <span class="text-emerald-600 font-extrabold">₹0 Delivery</span>
+                  <span class="text-brand-hairline">•</span>
+                  <span class="text-brand-muted">385340</span>
                 </div>
               </div>
             </div>
           </section>
 
-          <!-- In-Store Search + Category Filter Bar -->
-          <div class="flex flex-col desktop:flex-row desktop:items-center justify-between gap-3 bg-white p-3.5 tablet:p-4 rounded-3xl border border-brand-hairline">
-            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <!-- Clean Category Tabs & In-Store Search -->
+          <div class="flex flex-col desktop:flex-row desktop:items-center justify-between gap-3">
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
               ${store.categories.map(cat => {
                 const active = state.activeStoreCategory === cat;
                 return `
-                  <button onclick="state.activeStoreCategory = '${cat}'; renderApp()" class="px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${active ? 'bg-brand-purple text-white shadow-pill' : 'bg-brand-canvas text-brand-ink hover:bg-brand-hairline'}">
+                  <button onclick="state.activeStoreCategory = '${cat}'; renderApp()" class="h-9 px-4 rounded-full text-xs font-extrabold whitespace-nowrap transition-all btn-tactile ${active ? 'bg-brand-purple text-white shadow-pill' : 'bg-white border border-brand-hairline text-brand-ink hover:border-brand-purple/30'}">
                     ${cat}
                   </button>
                 `;
               }).join('')}
             </div>
 
-            <div class="relative desktop:w-72 shrink-0">
-              <input type="text" oninput="state.storeSearchQuery = this.value; renderApp()" value="${escapeAttr(state.storeSearchQuery)}" placeholder="Search in ${escapeAttr(store.name)}..." class="w-full pl-9 pr-3.5 py-2 rounded-full bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-xs font-medium text-brand-ink" />
+            <div class="relative desktop:w-64 shrink-0">
+              <input type="text" oninput="state.storeSearchQuery = this.value; renderApp()" value="${escapeAttr(state.storeSearchQuery)}" placeholder="Search in ${escapeAttr(store.name)}..." class="w-full h-10 pl-9 pr-3.5 rounded-full bg-white border border-brand-hairline focus:border-brand-purple focus:outline-none text-xs font-medium text-brand-ink" />
               <svg class="w-3.5 h-3.5 text-brand-purple absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="7"></circle>
                 <path stroke-linecap="round" d="M20 20l-3.5-3.5"></path>
@@ -2004,48 +2410,54 @@
             </div>
           </div>
 
-          <!-- Responsive Product Grid -->
+          <!-- Clean Product Cards -->
           ${filteredProducts.length === 0 ? `
-            <div class="bg-white rounded-3xl p-10 text-center border border-brand-hairline">
-              <p class="font-editorial font-bold text-lg text-brand-ink">No matching dishes in ${store.name}</p>
-              <button onclick="state.activeStoreCategory = 'All'; state.storeSearchQuery = ''; renderApp()" class="mt-3 px-4 py-2 rounded-full bg-brand-purple text-white text-xs font-bold">
-                Reset Filters
+            <div class="bg-white rounded-[26px] p-9 text-center border border-brand-hairline">
+              <p class="font-editorial font-bold text-base text-brand-ink">No matching dishes in ${store.name}</p>
+              <button onclick="state.activeStoreCategory = 'All'; state.storeSearchQuery = ''; renderApp()" class="mt-3 h-9 px-4 rounded-full bg-brand-purple text-white text-xs font-bold">
+                Show All Items
               </button>
             </div>
           ` : `
-            <section class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-5 tablet:gap-6">
-              ${filteredProducts.map(product => `
-                <article onclick="openProductModal('${product.id}')" class="group bg-white rounded-[26px] overflow-hidden border border-brand-hairline shadow-editorial hover:border-brand-purple/35 transition-all cursor-pointer flex flex-col justify-between editorial-zoom">
-                  <div>
-                    <div class="relative aspect-[16/10] overflow-hidden bg-brand-canvas">
-                      <img src="${product.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(product.name)}" loading="lazy" class="w-full h-full object-cover" />
-                      <span class="absolute top-3.5 left-3.5 px-3 py-1 rounded-full bg-white/95 text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
-                        ${product.badge}
-                      </span>
-                    </div>
-
-                    <div class="p-5 pb-3">
-                      <span class="text-[10px] font-bold uppercase tracking-wider text-brand-purple">${product.category}</span>
-                      <h3 class="font-editorial font-extrabold text-lg tablet:text-xl text-brand-ink group-hover:text-brand-purple transition-colors mt-0.5">
-                        ${product.name}
-                      </h3>
-                      <p class="mt-1.5 text-xs tablet:text-[13px] text-brand-muted leading-relaxed line-clamp-2">
-                        ${product.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="px-5 pb-5 pt-3 flex items-center justify-between border-t border-brand-canvas mt-2">
+            <section class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-4 tablet:gap-6">
+              ${filteredProducts.map(product => {
+                const isExpanded = !!state.expandedProducts[product.id];
+                return `
+                  <article onclick="openProductModal('${product.id}')" class="card-tactile group bg-white rounded-[24px] overflow-hidden border border-brand-hairline shadow-editorial hover:border-brand-purple/35 cursor-pointer flex flex-col justify-between editorial-zoom">
                     <div>
-                      <span class="text-[10px] uppercase tracking-wider text-brand-muted block font-semibold">Price</span>
-                      <span class="font-editorial font-extrabold text-lg tablet:text-xl text-brand-ink">${formatCurrency(product.price)}</span>
+                      <div class="relative aspect-[16/10] overflow-hidden bg-brand-canvas">
+                        <img src="${product.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(product.name)}" loading="lazy" class="w-full h-full object-cover" />
+                        ${product.isHot ? `
+                          <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-brand-yellow text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
+                            ${product.badge}
+                          </span>
+                        ` : ''}
+                      </div>
+
+                      <div class="p-4 pb-2.5">
+                        <h3 class="font-editorial font-extrabold text-base tablet:text-lg text-brand-ink group-hover:text-brand-purple transition-colors leading-snug">
+                          ${product.name}
+                        </h3>
+                        <p class="mt-1 text-xs text-brand-muted leading-relaxed ${isExpanded ? '' : 'line-clamp-1'}">
+                          ${product.description}
+                        </p>
+                        ${product.description.length > 55 ? `
+                          <button type="button" onclick="toggleProductDescription('${product.id}', event)" class="mt-1 text-[11px] font-bold text-brand-purple hover:underline">
+                            ${isExpanded ? 'Less' : 'More'}
+                          </button>
+                        ` : ''}
+                      </div>
                     </div>
-                    <div data-product-control="${product.id}" data-variant="default">
-                      ${renderQuantityControlHTML(product.id, 'default')}
+
+                    <div class="px-4 pb-4 pt-2.5 flex items-center justify-between border-t border-brand-canvas mt-1">
+                      <span class="font-editorial font-extrabold text-lg text-brand-ink">${formatCurrency(product.price)}</span>
+                      <div data-product-control="${product.id}" data-variant="compact">
+                        ${renderQuantityControlHTML(product.id, 'compact')}
+                      </div>
                     </div>
-                  </div>
-                </article>
-              `).join('')}
+                  </article>
+                `;
+              }).join('')}
             </section>
           `}
         </div>
@@ -2053,80 +2465,73 @@
     }
 
     // -----------------------------------------------------------------------
-    // 10. VIEW 3: ORDERS
+    // 10. VIEW 3: ORDERS (ACTIVE PRIORITY + COMPACT HISTORY + DEDICATED DETAIL VIEW)
     // -----------------------------------------------------------------------
     function renderOrdersView() {
       const activeOrders = state.orders.filter(o => o.status !== 'Delivered');
       const pastOrders = state.orders.filter(o => o.status === 'Delivered');
 
       return `
-        <div class="pt-5 tablet:pt-8 max-w-5xl mx-auto space-y-8 animate-fade-up">
-          <div class="flex flex-col tablet:flex-row tablet:items-end justify-between gap-3">
-            <div>
-              <span class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-purple">
-                Radhanpur 385340 Dispatch
-              </span>
-              <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink mt-1">
-                Your Orders
-              </h1>
-            </div>
-            <a href="https://wa.me/919875299621" target="_blank" rel="noopener noreferrer" class="self-start tablet:self-auto inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline text-xs font-bold text-brand-ink hover:border-emerald-500">
-              <span class="w-2 h-2 rounded-full bg-[#25D366]"></span>
-              <span>Order Support on WhatsApp</span>
-            </a>
+        <div class="pt-4 tablet:pt-8 max-w-4xl mx-auto space-y-7 animate-fade-up">
+          <div>
+            <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink">
+              Orders
+            </h1>
+            <p class="text-xs tablet:text-sm text-brand-muted mt-0.5">
+              Live tracking &amp; order history in Radhanpur 385340
+            </p>
           </div>
 
-          <!-- Active Orders Section -->
-          <section class="space-y-4">
-            <h2 class="font-editorial font-extrabold text-lg text-brand-ink flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-brand-orange animate-ping"></span>
+          <!-- Priority: Active Orders -->
+          <section class="space-y-3.5">
+            <h2 class="font-editorial font-extrabold text-sm uppercase tracking-wider text-brand-purple flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-brand-orange animate-ping"></span>
               <span>Active Orders (${activeOrders.length})</span>
             </h2>
 
             ${activeOrders.length === 0 ? `
-              <div class="bg-white rounded-3xl p-7 border border-brand-hairline flex flex-col tablet:flex-row items-start tablet:items-center justify-between gap-4">
+              <div class="bg-white rounded-[24px] p-6 border border-brand-hairline flex items-center justify-between gap-4">
                 <div>
-                  <p class="font-editorial font-bold text-base text-brand-ink">No active orders right now</p>
-                  <p class="text-xs text-brand-muted mt-0.5">Craving something fresh? Browse our ${state.stores.length} partner kitchens in Radhanpur 385340.</p>
+                  <p class="font-editorial font-bold text-sm tablet:text-base text-brand-ink">No active orders</p>
+                  <p class="text-xs text-brand-muted mt-0.5">Ready when you are.</p>
                 </div>
-                <button onclick="navigateTo('stores')" class="px-5 py-2.5 rounded-full bg-brand-purple text-white text-xs font-bold shadow-pill">
-                  Explore Stores
+                <button onclick="navigateTo('stores')" class="h-10 px-5 rounded-full bg-brand-purple text-white text-xs font-extrabold shadow-pill btn-tactile shrink-0">
+                  Order Now
                 </button>
               </div>
             ` : `
-              <div class="grid grid-cols-1 desktop:grid-cols-2 gap-5">
+              <div class="grid grid-cols-1 desktop:grid-cols-2 gap-4">
                 ${activeOrders.map(order => `
-                  <div class="bg-brand-deep text-white rounded-[28px] p-5 tablet:p-6 shadow-editorial space-y-4">
+                  <div onclick="navigateTo('order-detail', { orderId: '${order.orderId}' })" class="bg-brand-deep text-white rounded-[26px] p-5 shadow-editorial space-y-4 cursor-pointer btn-tactile">
                     <div class="flex items-center justify-between">
-                      <span class="px-3 py-1 rounded-full bg-brand-yellow text-brand-ink text-[11px] font-extrabold uppercase tracking-wider">
+                      <span class="px-3 py-1 rounded-full bg-brand-yellow text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
                         ${order.status}
                       </span>
-                      <span class="text-xs font-bold text-white/75">#${order.orderId} • ${order.date}</span>
+                      <span class="text-xs font-bold text-white/75">#${order.orderId}</span>
                     </div>
 
                     <div>
-                      <p class="font-editorial font-extrabold text-lg">
+                      <p class="font-editorial font-extrabold text-base tablet:text-lg line-clamp-1">
                         ${order.items.map(i => `${i.qty}× ${i.name}`).join(', ')}
                       </p>
-                      <p class="text-xs text-white/70 mt-1">Delivering to: ${order.landmark}</p>
+                      <p class="text-xs text-white/70 mt-0.5">${order.date}</p>
                     </div>
 
-                    <div class="space-y-1.5 pt-1">
-                      <div class="h-2 w-full rounded-full bg-white/15 overflow-hidden">
+                    <!-- Clean Status Timeline -->
+                    <div class="space-y-1.5">
+                      <div class="h-1.5 w-full rounded-full bg-white/15 overflow-hidden">
                         <div class="h-full w-2/3 rounded-full bg-brand-yellow"></div>
                       </div>
-                      <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider text-white/75">
+                      <div class="flex justify-between text-[10px] font-bold text-white/75">
                         <span class="text-brand-yellow">Confirmed</span>
                         <span class="text-brand-yellow">Preparing</span>
-                        <span>Out in 385340</span>
+                        <span>On the way</span>
                       </div>
                     </div>
 
                     <div class="pt-3 border-t border-white/10 flex items-center justify-between">
-                      <span class="font-editorial font-extrabold text-lg text-brand-yellow">${formatCurrency(order.bill.grandTotal)}</span>
-                      <button onclick="openOrderDetailModal('${order.orderId}')" class="px-4 py-2 rounded-full bg-white text-brand-ink text-xs font-extrabold">
-                        View Details
-                      </button>
+                      <span class="font-editorial font-extrabold text-base text-brand-yellow">${formatCurrency(order.bill.grandTotal)}</span>
+                      <span class="text-xs font-extrabold text-white">Track &amp; Receipt →</span>
                     </div>
                   </div>
                 `).join('')}
@@ -2134,43 +2539,31 @@
             `}
           </section>
 
-          <!-- Previous Orders Section -->
-          <section class="space-y-4">
-            <h2 class="font-editorial font-extrabold text-lg text-brand-ink">
-              Previous Orders (${pastOrders.length})
+          <!-- Compact Past Orders -->
+          <section class="space-y-3.5">
+            <h2 class="font-editorial font-extrabold text-sm uppercase tracking-wider text-brand-muted">
+              Past Orders (${pastOrders.length})
             </h2>
 
-            <div class="grid grid-cols-1 desktop:grid-cols-2 gap-5">
+            <div class="space-y-3">
               ${pastOrders.map(order => `
-                <div class="bg-white rounded-[26px] p-5 border border-brand-hairline shadow-2xs flex flex-col justify-between space-y-4">
-                  <div>
-                    <div class="flex items-center justify-between gap-2 mb-3">
-                      <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-extrabold">
-                        ✓ ${order.status}
-                      </span>
-                      <span class="text-xs text-brand-muted font-medium">#${order.orderId} • ${order.date}</span>
+                <div onclick="navigateTo('order-detail', { orderId: '${order.orderId}' })" class="bg-white rounded-[22px] p-4 tablet:p-5 border border-brand-hairline hover:border-brand-purple/35 transition-all cursor-pointer flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <span class="font-editorial font-extrabold text-sm text-brand-ink">#${order.orderId}</span>
+                      <span class="text-[11px] font-bold text-emerald-600">• ${order.status}</span>
+                      <span class="text-[11px] text-brand-muted hidden xs:inline">• ${order.date}</span>
                     </div>
-
-                    <p class="font-editorial font-bold text-base text-brand-ink">
+                    <p class="text-xs text-brand-muted truncate mt-1">
                       ${order.items.map(i => `${i.qty}× ${i.name}`).join(', ')}
                     </p>
-                    <p class="text-xs text-brand-muted mt-1 line-clamp-1">${order.landmark}</p>
                   </div>
 
-                  <div class="pt-3 border-t border-brand-canvas flex items-center justify-between gap-2">
-                    <div>
-                      <span class="text-[10px] uppercase text-brand-muted block font-semibold">Total Paid</span>
-                      <span class="font-editorial font-extrabold text-base text-brand-ink">${formatCurrency(order.bill.grandTotal)}</span>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                      <button onclick="openOrderDetailModal('${order.orderId}')" class="px-3.5 py-2 rounded-full bg-brand-canvas hover:bg-brand-hairline text-xs font-bold text-brand-ink">
-                        Details
-                      </button>
-                      <button onclick="reorderItems('${order.orderId}')" class="px-4 py-2 rounded-full bg-brand-purple hover:bg-brand-deep text-white text-xs font-bold shadow-2xs">
-                        ↻ Reorder
-                      </button>
-                    </div>
+                  <div class="flex items-center gap-2.5 shrink-0">
+                    <span class="font-editorial font-extrabold text-sm text-brand-ink">${formatCurrency(order.bill.grandTotal)}</span>
+                    <button onclick="event.stopPropagation(); reorderItems('${order.orderId}')" class="h-9 px-3.5 rounded-full bg-brand-purple hover:bg-brand-deep text-white text-xs font-extrabold btn-tactile">
+                      ↻ Reorder
+                    </button>
                   </div>
                 </div>
               `).join('')}
@@ -2180,75 +2573,108 @@
       `;
     }
 
-    function openOrderDetailModal(orderId) {
-      const order = state.orders.find(o => o.orderId === orderId);
-      if (!order) return;
+    // Dedicated Full-Page Order Detail Screen (Supports Back Navigation cleanly)
+    function renderOrderDetailView() {
+      const order = state.orders.find(o => o.orderId === state.activeOrderId) || state.orders[0];
+      if (!order) {
+        navigateTo('orders');
+        return '';
+      }
 
-      const modal = document.getElementById('order-detail-modal');
-      const card = document.getElementById('order-detail-card');
+      const isActive = order.status !== 'Delivered';
 
-      card.innerHTML = `
-        <div class="flex items-center justify-between pb-4 border-b border-brand-hairline">
-          <div>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-brand-purple">${order.status}</span>
-            <h3 class="font-editorial font-extrabold text-xl text-brand-ink">Order #${order.orderId}</h3>
-          </div>
-          <button onclick="closeOrderDetailModal()" class="w-9 h-9 rounded-full bg-brand-canvas flex items-center justify-center text-brand-ink">✕</button>
-        </div>
-
-        <div class="py-4 space-y-4">
-          <div class="p-3.5 rounded-2xl bg-brand-canvas text-xs space-y-1">
-            <p class="font-bold text-brand-ink">Delivery Destination (Radhanpur 385340)</p>
-            <p class="text-brand-muted">${order.landmark}</p>
-            <p class="text-brand-muted">Payment: <strong class="text-brand-ink">${order.paymentMethod}</strong> • ${order.date}</p>
-          </div>
-
-          <div class="space-y-2.5">
-            <p class="text-[11px] font-bold uppercase tracking-wider text-brand-muted">Items Ordered</p>
-            ${order.items.map(i => `
-              <div class="flex items-center justify-between text-sm">
-                <div>
-                  <p class="font-semibold text-brand-ink">${i.qty} × ${i.name}</p>
-                  <p class="text-[11px] text-brand-muted">${i.storeName}</p>
-                </div>
-                <span class="font-bold text-brand-ink">${formatCurrency(i.subtotal)}</span>
-              </div>
-            `).join('')}
-          </div>
-
-          <div class="pt-3 border-t border-brand-hairline space-y-1.5 text-xs">
-            <div class="flex justify-between text-brand-muted">
-              <span>Item Total</span>
-              <span class="font-semibold text-brand-ink">${formatCurrency(order.bill.itemTotal)}</span>
-            </div>
-            <div class="flex justify-between text-brand-muted">
-              <span>Platform Fee</span>
-              <span class="font-semibold text-brand-ink">${formatCurrency(order.bill.platformFee)}</span>
-            </div>
-            <div class="flex justify-between text-brand-muted">
-              <span>Delivery Fee</span>
-              <span class="font-extrabold text-emerald-600">₹0 FREE</span>
-            </div>
-            <div class="flex justify-between pt-2 text-base font-editorial font-extrabold text-brand-ink">
-              <span>Grand Total</span>
-              <span class="text-brand-purple">${formatCurrency(order.bill.grandTotal)}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="pt-2 flex gap-3">
-          <button onclick="closeOrderDetailModal(); reorderItems('${order.orderId}')" class="flex-1 py-3.5 rounded-2xl bg-brand-purple text-white font-editorial font-bold text-xs shadow-pill">
-            ↻ Reorder All Items
+      return `
+        <div class="pt-4 tablet:pt-8 max-w-2xl mx-auto space-y-5 animate-fade-up">
+          <button onclick="navigateBack()" class="hidden desktop:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline text-xs font-bold text-brand-ink btn-tactile">
+            ← Back to Orders
           </button>
-          <a href="https://wa.me/919875299621?text=${encodeURIComponent(`Hi Zatpatgo Care, help needed with order #${order.orderId}`)}" target="_blank" rel="noopener noreferrer" class="px-4 py-3.5 rounded-2xl bg-brand-canvas text-brand-ink font-bold text-xs flex items-center justify-center">
-            WhatsApp Help
-          </a>
+
+          <!-- Status Card -->
+          <div class="bg-white rounded-[26px] p-5 tablet:p-6 border border-brand-hairline shadow-editorial space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="px-3 py-1 rounded-full ${isActive ? 'bg-brand-yellow text-brand-ink' : 'bg-emerald-50 text-emerald-700'} text-[10px] font-extrabold uppercase tracking-wider">
+                  ${order.status}
+                </span>
+                <h1 class="font-editorial font-extrabold text-2xl text-brand-ink mt-2">
+                  Order #${order.orderId}
+                </h1>
+              </div>
+              <span class="text-xs font-semibold text-brand-muted">${order.date}</span>
+            </div>
+
+            ${isActive ? `
+              <div class="space-y-1.5 pt-1">
+                <div class="h-2 w-full rounded-full bg-brand-canvas overflow-hidden">
+                  <div class="h-full w-2/3 rounded-full bg-brand-purple"></div>
+                </div>
+                <div class="flex justify-between text-[11px] font-bold text-brand-muted">
+                  <span class="text-brand-purple">Confirmed</span>
+                  <span class="text-brand-purple">Preparing</span>
+                  <span>Arriving in 385340</span>
+                </div>
+              </div>
+            ` : ''}
+
+            <div class="pt-3 border-t border-brand-canvas text-xs space-y-1">
+              <p class="font-bold text-brand-ink">Delivery Address</p>
+              <p class="text-brand-muted">${order.landmark}</p>
+              <p class="text-brand-muted pt-1">Paid via <strong class="text-brand-ink">${order.paymentMethod}</strong></p>
+            </div>
+          </div>
+
+          <!-- Items & Bill Breakdown -->
+          <div class="bg-white rounded-[26px] p-5 tablet:p-6 border border-brand-hairline shadow-editorial space-y-4">
+            <h2 class="font-editorial font-extrabold text-base text-brand-ink">Items &amp; Receipt</h2>
+
+            <div class="space-y-3 pb-4 border-b border-brand-hairline">
+              ${order.items.map(i => `
+                <div class="flex items-center justify-between text-sm">
+                  <div>
+                    <p class="font-bold text-brand-ink">${i.qty} × ${i.name}</p>
+                    <p class="text-[11px] text-brand-muted">${i.storeName}</p>
+                  </div>
+                  <span class="font-editorial font-bold text-brand-ink">${formatCurrency(i.subtotal)}</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between text-brand-muted">
+                <span>Item Total</span>
+                <span class="font-bold text-brand-ink">${formatCurrency(order.bill.itemTotal)}</span>
+              </div>
+              <div class="flex justify-between text-brand-muted">
+                <span>Platform Fee</span>
+                <span class="font-bold text-brand-ink">${formatCurrency(order.bill.platformFee)}</span>
+              </div>
+              <div class="flex justify-between text-brand-muted">
+                <span>Delivery Fee</span>
+                <span class="font-extrabold text-emerald-600">₹0 FREE</span>
+              </div>
+              <div class="pt-2.5 border-t border-brand-hairline flex justify-between items-center">
+                <span class="font-editorial font-extrabold text-base text-brand-ink">Grand Total</span>
+                <span class="font-editorial font-extrabold text-xl text-brand-purple">${formatCurrency(order.bill.grandTotal)}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Primary & Secondary Actions -->
+          <div class="flex flex-col xs:flex-row gap-3">
+            <button onclick="reorderItems('${order.orderId}')" class="flex-1 h-12 rounded-2xl bg-brand-purple hover:bg-brand-deep text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
+              ↻ Reorder All Items
+            </button>
+            <a href="https://wa.me/919875299621?text=${encodeURIComponent(`Hi Zatpatgo Care, help needed with order #${order.orderId}`)}" target="_blank" rel="noopener noreferrer" class="h-12 px-5 rounded-2xl bg-white border border-brand-hairline text-brand-ink font-bold text-xs flex items-center justify-center gap-2 btn-tactile">
+              <span class="w-2 h-2 rounded-full bg-[#25D366]"></span>
+              <span>WhatsApp Help</span>
+            </a>
+          </div>
         </div>
       `;
+    }
 
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      syncBodyScrollLock();
+    function openOrderDetailModal(orderId) {
+      navigateTo('order-detail', { orderId });
     }
 
     function closeOrderDetailModal() {
@@ -2278,120 +2704,200 @@
     }
 
     // -----------------------------------------------------------------------
-    // 11. VIEW 4: PROFILE
+    // 11. VIEW 4: PROFILE (GROUPED NAVIGATION LIST + DEDICATED SUBPAGES)
     // -----------------------------------------------------------------------
     function renderProfileView() {
+      const menuGroups = [
+        {
+          id: 'address',
+          icon: '📍',
+          title: 'Delivery Address',
+          subtitle: state.deliveryLandmark || 'Radhanpur, Gujarat — 385340'
+        },
+        {
+          id: 'personal',
+          icon: '👤',
+          title: 'Personal Information',
+          subtitle: state.user ? `${state.user.name} • +91 ${state.user.phone}` : 'Guest browsing • Sign in with +91'
+        },
+        {
+          id: 'support',
+          icon: '💬',
+          title: 'WhatsApp Care & Support',
+          subtitle: '+91 9875299621 • Direct assistance'
+        },
+        {
+          id: 'app',
+          icon: '📲',
+          title: 'Install Zatpatgo App',
+          subtitle: 'Add to Home Screen for instant access'
+        }
+      ];
+
       return `
-        <div class="pt-5 tablet:pt-8 max-w-4xl mx-auto space-y-6 tablet:space-y-8 animate-fade-up">
-          <div>
-            <span class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-purple">
-              Member &amp; Support
-            </span>
-            <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink mt-1">
-              Account &amp; Profile
-            </h1>
-          </div>
-
-          <div class="grid grid-cols-1 desktop:grid-cols-12 gap-6">
-            
-            <div class="desktop:col-span-7 space-y-6">
-              <div class="bg-white rounded-[28px] p-6 tablet:p-7 border border-brand-hairline shadow-editorial">
-                ${state.user ? `
-                  <div class="flex items-center gap-4 pb-5 border-b border-brand-hairline">
-                    <div class="w-14 h-14 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xl flex items-center justify-center shrink-0">
-                      ${(state.user.name || 'Z').charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-extrabold uppercase tracking-wider">
-                        Verified +91 Account
-                      </span>
-                      <h2 class="font-editorial font-extrabold text-xl text-brand-ink mt-1">${state.user.name || 'Radhanpur Patron'}</h2>
-                      <p class="text-sm font-semibold text-brand-muted">+91 ${state.user.phone}</p>
-                    </div>
-                  </div>
-                ` : `
-                  <div class="pb-5 border-b border-brand-hairline flex flex-col tablet:flex-row tablet:items-center justify-between gap-4">
-                    <div>
-                      <span class="text-[11px] font-bold uppercase tracking-wider text-brand-purple">Guest Browsing Mode</span>
-                      <h2 class="font-editorial font-extrabold text-xl text-brand-ink mt-0.5">Sign in with Indian Mobile</h2>
-                      <p class="text-xs text-brand-muted mt-1">Browse freely anytime; verify +91 OTP when ready to order.</p>
-                    </div>
-                    <button onclick="state.pendingCheckoutAfterOtp = false; openOtpModal()" class="px-5 py-3 rounded-full bg-brand-purple text-white text-xs font-bold shadow-pill shrink-0">
-                      Sign In / Create Account
-                    </button>
-                  </div>
-                `}
-
-                <div class="pt-5 space-y-4">
-                  <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase tracking-wider text-brand-muted">Service Area &amp; Address</span>
-                    <span class="text-xs font-extrabold text-brand-purple">PIN 385340 Only</span>
-                  </div>
-
-                  <div class="p-4 rounded-2xl bg-brand-canvas border border-brand-hairline space-y-2.5">
-                    <div class="flex items-center justify-between text-xs">
-                      <span class="text-brand-muted">Town &amp; State</span>
-                      <strong class="text-brand-ink">Radhanpur, Gujarat — 385340</strong>
-                    </div>
-                    <div>
-                      <label class="block text-[11px] font-bold text-brand-muted mb-1">Saved Landmark / Street</label>
-                      <input type="text" value="${escapeAttr(state.deliveryLandmark)}" onchange="state.deliveryLandmark = this.value; localStorage.setItem('zatpatgo_address_v2', this.value); showToast('Address updated');" class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-brand-hairline text-xs font-semibold text-brand-ink focus:border-brand-purple focus:outline-none" />
-                    </div>
-                  </div>
-
-                  ${state.user ? `
-                    <button onclick="logoutUser()" class="w-full py-3.5 rounded-2xl border border-brand-hairline hover:bg-brand-orange/10 text-xs font-extrabold text-brand-orange transition-colors">
-                      Logout from Account
-                    </button>
-                  ` : ''}
-                </div>
+        <div class="pt-4 tablet:pt-8 max-w-2xl mx-auto space-y-6 animate-fade-up">
+          
+          <!-- Clean Account Header Card -->
+          <div class="bg-white rounded-[28px] p-5 tablet:p-6 border border-brand-hairline shadow-editorial flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <div class="w-14 h-14 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xl flex items-center justify-center shrink-0 shadow-pill">
+                ${state.user ? (state.user.name || 'Z').charAt(0).toUpperCase() : 'Z'}
+              </div>
+              <div class="min-w-0">
+                <h1 class="font-editorial font-extrabold text-xl tablet:text-2xl text-brand-ink truncate">
+                  ${state.user ? (state.user.name || 'Radhanpur Patron') : 'Welcome to Zatpatgo'}
+                </h1>
+                <p class="text-xs font-semibold text-brand-muted mt-0.5 truncate">
+                  ${state.user ? `+91 ${state.user.phone} • Radhanpur 385340` : 'Exclusively serving Radhanpur 385340'}
+                </p>
               </div>
             </div>
 
-            <div class="desktop:col-span-5 space-y-6">
-              
-              <div class="bg-brand-deep text-white rounded-[28px] p-6 tablet:p-7 shadow-editorial space-y-4">
-                <span class="inline-block px-3 py-1 rounded-full bg-white/10 text-brand-yellow text-[10px] font-extrabold uppercase tracking-widest">
-                  Customer Care • WhatsApp Only
-                </span>
-                <h2 class="font-editorial font-extrabold text-2xl leading-snug">
-                  Direct Concierge Support
-                </h2>
-                <p class="text-xs tablet:text-sm text-white/80 leading-relaxed">
-                  Need help with an order, custom request, or Radhanpur 385340 delivery? Connect directly with our support team on WhatsApp.
-                </p>
+            ${!state.user ? `
+              <button onclick="state.pendingCheckoutAfterOtp = false; openOtpModal()" class="h-10 px-4 rounded-full bg-brand-purple text-white text-xs font-extrabold shadow-pill shrink-0 btn-tactile">
+                Sign In
+              </button>
+            ` : `
+              <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-extrabold uppercase shrink-0">
+                Verified
+              </span>
+            `}
+          </div>
 
-                <div class="p-3.5 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-between">
-                  <div>
-                    <span class="text-[10px] uppercase tracking-wider text-white/60 block">Official WhatsApp</span>
-                    <strong class="font-editorial font-extrabold text-base tracking-wide">+91 9875299621</strong>
+          <!-- Grouped Action Rows -->
+          <div class="bg-white rounded-[28px] border border-brand-hairline shadow-editorial divide-y divide-brand-hairline overflow-hidden">
+            ${menuGroups.map(item => `
+              <button onclick="navigateTo('profile-sub', { profileSection: '${item.id}' })" class="w-full p-4 tablet:p-5 flex items-center justify-between gap-3.5 text-left hover:bg-brand-canvas/70 transition-colors btn-tactile">
+                <div class="flex items-center gap-3.5 min-w-0">
+                  <span class="w-10 h-10 rounded-2xl bg-brand-canvas flex items-center justify-center text-base shrink-0">
+                    ${item.icon}
+                  </span>
+                  <div class="min-w-0">
+                    <p class="font-editorial font-bold text-sm tablet:text-base text-brand-ink">${item.title}</p>
+                    <p class="text-xs text-brand-muted truncate mt-0.5">${item.subtitle}</p>
                   </div>
-                  <span class="px-2.5 py-1 rounded-lg bg-[#25D366]/20 text-[#25D366] text-[11px] font-bold">Active</span>
                 </div>
+                <span class="text-brand-muted font-bold text-sm shrink-0">→</span>
+              </button>
+            `).join('')}
+          </div>
 
-                <a href="https://wa.me/919875299621" target="_blank" rel="noopener noreferrer" class="w-full py-4 rounded-2xl bg-[#25D366] hover:brightness-105 text-brand-ink font-editorial font-extrabold text-sm flex items-center justify-center gap-2 transition-all shadow-lg">
-                  <span>Chat on WhatsApp Now</span>
-                  <span>↗</span>
-                </a>
+          <!-- Quick WhatsApp Direct Pill -->
+          <div class="flex items-center justify-between gap-3 pt-1">
+            <a href="https://wa.me/919875299621" target="_blank" rel="noopener noreferrer" class="flex-1 h-12 rounded-2xl bg-[#25D366] text-brand-ink font-editorial font-extrabold text-xs flex items-center justify-center gap-2 shadow-2xs btn-tactile">
+              <span>Chat on WhatsApp (+91 9875299621)</span>
+              <span>↗</span>
+            </a>
+
+            ${state.user ? `
+              <button onclick="logoutUser()" class="h-12 px-5 rounded-2xl bg-white border border-brand-hairline hover:bg-brand-orange/10 text-xs font-extrabold text-brand-orange btn-tactile">
+                Logout
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderProfileSubView() {
+      const section = state.activeProfileSection || 'address';
+      let contentHTML = '';
+
+      if (section === 'address') {
+        contentHTML = `
+          <div class="bg-white rounded-[28px] p-5 tablet:p-7 border border-brand-hairline shadow-editorial space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="font-editorial font-extrabold text-lg text-brand-ink">Saved Delivery Location</h2>
+              <span class="px-3 py-1 rounded-full bg-brand-purple/10 text-brand-purple text-xs font-extrabold">PIN 385340</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10px] font-bold uppercase text-brand-muted mb-1">Town &amp; State</label>
+                <input type="text" value="Radhanpur, Gujarat" disabled class="w-full px-3.5 py-2.5 rounded-xl bg-brand-canvas border border-brand-hairline text-xs font-bold text-brand-ink" />
               </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase text-brand-muted mb-1">PIN Code</label>
+                <input type="text" value="385340" disabled class="w-full px-3.5 py-2.5 rounded-xl bg-brand-canvas border border-brand-hairline text-xs font-extrabold text-brand-purple" />
+              </div>
+            </div>
 
-              <div class="bg-white rounded-[28px] p-6 border border-brand-hairline shadow-2xs space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="text-[11px] font-bold uppercase tracking-wider text-brand-purple">Progressive Web App</span>
-                  <span class="text-xs font-bold text-emerald-600">Standalone Ready</span>
+            <div>
+              <label class="block text-[11px] font-bold uppercase text-brand-muted mb-1">Street / Society / Landmark</label>
+              <input id="profile-landmark-input" type="text" value="${escapeAttr(state.deliveryLandmark)}" class="w-full px-4 py-3 rounded-2xl bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-sm font-medium text-brand-ink" />
+            </div>
+
+            <button onclick="const val = document.getElementById('profile-landmark-input').value.trim(); if (val) { state.deliveryLandmark = val; localStorage.setItem('zatpatgo_address_v2', val); showToast('Address saved'); navigateBack(); }" class="w-full h-12 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
+              Save Delivery Address
+            </button>
+          </div>
+        `;
+      } else if (section === 'personal') {
+        contentHTML = `
+          <div class="bg-white rounded-[28px] p-5 tablet:p-7 border border-brand-hairline shadow-editorial space-y-5">
+            ${state.user ? `
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-[10px] font-bold uppercase text-brand-muted mb-1">Full Name</label>
+                  <input id="profile-name-edit" type="text" value="${escapeAttr(state.user.name || '')}" class="w-full px-4 py-3 rounded-2xl bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-sm font-bold text-brand-ink" />
                 </div>
-                <h3 class="font-editorial font-extrabold text-lg text-brand-ink">Install Zatpatgo App</h3>
-                <p class="text-xs text-brand-muted leading-relaxed">
-                  Add Zatpatgo to your home screen for standalone app speed, local state persistence, and instant ordering.
-                </p>
-                <button onclick="triggerPwaInstall()" class="w-full py-3 rounded-2xl bg-brand-canvas hover:bg-brand-purple hover:text-white text-brand-ink font-editorial font-bold text-xs transition-colors">
-                  Install / Add to Home Screen
+                <div>
+                  <label class="block text-[10px] font-bold uppercase text-brand-muted mb-1">Verified Mobile</label>
+                  <input type="text" value="+91 ${state.user.phone}" disabled class="w-full px-4 py-3 rounded-2xl bg-brand-canvas border border-brand-hairline text-sm font-bold text-brand-muted" />
+                </div>
+              </div>
+              <button onclick="const n = document.getElementById('profile-name-edit').value.trim(); if (n) { state.user.name = n; localStorage.setItem('zatpatgo_user_v2', JSON.stringify(state.user)); showToast('Name updated'); navigateBack(); }" class="w-full h-12 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
+                Save Changes
+              </button>
+            ` : `
+              <div class="text-center py-4 space-y-3">
+                <h2 class="font-editorial font-extrabold text-xl text-brand-ink">Sign in with +91 Mobile</h2>
+                <p class="text-xs text-brand-muted">Verify your Indian mobile number via instant OTP to save orders and checkout faster.</p>
+                <button onclick="state.pendingCheckoutAfterOtp = false; openOtpModal()" class="w-full h-12 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
+                  Continue with +91 OTP
                 </button>
               </div>
-
-            </div>
-
+            `}
           </div>
+        `;
+      } else if (section === 'support') {
+        contentHTML = `
+          <div class="bg-brand-deep text-white rounded-[28px] p-6 tablet:p-7 shadow-editorial space-y-4">
+            <span class="inline-block px-3 py-1 rounded-full bg-white/10 text-brand-yellow text-[10px] font-extrabold uppercase tracking-widest">
+              WhatsApp Concierge
+            </span>
+            <h2 class="font-editorial font-extrabold text-2xl leading-snug">
+              Need help with your order?
+            </h2>
+            <p class="text-xs tablet:text-sm text-white/80 leading-relaxed">
+              Our Radhanpur 385340 support team responds directly on WhatsApp at <strong>+91 9875299621</strong>.
+            </p>
+            <a href="https://wa.me/919875299621" target="_blank" rel="noopener noreferrer" class="w-full h-12 rounded-2xl bg-[#25D366] text-brand-ink font-editorial font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg btn-tactile">
+              <span>Message on WhatsApp</span>
+              <span>↗</span>
+            </a>
+          </div>
+        `;
+      } else {
+        contentHTML = `
+          <div class="bg-white rounded-[28px] p-6 border border-brand-hairline shadow-editorial space-y-4">
+            <h2 class="font-editorial font-extrabold text-xl text-brand-ink">Install Zatpatgo PWA</h2>
+            <p class="text-xs tablet:text-sm text-brand-muted leading-relaxed">
+              Add Zatpatgo to your home screen for one-tap access, full-screen app layout, and cached menu browsing.
+            </p>
+            <button onclick="triggerPwaInstall()" class="w-full h-12 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
+              Add to Home Screen
+            </button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="pt-4 tablet:pt-8 max-w-xl mx-auto space-y-5 animate-fade-up">
+          <button onclick="navigateBack()" class="hidden desktop:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline text-xs font-bold text-brand-ink btn-tactile">
+            ← Back to Profile
+          </button>
+          ${contentHTML}
         </div>
       `;
     }
@@ -2702,67 +3208,48 @@
       const isOffline = !navigator.onLine;
 
       return `
-        <div class="pt-5 tablet:pt-8 max-w-4xl mx-auto animate-fade-up">
-          <button onclick="navigateTo('home')" class="hidden desktop:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline text-xs font-bold text-brand-ink mb-6">
-            ← Back to Menu
+        <div class="pt-4 tablet:pt-8 max-w-4xl mx-auto space-y-5 animate-fade-up">
+          <button onclick="navigateBack()" class="hidden desktop:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline text-xs font-bold text-brand-ink btn-tactile">
+            ← Back
           </button>
 
-          <div class="mb-6">
-            <span class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-purple">Secure Checkout</span>
-            <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink mt-1">
-              Payment &amp; Delivery
-            </h1>
-          </div>
-
-          <div class="grid grid-cols-1 desktop:grid-cols-12 gap-6 tablet:gap-8">
+          <div class="grid grid-cols-1 desktop:grid-cols-12 gap-5 tablet:gap-7">
             
-            <div class="desktop:col-span-7 space-y-6">
-              <div class="bg-white rounded-[28px] p-5 tablet:p-7 border border-brand-hairline shadow-editorial">
-                <div class="flex items-center justify-between pb-4 border-b border-brand-hairline">
-                  <div>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-600">Verified +91 Patron</span>
-                    <p class="font-editorial font-bold text-base text-brand-ink mt-0.5">
-                      ${state.user.name || 'Radhanpur Patron'} • +91 ${state.user.phone}
-                    </p>
-                  </div>
-                  <span class="px-3 py-1 rounded-full bg-brand-canvas text-xs font-extrabold text-brand-purple">385340 Only</span>
+            <div class="desktop:col-span-7 space-y-4">
+              <!-- Compact Delivery Address Section -->
+              <div class="bg-white rounded-[24px] p-4 tablet:p-6 border border-brand-hairline shadow-editorial space-y-3">
+                <div class="flex items-center justify-between">
+                  <h2 class="font-editorial font-extrabold text-base text-brand-ink">Delivery Details</h2>
+                  <span class="px-2.5 py-0.5 rounded-full bg-brand-purple/10 text-[11px] font-extrabold text-brand-purple">Radhanpur 385340</span>
                 </div>
 
-                <div class="mt-4 space-y-3.5">
-                  <div class="grid grid-cols-2 gap-3">
-                    <div>
-                      <label class="block text-[10px] font-bold uppercase text-brand-muted mb-1">City</label>
-                      <input type="text" value="Radhanpur, Gujarat" disabled class="w-full px-3.5 py-2.5 rounded-xl bg-brand-canvas border border-brand-hairline text-xs font-bold text-brand-ink" />
-                    </div>
-                    <div>
-                      <label class="block text-[10px] font-bold uppercase text-brand-muted mb-1">PIN Code</label>
-                      <input type="text" value="385340" disabled class="w-full px-3.5 py-2.5 rounded-xl bg-brand-canvas border border-brand-hairline text-xs font-extrabold text-brand-purple" />
-                    </div>
-                  </div>
+                <p class="text-xs font-semibold text-brand-muted">
+                  ${state.user.name || 'Radhanpur Patron'} • +91 ${state.user.phone}
+                </p>
 
-                  <div>
-                    <label for="checkout-landmark" class="block text-[11px] font-bold uppercase text-brand-muted mb-1">
-                      Street / Society / Landmark in Radhanpur *
-                    </label>
-                    <input id="checkout-landmark" type="text" oninput="state.deliveryLandmark = this.value; localStorage.setItem('zatpatgo_address_v2', this.value)" value="${escapeAttr(state.deliveryLandmark)}" placeholder="e.g. Near Highway Char Rasta, Radhanpur" class="w-full px-4 py-3 rounded-2xl bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-sm font-medium text-brand-ink" />
-                  </div>
+                <div>
+                  <label for="checkout-landmark" class="block text-[10px] font-bold uppercase text-brand-muted mb-1">
+                    Landmark / Society / Street *
+                  </label>
+                  <input id="checkout-landmark" type="text" oninput="state.deliveryLandmark = this.value; localStorage.setItem('zatpatgo_address_v2', this.value)" value="${escapeAttr(state.deliveryLandmark)}" placeholder="e.g. Near Highway Char Rasta, Radhanpur" class="w-full px-3.5 py-2.5 rounded-xl bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-sm font-medium text-brand-ink" />
                 </div>
               </div>
 
-              <div class="bg-white rounded-[28px] p-5 tablet:p-7 border border-brand-hairline shadow-editorial">
-                <h2 class="font-editorial font-extrabold text-lg text-brand-ink mb-4">Choose Payment Method</h2>
-                <div class="space-y-3">
+              <!-- Compact Payment Method Section -->
+              <div class="bg-white rounded-[24px] p-4 tablet:p-6 border border-brand-hairline shadow-editorial space-y-3">
+                <h2 class="font-editorial font-extrabold text-base text-brand-ink">Payment Method</h2>
+                <div class="space-y-2.5">
                   ${[
-                    { id: 'upi', title: 'UPI Instant Pay (GPay / PhonePe / Paytm)', sub: 'Instant confirmation • Zero extra fees' },
-                    { id: 'card', title: 'Credit / Debit Card', sub: 'Visa, Mastercard, RuPay supported' },
-                    { id: 'other', title: 'Other Options (NetBanking / Pay on Delivery)', sub: 'Available across Radhanpur 385340' }
+                    { id: 'upi', title: 'UPI Instant Pay', sub: 'GPay, PhonePe, Paytm' },
+                    { id: 'card', title: 'Credit / Debit Card', sub: 'Visa, Mastercard, RuPay' },
+                    { id: 'other', title: 'Pay on Delivery / NetBanking', sub: 'Available in 385340' }
                   ].map(m => {
                     const selected = state.paymentMethod === m.id;
                     return `
-                      <label onclick="state.paymentMethod = '${m.id}'; renderApp()" class="flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-all ${selected ? 'border-brand-purple bg-brand-purple/[0.04]' : 'border-brand-hairline hover:border-brand-purple/30'}">
+                      <label data-haptic-explicit="true" onclick="triggerHaptic('medium'); state.paymentMethod = '${m.id}'; renderApp()" class="btn-tactile flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all ${selected ? 'border-brand-purple bg-brand-purple/[0.04]' : 'border-brand-hairline hover:border-brand-purple/30'}">
                         <div class="pr-3">
                           <p class="font-editorial font-bold text-sm text-brand-ink">${m.title}</p>
-                          <p class="text-xs text-brand-muted mt-0.5">${m.sub}</p>
+                          <p class="text-[11px] text-brand-muted">${m.sub}</p>
                         </div>
                         <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? 'border-brand-purple' : 'border-brand-muted/40'}">
                           ${selected ? '<span class="w-2.5 h-2.5 rounded-full bg-brand-purple"></span>' : ''}
@@ -2774,19 +3261,19 @@
               </div>
             </div>
 
-            <!-- Final Payable Summary -->
+            <!-- Compact Bill & Primary Pay CTA -->
             <div class="desktop:col-span-5">
-              <div class="bg-white rounded-[28px] p-5 tablet:p-7 border border-brand-hairline shadow-editorial sticky top-24">
-                <h2 class="font-editorial font-extrabold text-lg text-brand-ink pb-4 border-b border-brand-hairline">
-                  Payable Summary (${bill.totalCount} ${bill.totalCount === 1 ? 'item' : 'items'})
+              <div class="bg-white rounded-[24px] p-4 tablet:p-6 border border-brand-hairline shadow-editorial sticky top-24 space-y-4">
+                <h2 class="font-editorial font-extrabold text-base text-brand-ink">
+                  Order Summary (${bill.totalCount} ${bill.totalCount === 1 ? 'item' : 'items'})
                 </h2>
 
-                <div class="py-4 space-y-2.5 max-h-56 overflow-y-auto border-b border-brand-hairline">
+                <div class="space-y-2 max-h-44 overflow-y-auto pb-3 border-b border-brand-hairline">
                   ${state.cart.map(entry => {
                     const prod = state.products.find(p => p.id === entry.productId);
                     if (!prod) return '';
                     return `
-                      <div class="flex items-center justify-between gap-3 text-xs tablet:text-sm">
+                      <div class="flex items-center justify-between gap-3 text-xs">
                         <span class="font-semibold text-brand-ink truncate">${entry.qty} × ${prod.name}</span>
                         <span class="font-editorial font-bold text-brand-ink shrink-0">${formatCurrency(prod.price * entry.qty)}</span>
                       </div>
@@ -2794,28 +3281,26 @@
                   }).join('')}
                 </div>
 
-                <div class="py-4 space-y-2.5 text-xs tablet:text-sm">
+                <div class="space-y-2 text-xs">
                   <div class="flex justify-between text-brand-muted">
                     <span>Item Total</span>
                     <span class="font-semibold text-brand-ink">${formatCurrency(bill.itemTotal)}</span>
                   </div>
                   <div class="flex justify-between text-brand-muted">
-                    <span>
-                      Platform Fee (${bill.itemTotal < 100 ? '₹15 flat below ₹100' : '5% on ₹100+'})
-                    </span>
+                    <span>Platform Fee (${bill.itemTotal < 100 ? '₹15 flat' : '5%'})</span>
                     <span class="font-semibold text-brand-ink">${formatCurrency(bill.platformFee)}</span>
                   </div>
                   <div class="flex justify-between text-brand-muted">
-                    <span>Delivery Fee (Radhanpur 385340)</span>
+                    <span>Delivery Fee</span>
                     <span class="font-extrabold text-emerald-600">₹0 FREE</span>
                   </div>
-                  <div class="pt-3 border-t border-brand-hairline flex items-center justify-between">
-                    <span class="font-editorial font-extrabold text-base text-brand-ink">Final Payable</span>
-                    <span class="font-editorial font-extrabold text-2xl text-brand-purple">${formatCurrency(bill.grandTotal)}</span>
+                  <div class="pt-2.5 border-t border-brand-hairline flex items-center justify-between">
+                    <span class="font-editorial font-extrabold text-sm text-brand-ink">Total Payable</span>
+                    <span class="font-editorial font-extrabold text-xl text-brand-purple">${formatCurrency(bill.grandTotal)}</span>
                   </div>
                 </div>
 
-                <button id="pay-now-btn" onclick="handlePayNow()" ${isOffline ? 'disabled' : ''} class="mt-2 w-full py-4 rounded-2xl ${isOffline ? 'bg-brand-muted cursor-not-allowed' : 'bg-brand-purple hover:bg-brand-deep shadow-pill'} text-white font-editorial font-bold text-sm tracking-wide transition-all active:scale-[0.98]">
+                <button id="pay-now-btn" onclick="handlePayNow()" ${isOffline ? 'disabled' : ''} class="w-full h-12 rounded-2xl ${isOffline ? 'bg-brand-muted cursor-not-allowed' : 'bg-brand-purple hover:bg-brand-deep shadow-pill'} text-white font-editorial font-extrabold text-sm tracking-wide transition-all btn-tactile">
                   ${isOffline ? 'Reconnect Internet to Pay' : `Pay Now • ${formatCurrency(bill.grandTotal)}`}
                 </button>
               </div>
@@ -2828,16 +3313,19 @@
 
     function handlePayNow() {
       if (!navigator.onLine) {
+        triggerHaptic('error');
         showToast('You are offline. Connect to the internet to complete payment.');
         return;
       }
 
       const landmark = state.deliveryLandmark.trim();
       if (!landmark) {
+        triggerHaptic('error');
         showToast('Please enter your delivery landmark in Radhanpur 385340');
         return;
       }
 
+      triggerHaptic('medium');
       const btn = document.getElementById('pay-now-btn');
       if (btn) {
         btn.disabled = true;
@@ -2879,6 +3367,7 @@
         state.lastOrder = newOrder;
         state.cart = [];
         saveCart();
+        triggerHaptic('success');
         navigateTo('success');
       }, 650);
     }
@@ -2890,48 +3379,45 @@
         return '';
       }
 
-      const waMsg = encodeURIComponent(`Hi Zatpatgo Care! Order #${order.orderId} confirmed for Radhanpur 385340.`);
-
       return `
-        <div class="pt-6 tablet:pt-12 max-w-xl mx-auto animate-fade-up">
-          <div class="bg-white rounded-[32px] p-6 tablet:p-10 border border-brand-hairline shadow-editorial text-center">
-            <div class="w-20 h-20 rounded-full bg-brand-purple mx-auto flex items-center justify-center shadow-pill mb-5">
-              <svg class="w-10 h-10 text-brand-yellow" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="48" stroke-dashoffset="0" class="animate-check-draw" d="M5 13l4 4L19 7"/>
+        <div class="pt-6 tablet:pt-12 max-w-md mx-auto animate-fade-up">
+          <div class="bg-white rounded-[30px] p-6 tablet:p-8 border border-brand-hairline shadow-editorial text-center space-y-5">
+            <div class="w-16 h-16 rounded-full bg-brand-purple mx-auto flex items-center justify-center shadow-pill animate-success-ring">
+              <svg class="w-8 h-8 text-brand-yellow" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="48" stroke-dashoffset="48" class="animate-check-draw" d="M5 13l4 4L19 7"/>
               </svg>
             </div>
 
-            <span class="px-3.5 py-1 rounded-full bg-brand-yellow/30 text-brand-ink text-[11px] font-extrabold uppercase tracking-widest">
-              Payment Successful • #${order.orderId}
-            </span>
+            <div>
+              <span class="px-3 py-1 rounded-full bg-brand-yellow/30 text-brand-ink text-[10px] font-extrabold uppercase tracking-widest">
+                Order #${order.orderId}
+              </span>
+              <h1 class="font-editorial font-extrabold text-2xl text-brand-ink mt-3">
+                Order Placed!
+              </h1>
+              <p class="text-xs text-brand-muted mt-1">
+                Preparing fresh for Radhanpur 385340.
+              </p>
+            </div>
 
-            <h1 class="font-editorial font-extrabold text-2xl tablet:text-3xl text-brand-ink mt-4">
-              Order Placed Successfully!
-            </h1>
-            <p class="text-xs tablet:text-sm text-brand-muted mt-2">
-              Your order has been routed to our kitchen partner in <strong class="text-brand-ink">Radhanpur 385340</strong>.
-            </p>
-
-            <div class="mt-6 p-4 rounded-2xl bg-brand-canvas border border-brand-hairline text-left space-y-2 text-xs">
-              <div class="flex justify-between gap-2">
-                <span class="text-brand-muted shrink-0">Delivery Destination</span>
-                <strong class="text-brand-ink text-right">${order.landmark}</strong>
+            <div class="p-4 rounded-2xl bg-brand-canvas border border-brand-hairline text-left space-y-2 text-xs">
+              <div class="flex justify-between">
+                <span class="text-brand-muted">Amount Paid</span>
+                <strong class="text-brand-purple font-editorial text-sm">${formatCurrency(order.bill.grandTotal)}</strong>
               </div>
               <div class="flex justify-between">
-                <span class="text-brand-muted">Total Paid (${order.paymentMethod})</span>
-                <strong class="text-brand-purple font-editorial text-sm">${formatCurrency(order.bill.grandTotal)}</strong>
+                <span class="text-brand-muted">Payment</span>
+                <strong class="text-brand-ink">${order.paymentMethod}</strong>
               </div>
             </div>
 
-            <div class="mt-6 space-y-3">
-              <button onclick="navigateTo('orders')" class="w-full py-4 rounded-2xl bg-brand-purple hover:bg-brand-deep text-white font-editorial font-bold text-sm shadow-pill">
-                Track Live Order Status
+            <div class="space-y-2.5 pt-1">
+              <button onclick="navigateTo('orders')" class="w-full h-12 rounded-2xl bg-brand-purple hover:bg-brand-deep text-white font-editorial font-extrabold text-sm shadow-pill btn-tactile">
+                Track Order
               </button>
-
-              <a href="https://wa.me/919875299621?text=${waMsg}" target="_blank" rel="noopener noreferrer" class="w-full py-3.5 rounded-2xl bg-brand-canvas hover:bg-brand-hairline text-brand-ink font-editorial font-bold text-xs flex items-center justify-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-[#25D366]"></span>
-                <span>WhatsApp Support (+91 9875299621)</span>
-              </a>
+              <button onclick="navigateTo('home')" class="w-full h-11 rounded-2xl bg-brand-canvas hover:bg-brand-hairline text-brand-ink font-editorial font-bold text-xs btn-tactile">
+                Back to Home
+              </button>
             </div>
           </div>
         </div>
@@ -2942,6 +3428,7 @@
     // 14. CART DRAWER, OTP GATE, SEARCH & PRODUCT MODAL
     // -----------------------------------------------------------------------
     function openCartDrawer() {
+      triggerHaptic('light');
       renderCartDrawer();
       const overlay = document.getElementById('cart-drawer-overlay');
       const drawer = document.getElementById('cart-drawer');
@@ -2954,6 +3441,7 @@
     }
 
     function closeCartDrawer() {
+      triggerHaptic('light');
       const overlay = document.getElementById('cart-drawer-overlay');
       const drawer = document.getElementById('cart-drawer');
       overlay.classList.add('opacity-0');
@@ -2976,7 +3464,7 @@
             <p class="text-xs text-brand-muted mt-1.5 max-w-xs">
               Add items from Visamo, Ked's Cafe, Tandoori Tales, Pizza Junction, Sweet Street, or Fresh Basket.
             </p>
-            <button onclick="closeCartDrawer(); navigateTo('stores')" class="mt-5 px-6 py-3 rounded-full bg-brand-purple text-white text-xs font-bold shadow-pill">
+            <button onclick="closeCartDrawer(); navigateTo('stores')" class="mt-5 px-6 py-3 rounded-full bg-brand-purple text-white text-xs font-bold shadow-pill btn-tactile">
               Browse Stores
             </button>
           </div>
@@ -2991,7 +3479,7 @@
             const prod = state.products.find(p => p.id === entry.productId);
             if (!prod) return '';
             return `
-              <div class="flex gap-3.5 p-3 rounded-2xl bg-brand-canvas/80 border border-brand-hairline">
+              <div data-cart-row="${prod.id}" class="flex gap-3.5 p-3 rounded-2xl bg-brand-canvas/80 border border-brand-hairline transition-all duration-200">
                 <img src="${prod.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(prod.name)}" class="w-20 h-20 rounded-xl object-cover shrink-0 bg-white" />
                 <div class="flex-1 min-w-0 flex flex-col justify-between">
                   <div class="flex items-start justify-between gap-2">
@@ -2999,15 +3487,15 @@
                       <span class="text-[10px] font-bold uppercase text-brand-purple block">${getStoreNameById(prod.storeId)}</span>
                       <h4 class="font-editorial font-bold text-sm text-brand-ink truncate">${prod.name}</h4>
                     </div>
-                    <button onclick="removeFromCart('${prod.id}')" class="text-brand-muted hover:text-brand-orange text-xs p-1">✕</button>
+                    <button data-haptic-explicit="true" onclick="removeFromCart('${prod.id}')" class="text-brand-muted hover:text-brand-orange text-xs p-1 btn-tactile">✕</button>
                   </div>
 
                   <div class="flex items-center justify-between mt-2">
                     <span class="font-editorial font-extrabold text-sm text-brand-ink">${formatCurrency(prod.price * entry.qty)}</span>
                     <div class="inline-flex items-center bg-white border border-brand-hairline rounded-full p-0.5">
-                      <button onclick="updateCartQty('${prod.id}', -1)" class="w-7 h-7 rounded-full hover:bg-brand-canvas font-bold text-sm">−</button>
+                      <button data-haptic-explicit="true" onclick="updateCartQty('${prod.id}', -1)" class="w-7 h-7 rounded-full hover:bg-brand-canvas font-bold text-sm btn-tactile">−</button>
                       <span class="min-w-[24px] text-center font-editorial font-extrabold text-xs">${entry.qty}</span>
-                      <button onclick="updateCartQty('${prod.id}', 1)" class="w-7 h-7 rounded-full hover:bg-brand-canvas font-bold text-sm text-brand-purple">+</button>
+                      <button data-haptic-explicit="true" onclick="updateCartQty('${prod.id}', 1)" class="w-7 h-7 rounded-full hover:bg-brand-canvas font-bold text-sm text-brand-purple btn-tactile">+</button>
                     </div>
                   </div>
                 </div>
@@ -3051,7 +3539,7 @@
 
       const isOffline = !navigator.onLine;
       footer.innerHTML = `
-        <button onclick="handleProceedToPay()" ${isOffline ? 'disabled' : ''} class="w-full py-4 rounded-2xl ${isOffline ? 'bg-brand-muted cursor-not-allowed' : 'bg-brand-purple hover:bg-brand-deep shadow-pill'} text-white font-editorial font-bold text-sm tracking-wide transition-all flex items-center justify-between px-5">
+        <button data-haptic-explicit="true" onclick="handleProceedToPay()" ${isOffline ? 'disabled' : ''} class="w-full py-4 rounded-2xl ${isOffline ? 'bg-brand-muted cursor-not-allowed' : 'bg-brand-purple hover:bg-brand-deep shadow-pill'} text-white font-editorial font-bold text-sm tracking-wide transition-all flex items-center justify-between px-5 btn-tactile">
           <span>${isOffline ? 'Offline — Cannot Checkout' : 'Proceed to Pay'}</span>
           <span class="bg-white/15 px-3 py-1 rounded-xl font-extrabold">${formatCurrency(bill.grandTotal)} →</span>
         </button>
@@ -3060,9 +3548,11 @@
 
     function handleProceedToPay() {
       if (!navigator.onLine) {
+        triggerHaptic('error');
         showToast('You are offline. Reconnect to proceed to payment.');
         return;
       }
+      triggerHaptic('medium');
       closeCartDrawer();
       if (!state.user) {
         state.pendingCheckoutAfterOtp = true;
@@ -3073,6 +3563,7 @@
     }
 
     function openOtpModal() {
+      triggerHaptic('light');
       const modal = document.getElementById('otp-modal');
       resetOtpToPhone();
       modal.classList.remove('hidden');
@@ -3081,6 +3572,7 @@
     }
 
     function closeOtpModal() {
+      triggerHaptic('light');
       const modal = document.getElementById('otp-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
@@ -3098,9 +3590,11 @@
       e.preventDefault();
       const digits = document.getElementById('otp-phone-input').value.replace(/\D/g, '');
       if (digits.length !== 10) {
+        triggerHaptic('error');
         document.getElementById('otp-phone-error').classList.remove('hidden');
         return;
       }
+      triggerHaptic('medium');
       document.getElementById('otp-phone-error').classList.add('hidden');
       state.currentDemoOtp = String(Math.floor(1000 + Math.random() * 9000));
       document.getElementById('demo-otp-hint').textContent = state.currentDemoOtp;
@@ -3115,6 +3609,7 @@
     }
 
     function autoFillDemoOtp() {
+      triggerHaptic('medium');
       const boxes = document.querySelectorAll('.otp-box');
       state.currentDemoOtp.split('').forEach((d, i) => {
         if (boxes[i]) boxes[i].value = d;
@@ -3125,6 +3620,7 @@
       e.preventDefault();
       const entered = Array.from(document.querySelectorAll('.otp-box')).map(b => b.value.trim()).join('');
       if (entered.length !== 4 || entered !== state.currentDemoOtp) {
+        triggerHaptic('error');
         document.getElementById('otp-code-error').classList.remove('hidden');
         return;
       }
@@ -3137,6 +3633,7 @@
         name: nameInput || 'Radhanpur Patron'
       };
       localStorage.setItem('zatpatgo_user_v2', JSON.stringify(state.user));
+      triggerHaptic('success');
       closeOtpModal();
       showToast('Verified! Bag preserved.');
 
@@ -3149,6 +3646,7 @@
     }
 
     function logoutUser() {
+      triggerHaptic('light');
       state.user = null;
       localStorage.removeItem('zatpatgo_user_v2');
       showToast('Logged out successfully');
@@ -3156,6 +3654,7 @@
     }
 
     function openSearchModal() {
+      triggerHaptic('light');
       const modal = document.getElementById('search-modal');
       const input = document.getElementById('search-input');
       modal.classList.remove('hidden');
@@ -3166,6 +3665,7 @@
     }
 
     function closeSearchModal() {
+      triggerHaptic('light');
       document.getElementById('search-modal').classList.add('hidden');
       syncBodyScrollLock();
     }
@@ -3193,7 +3693,7 @@
             <p class="text-[10px] font-bold uppercase tracking-widest text-brand-muted mb-2">Stores</p>
             <div class="grid grid-cols-1 tablet:grid-cols-3 gap-2">
               ${matchedStores.map(s => `
-                <button onclick="closeSearchModal(); navigateTo('store-detail', { storeId: '${s.id}' })" class="flex items-center gap-2.5 p-2 rounded-2xl bg-brand-canvas hover:bg-brand-purple/10 text-left">
+                <button onclick="closeSearchModal(); navigateTo('store-detail', { storeId: '${s.id}' })" class="flex items-center gap-2.5 p-2 rounded-2xl bg-brand-canvas hover:bg-brand-purple/10 text-left btn-tactile">
                   <img src="${s.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(s.name)}" class="w-10 h-10 rounded-xl object-cover shrink-0" />
                   <div class="min-w-0">
                     <p class="font-editorial font-bold text-xs text-brand-ink truncate">${s.name}</p>
@@ -3234,6 +3734,7 @@
       const product = state.products.find(p => p.id === productId);
       if (!product) return;
 
+      triggerHaptic('light');
       const modal = document.getElementById('product-modal');
       const card = document.getElementById('product-modal-card');
       const storeName = getStoreNameById(product.storeId);
@@ -3241,7 +3742,7 @@
       card.innerHTML = `
         <div class="relative aspect-[16/10] bg-brand-canvas shrink-0">
           <img src="${product.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(product.name)}" class="w-full h-full object-cover" />
-          <button onclick="closeProductModal()" aria-label="Close" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-brand-ink/75 text-white flex items-center justify-center">✕</button>
+          <button onclick="closeProductModal()" aria-label="Close" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-brand-ink/75 text-white flex items-center justify-center btn-tactile">✕</button>
           <span class="absolute bottom-3.5 left-3.5 px-3 py-1 rounded-full bg-brand-yellow text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
             ${product.badge}
           </span>
@@ -3280,6 +3781,7 @@
     }
 
     function closeProductModal() {
+      triggerHaptic('light');
       const modal = document.getElementById('product-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
@@ -3361,8 +3863,14 @@
         case 'orders':
           root.innerHTML = renderOrdersView();
           break;
+        case 'order-detail':
+          root.innerHTML = renderOrderDetailView();
+          break;
         case 'profile':
           root.innerHTML = renderProfileView();
+          break;
+        case 'profile-sub':
+          root.innerHTML = renderProfileSubView();
           break;
         case 'checkout':
           root.innerHTML = renderCheckoutView();
@@ -3376,14 +3884,29 @@
           attachHeroSwipeListeners();
           break;
       }
+
+      const viewContainer = root.firstElementChild;
+      if (viewContainer) {
+        viewContainer.classList.remove('animate-fade-up', 'animate-slide-push', 'animate-slide-pop');
+        const animClass =
+          state.transitionType === 'push'
+            ? 'animate-slide-push'
+            : state.transitionType === 'pop'
+              ? 'animate-slide-pop'
+              : 'animate-fade-up';
+        viewContainer.classList.add(animClass);
+      }
+
       updateGlobalChrome();
     }
-
-    window.addEventListener('scroll', syncMobileScrollChrome, { passive: true });
 
     document.addEventListener('DOMContentLoaded', () => {
       initPwaManifestAndIcons();
       updateOnlineStatusUI();
+
+      try {
+        window.history.replaceState({ navStack: [], current: createNavSnapshot({ scrollY: 0 }) }, '');
+      } catch (_) {}
 
       const boxes = document.querySelectorAll('.otp-box');
       boxes.forEach((box, idx) => {
@@ -3405,12 +3928,9 @@
         e.preventDefault();
         openSearchModal();
       } else if (e.key === 'Escape') {
-        closeSearchModal();
-        closeCartDrawer();
-        closeProductModal();
-        closeOtpModal();
-        closeCatalogEditor();
-        closeOrderDetailModal();
+        if (!closeTopmostOverlay() && !PRIMARY_TABS.includes(state.view)) {
+          navigateBack();
+        }
       }
     });
   </script>

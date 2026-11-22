@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#5426C8" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Zatpatgo" />
 
   <!-- Dynamic PWA Manifest & Apple Touch Icon injected immediately -->
@@ -122,6 +122,8 @@
       --brand-deep: #321078;
       --brand-orange: #FF702E;
       --brand-yellow: #FFD84D;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
       --spring-snappy: cubic-bezier(0.22, 1, 0.36, 1);
       --spring-sheet: cubic-bezier(0.32, 0.72, 0, 1);
     }
@@ -134,11 +136,14 @@
     html {
       scroll-behavior: auto;
       overflow-x: hidden;
+      background-color: var(--bg-canvas);
     }
 
     body {
       margin: 0;
       padding: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
       background-color: var(--bg-canvas);
       color: var(--ink-primary);
       font-family: 'Inter', sans-serif;
@@ -267,10 +272,18 @@
     }
 
     .pb-safe {
-      padding-bottom: max(0.65rem, env(safe-area-inset-bottom));
+      padding-bottom: max(0.75rem, var(--safe-bottom));
     }
     .pt-safe {
-      padding-top: max(0.45rem, env(safe-area-inset-top));
+      padding-top: calc(12px + var(--safe-top));
+    }
+
+    .app-mobile-header {
+      padding-top: calc(12px + var(--safe-top));
+    }
+
+    .app-drawer-header {
+      padding-top: calc(14px + var(--safe-top));
     }
 
     /* Smooth collapsible search bar on mobile scroll */
@@ -289,7 +302,7 @@
 
     /* Floating Cart Bar positioning aware of Mobile Dock + Safe Area */
     .floating-cart-pos {
-      bottom: calc(84px + env(safe-area-inset-bottom));
+      bottom: calc(84px + var(--safe-bottom));
     }
     @media (min-width: 1024px) {
       .floating-cart-pos {
@@ -423,8 +436,8 @@
        2. MOBILE & TABLET NATIVE APP HEADER (<1024px — 360px–1023px)
        Contextual Back Button on Sub-views + Compact Search Trigger when Scrolled
   ====================================================================== -->
-  <header class="desktop:hidden sticky top-0 z-40 glass-nav pt-safe">
-    <div class="px-4 tablet:px-6 pt-2 pb-2.5">
+  <header class="desktop:hidden sticky top-0 z-40 glass-nav app-mobile-header">
+    <div class="px-4 tablet:px-6 pb-2.5">
       <!-- Top Row: Contextual Back/Brand + Location Pill + Compact Search Icon + Bag -->
       <div class="flex items-center justify-between gap-2 min-h-[44px]">
         
@@ -597,7 +610,7 @@
   ====================================================================== -->
   <div id="cart-drawer-overlay" onclick="closeCartDrawer()" class="fixed inset-0 z-50 bg-brand-ink/50 backdrop-blur-xs ios-backdrop hidden opacity-0"></div>
   <aside id="cart-drawer" aria-label="Shopping Bag" style="height: 100dvh; max-height: 100dvh;" class="fixed top-0 right-0 bottom-0 z-50 w-full max-w-md bg-white shadow-2xl ios-drawer-panel transform translate-x-full flex flex-col overflow-hidden">
-    <div style="padding-top: calc(env(safe-area-inset-top, 0px) + 1rem);" class="px-5 pb-4 border-b border-brand-hairline flex items-center justify-between gap-3 shrink-0 bg-white">
+    <div class="app-drawer-header px-5 pb-4 border-b border-brand-hairline flex items-center justify-between gap-3 shrink-0 bg-white">
       <div class="min-w-0">
         <span class="block text-[10px] font-extrabold uppercase tracking-widest text-brand-purple leading-tight truncate">Radhanpur 385340 • ₹0 Delivery</span>
         <h2 class="font-editorial font-extrabold text-xl text-brand-ink leading-tight mt-0.5">Your Bag</h2>
@@ -1725,7 +1738,7 @@
                 Zatpat<span class="text-brand-purple">go</span>
               </span>
               <span class="text-[9px] font-bold uppercase tracking-[0.13em] text-brand-muted block mt-0.5">
-                Fast Delivery
+                
               </span>
             </div>
           </button>

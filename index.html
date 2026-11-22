@@ -737,72 +737,40 @@
   ====================================================================== -->
   <script>
     // -----------------------------------------------------------------------
-    // 0. CENTRALIZED HAPTIC FEEDBACK & TACTILE TOUCH ENGINE
-    //    - Supports Android Chrome Web Vibration API (navigator.vibrate)
-    //    - Supports native Capacitor / Cordova / WebKit haptic bridges if present
-    //    - Gracefully falls back on iOS Safari / desktop without errors
-    //    - Deduplicates rapid/bubbled triggers & ignores disabled controls
+    // 0. REUSABLE HAPTIC CLICK FEEDBACK UTILITY (navigator.vibrate(10))
+    //    - Triggers directly on user tap/click interactions
+    //    - Prevents duplicate vibration events within 60ms
+    //    - Skips disabled buttons/controls
+    //    - Gracefully handles unsupported browsers/devices (e.g. iOS Safari)
     // -----------------------------------------------------------------------
     let lastHapticTimestamp = 0;
 
-    function triggerHaptic(type = 'light', sourceEl = null) {
+    function triggerHaptic(sourceEl = null) {
       try {
-        // Never trigger haptics on disabled buttons or inputs
         const target = sourceEl || document.activeElement;
         if (target && (target.disabled || target.getAttribute('aria-disabled') === 'true')) {
           return;
         }
 
-        // Prevent duplicate vibration bursts from bubbled events within 45ms
         const now = performance.now();
-        if (now - lastHapticTimestamp < 45) return;
+        if (now - lastHapticTimestamp < 60) return;
         lastHapticTimestamp = now;
 
-        // 1. Check Native Wrapper Bridges (Capacitor / iOS WKWebView / Android)
-        const capHaptics = window.Capacitor?.Plugins?.Haptics;
-        if (capHaptics) {
-          if (type === 'success' && capHaptics.notification) {
-            capHaptics.notification({ type: 'SUCCESS' }).catch(() => {});
-            return;
-          }
-          if (type === 'error' && capHaptics.notification) {
-            capHaptics.notification({ type: 'ERROR' }).catch(() => {});
-            return;
-          }
-          if (capHaptics.impact) {
-            const style = type === 'medium' ? 'MEDIUM' : 'LIGHT';
-            capHaptics.impact({ style }).catch(() => {});
-            return;
-          }
-        }
-
-        if (window.webkit?.messageHandlers?.haptic) {
-          window.webkit.messageHandlers.haptic.postMessage({ type });
-          return;
-        }
-
-        // 2. Web Vibration API (Supported on Android Chrome/Edge/Firefox; gracefully skipped on iOS Safari)
         if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
-          const patterns = {
-            light: 10,
-            medium: 20,
-            success: [15, 45, 28],
-            error: [30, 40, 30]
-          };
-          navigator.vibrate(patterns[type] ?? 10);
+          navigator.vibrate(10);
         }
       } catch (_) {
-        // Silent graceful fallback on restricted contexts
+        // Graceful no-op on unsupported devices (such as iOS Safari)
       }
     }
 
-    // Global delegated tactile touch feedback (press scale + subtle light tap)
+    // Delegated click & touch interaction listener for all clickable buttons & controls
     (function initGlobalTactileDelegation() {
       let activePressEl = null;
 
       function findInteractiveTarget(el) {
         if (!el || !(el instanceof Element)) return null;
-        return el.closest('button, a[href], [role="button"], .card-tactile, label[onclick]');
+        return el.closest('button, a[href], [role="button"], .card-tactile, label[onclick], select');
       }
 
       document.addEventListener('pointerdown', (e) => {
@@ -813,11 +781,14 @@
 
         activePressEl = interactive;
         interactive.classList.add('is-pressing');
+        triggerHaptic(interactive);
+      }, { passive: true });
 
-        // Light tap for standard navigation & cards; medium/success handled in specific actions
-        if (!interactive.dataset.hapticExplicit) {
-          triggerHaptic('light', interactive);
-        }
+      document.addEventListener('click', (e) => {
+        const interactive = findInteractiveTarget(e.target);
+        if (!interactive) return;
+        if (interactive.disabled || interactive.getAttribute('aria-disabled') === 'true') return;
+        triggerHaptic(interactive);
       }, { passive: true });
 
       const clearPressState = () => {
@@ -1493,7 +1464,7 @@
     }
 
     function navigateBack() {
-      triggerHaptic('light');
+      triggerHaptic();
       if (closeTopmostOverlay()) return;
 
       if (state.navStack.length > 0) {
@@ -1546,7 +1517,7 @@
     }
 
     function navigateTo(view, params = {}) {
-      triggerHaptic('light');
+      triggerHaptic();
       const sameView =
         state.view === view &&
         (!params.storeId || state.activeStoreId === params.storeId) &&
@@ -1646,7 +1617,7 @@
 
     function addToCart(productId, event) {
       if (event) event.stopPropagation();
-      triggerHaptic('medium');
+      triggerHaptic();
       const existing = state.cart.find(item => item.productId === productId);
       if (existing) {
         existing.qty += 1;
@@ -1661,7 +1632,7 @@
 
     function updateCartQty(productId, delta, event) {
       if (event) event.stopPropagation();
-      triggerHaptic('medium');
+      triggerHaptic();
       const idx = state.cart.findIndex(item => item.productId === productId);
       if (idx === -1) {
         if (delta > 0) addToCart(productId);
@@ -1688,7 +1659,7 @@
     }
 
     function removeFromCart(productId) {
-      triggerHaptic('medium');
+      triggerHaptic();
       const rowEl = document.querySelector(`[data-cart-row="${productId}"]`);
       if (rowEl) {
         rowEl.classList.add('cart-item-removing');
@@ -2611,7 +2582,7 @@
     }
 
     function reorderItems(orderId) {
-      triggerHaptic('medium');
+      triggerHaptic();
       const order = state.orders.find(o => o.orderId === orderId);
       if (!order) return;
 
@@ -2811,7 +2782,7 @@
     // 12. EDITABLE OFFERS STRIP, STORE & PRODUCT STUDIO
     // -----------------------------------------------------------------------
     function openCatalogEditor(storeId) {
-      triggerHaptic('light');
+      triggerHaptic();
       const store = state.stores.find(s => s.id === storeId) || state.stores[0];
       const storeProducts = state.products.filter(p => p.storeId === store.id);
       const modal = document.getElementById('catalog-editor-modal');
@@ -3153,7 +3124,7 @@
                   ].map(m => {
                     const selected = state.paymentMethod === m.id;
                     return `
-                      <label onclick="triggerHaptic('medium'); state.paymentMethod = '${m.id}'; renderApp()" class="flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all btn-tactile ${selected ? 'border-brand-purple bg-brand-purple/[0.04]' : 'border-brand-hairline hover:border-brand-purple/30'}">
+                      <label onclick="triggerHaptic(); state.paymentMethod = '${m.id}'; renderApp()" class="flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all btn-tactile ${selected ? 'border-brand-purple bg-brand-purple/[0.04]' : 'border-brand-hairline hover:border-brand-purple/30'}">
                         <div>
                           <p class="font-editorial font-bold text-xs tablet:text-sm text-brand-ink">${m.title}</p>
                           <p class="text-[11px] text-brand-muted">${m.sub}</p>
@@ -3223,19 +3194,19 @@
 
     function handlePayNow() {
       if (!navigator.onLine) {
-        triggerHaptic('error');
+        triggerHaptic();
         showToast('You are offline. Connect to the internet to complete payment.');
         return;
       }
 
       const landmark = state.deliveryLandmark.trim();
       if (!landmark) {
-        triggerHaptic('error');
+        triggerHaptic();
         showToast('Please enter your delivery landmark in Radhanpur 385340');
         return;
       }
 
-      triggerHaptic('medium');
+      triggerHaptic();
       const btn = document.getElementById('pay-now-btn');
       if (btn) {
         btn.disabled = true;
@@ -3277,7 +3248,7 @@
         state.lastOrder = newOrder;
         state.cart = [];
         saveCart();
-        triggerHaptic('success');
+        triggerHaptic();
         navigateTo('success');
       }, 600);
     }
@@ -3338,7 +3309,7 @@
     // 14. CART DRAWER, OTP GATE, SEARCH & PRODUCT MODAL
     // -----------------------------------------------------------------------
     function openCartDrawer() {
-      triggerHaptic('light');
+      triggerHaptic();
       renderCartDrawer();
       const overlay = document.getElementById('cart-drawer-overlay');
       const drawer = document.getElementById('cart-drawer');
@@ -3457,11 +3428,11 @@
 
     function handleProceedToPay() {
       if (!navigator.onLine) {
-        triggerHaptic('error');
+        triggerHaptic();
         showToast('You are offline. Reconnect to proceed to payment.');
         return;
       }
-      triggerHaptic('medium');
+      triggerHaptic();
       closeCartDrawer();
       if (!state.user) {
         state.pendingCheckoutAfterOtp = true;
@@ -3473,7 +3444,7 @@
 
     // OTP Login/Signup Handlers
     function openOtpModal() {
-      triggerHaptic('light');
+      triggerHaptic();
       const modal = document.getElementById('otp-modal');
       resetOtpToPhone();
       modal.classList.remove('hidden');
@@ -3499,11 +3470,11 @@
       e.preventDefault();
       const digits = document.getElementById('otp-phone-input').value.replace(/\D/g, '');
       if (digits.length !== 10) {
-        triggerHaptic('error');
+        triggerHaptic();
         document.getElementById('otp-phone-error').classList.remove('hidden');
         return;
       }
-      triggerHaptic('medium');
+      triggerHaptic();
       document.getElementById('otp-phone-error').classList.add('hidden');
       state.currentDemoOtp = String(Math.floor(1000 + Math.random() * 9000));
       document.getElementById('demo-otp-hint').textContent = state.currentDemoOtp;
@@ -3518,7 +3489,7 @@
     }
 
     function autoFillDemoOtp() {
-      triggerHaptic('light');
+      triggerHaptic();
       const boxes = document.querySelectorAll('.otp-box');
       state.currentDemoOtp.split('').forEach((d, i) => {
         if (boxes[i]) boxes[i].value = d;
@@ -3529,7 +3500,7 @@
       e.preventDefault();
       const entered = Array.from(document.querySelectorAll('.otp-box')).map(b => b.value.trim()).join('');
       if (entered.length !== 4 || entered !== state.currentDemoOtp) {
-        triggerHaptic('error');
+        triggerHaptic();
         document.getElementById('otp-code-error').classList.remove('hidden');
         return;
       }
@@ -3542,7 +3513,7 @@
         name: nameInput || 'Radhanpur Patron'
       };
       localStorage.setItem('zatpatgo_user_v2', JSON.stringify(state.user));
-      triggerHaptic('success');
+      triggerHaptic();
       closeOtpModal();
       showToast('Verified! Bag preserved.');
 
@@ -3555,7 +3526,7 @@
     }
 
     function logoutUser() {
-      triggerHaptic('medium');
+      triggerHaptic();
       state.user = null;
       localStorage.removeItem('zatpatgo_user_v2');
       showToast('Logged out successfully');
@@ -3564,7 +3535,7 @@
 
     // Search Modal
     function openSearchModal() {
-      triggerHaptic('light');
+      triggerHaptic();
       const modal = document.getElementById('search-modal');
       const input = document.getElementById('search-input');
       modal.classList.remove('hidden');
@@ -3641,7 +3612,7 @@
 
     // Product Quick-View Bottom Sheet / Modal
     function openProductModal(productId) {
-      triggerHaptic('light');
+      triggerHaptic();
       const product = state.products.find(p => p.id === productId);
       if (!product) return;
 

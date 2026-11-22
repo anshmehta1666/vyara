@@ -93,10 +93,6 @@
               '65%': { transform: 'scale(1.06)', opacity: '1' },
               '100%': { transform: 'scale(1)', opacity: '1' },
             },
-            blobFloat: {
-              '0%, 100%': { borderRadius: '58% 42% 65% 35% / 44% 58% 42% 56%' },
-              '50%': { borderRadius: '44% 56% 38% 62% / 56% 42% 58% 44%' },
-            },
             checkDraw: {
               '0%': { strokeDashoffset: '48' },
               '100%': { strokeDashoffset: '0' },
@@ -111,7 +107,6 @@
             'sheet-up': 'sheetUp 0.32s cubic-bezier(0.22, 1, 0.36, 1) forwards',
             'modal-zoom': 'modalZoom 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards',
             'success-ring': 'successRing 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards',
-            'blob-float': 'blobFloat 9s ease-in-out infinite',
             'check-draw': 'checkDraw 0.48s cubic-bezier(0.22, 1, 0.36, 1) 0.14s forwards',
           }
         }
@@ -157,15 +152,21 @@
       letter-spacing: -0.025em;
     }
 
-    /* Three Signature Shapes System */
-    .shape-blob-a {
-      border-radius: 58% 42% 64% 36% / 44% 58% 42% 56%;
+    /* Apple-Inspired Rounded-Rectangle Image Design System */
+    .z-img-thumb {
+      border-radius: 12px;
+      object-fit: cover;
+      overflow: hidden;
     }
-    .shape-blob-b {
-      border-radius: 42% 58% 36% 64% / 56% 42% 58% 44%;
+    .z-img-card {
+      border-radius: 16px;
+      object-fit: cover;
+      overflow: hidden;
     }
-    .shape-blob-c {
-      border-radius: 64% 36% 48% 52% / 38% 62% 38% 62%;
+    .z-img-hero {
+      border-radius: 22px;
+      object-fit: cover;
+      overflow: hidden;
     }
 
     /* Apple-Inspired Tactile Button & Card Microinteractions */
@@ -1973,57 +1974,12 @@
       return `
         <div class="pt-3.5 tablet:pt-6 space-y-8 tablet:space-y-11 animate-fade-up">
 
-          <!-- SHAPE 1: ROUNDED RECTANGLE HERO CAMPAIGN SLIDER -->
-          <section id="hero-slider-viewport" class="relative rounded-[28px] tablet:rounded-[36px] overflow-hidden ${slide.themeBg} text-white shadow-editorial">
-            <div class="grid grid-cols-1 desktop:grid-cols-12 min-h-[370px] tablet:min-h-[410px]">
-              <div class="desktop:col-span-6 p-6 tablet:p-10 flex flex-col justify-between z-10">
-                <div>
-                  <div class="flex flex-wrap items-center gap-2 mb-3.5">
-                    <span class="px-3 py-1 rounded-full ${slide.accentColor} text-[10px] tablet:text-[11px] font-extrabold uppercase tracking-wider">
-                      ${slide.accentTag}
-                    </span>
-                    <span class="text-[10px] tablet:text-xs font-bold uppercase tracking-[0.16em] text-white/75">
-                      ${slide.eyebrow}
-                    </span>
-                  </div>
-
-                  <h1 class="font-editorial font-extrabold text-[28px] tablet:text-5xl leading-[1.08] tracking-tight">
-                    ${slide.title}
-                  </h1>
-                  <p class="mt-3 text-xs tablet:text-base text-white/80 leading-relaxed max-w-md">
-                    ${slide.subtitle}
-                  </p>
-                </div>
-
-                <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
-                  <button onclick="navigateTo('store-detail', { storeId: '${slide.targetId}' })" class="h-12 px-6 rounded-full bg-brand-yellow hover:brightness-105 text-brand-ink font-editorial font-extrabold text-xs tablet:text-sm inline-flex items-center gap-2 shadow-lg btn-tactile">
-                    <span>${slide.ctaText}</span>
-                    <span>→</span>
-                  </button>
-
-                  <!-- Pagination Dots -->
-                  <div class="flex items-center gap-2">
-                    ${HERO_SLIDES.map((s, idx) => `
-                      <button onclick="goToHeroSlide(${idx})" aria-label="Slide ${idx + 1}" class="h-2.5 rounded-full transition-all ${idx === state.heroIndex ? 'w-7 bg-brand-yellow' : 'w-2.5 bg-white/35 hover:bg-white/60'}"></button>
-                    `).join('')}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Layered Photography Composition -->
-              <div class="desktop:col-span-6 relative h-52 tablet:h-72 desktop:h-auto overflow-hidden flex items-center justify-center p-4 desktop:p-8">
-                <div class="w-full h-full overflow-hidden ${slide.layout === 'blob-spotlight' ? 'shape-blob-a animate-blob-float border-4 border-brand-yellow/40' : 'rounded-[24px]'} relative shadow-2xl">
-                  <img src="${slide.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(slide.title)}" class="w-full h-full object-cover" />
-                  <div class="absolute inset-0 bg-gradient-to-t from-brand-ink/60 via-transparent to-transparent"></div>
-                  <span class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-brand-ink/85 text-brand-yellow text-[10px] font-extrabold tracking-wider">
-                    ${slide.badgeText}
-                  </span>
-                </div>
-              </div>
-            </div>
+          <!-- APPLE-STYLE ROUNDED-RECTANGLE IMAGE-ONLY HERO BANNER (22px RADIUS) -->
+          <section id="hero-slider-viewport" onclick="navigateTo('store-detail', { storeId: '${slide.targetId}' })" class="relative w-full aspect-[16/9] tablet:aspect-[21/9] max-h-[440px] rounded-[22px] overflow-hidden bg-brand-canvas shadow-editorial cursor-pointer">
+            <img src="${slide.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(slide.title)}" class="w-full h-full object-cover object-center block" />
           </section>
 
-          <!-- SHAPE 3: CIRCULAR / PILL QUICK CRAVING FILTERS -->
+          <!-- QUICK CRAVING FILTERS -->
           <section class="space-y-3">
             <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
               ${QUICK_MOOD_PILLS.map(pill => {
@@ -2032,7 +1988,7 @@
                   <button onclick="state.homeMoodFilter = '${pill.id}'; renderApp()" class="h-11 px-4 rounded-full text-xs font-extrabold whitespace-nowrap inline-flex items-center gap-2 transition-all btn-tactile ${
                     active ? 'bg-brand-purple text-white shadow-pill' : 'bg-white border border-brand-hairline text-brand-ink hover:border-brand-purple/40'
                   }">
-                    <span class="w-6 h-6 rounded-full ${active ? 'bg-white/20' : 'bg-brand-canvas'} flex items-center justify-center text-xs">${pill.icon}</span>
+                    <span class="w-6 h-6 rounded-lg ${active ? 'bg-white/20' : 'bg-brand-canvas'} flex items-center justify-center text-xs">${pill.icon}</span>
                     <span>${pill.label}</span>
                   </button>
                 `;
@@ -2057,7 +2013,7 @@
                 const badgeCls = badgeStyleMap[off.badgeStyle] || badgeStyleMap.orange;
                 const widthCls = off.cardSize === 'tall' ? 'w-[245px] tablet:w-[270px]' : 'w-[300px] tablet:w-[350px]';
                 return `
-                  <article onclick="handleOfferCardClick('${off.id}')" class="card-tactile ${widthCls} shrink-0 snap-start rounded-[28px] overflow-hidden bg-brand-ink text-white relative h-[215px] tablet:h-[235px] cursor-pointer shadow-editorial editorial-zoom group">
+                  <article onclick="handleOfferCardClick('${off.id}')" class="card-tactile ${widthCls} shrink-0 snap-start rounded-[22px] overflow-hidden bg-brand-ink text-white relative h-[215px] tablet:h-[235px] cursor-pointer shadow-editorial editorial-zoom group">
                     <img src="${off.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(off.title)}" loading="lazy" class="w-full h-full object-cover opacity-80" />
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-ink via-brand-ink/45 to-transparent"></div>
                     <div class="absolute inset-0 p-4 tablet:p-5 flex flex-col justify-between">
@@ -2083,7 +2039,7 @@
             </div>
           </section>
 
-          <!-- SHAPE 2: ORGANIC / ASYMMETRICAL BLOB SHOWCASE — HOT ITEMS -->
+          <!-- APPLE ROUNDED-RECTANGLE PRODUCT SHOWCASE — HOT ITEMS -->
           <section class="space-y-4">
             <div class="flex items-end justify-between">
               <div>
@@ -2096,40 +2052,33 @@
             </div>
 
             <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-5">
-              ${hotProducts.map((prod, idx) => {
-                const blobCls = idx % 2 === 0 ? 'shape-blob-a' : 'shape-blob-b';
-                const backAccent = idx % 2 === 0 ? 'bg-brand-purple/15' : 'bg-brand-orange/15';
-                return `
-                  <article onclick="openProductModal('${prod.id}')" class="card-tactile bg-white rounded-[28px] p-4 tablet:p-5 border border-brand-hairline shadow-editorial hover:border-brand-purple/40 cursor-pointer flex flex-col justify-between editorial-zoom">
-                    <div>
-                      <div class="relative h-48 tablet:h-52 flex items-center justify-center mb-3">
-                        <div class="absolute inset-2 ${blobCls} ${backAccent} transform rotate-3"></div>
-                        <div class="relative w-full h-full ${blobCls} overflow-hidden shadow-md bg-brand-canvas">
-                          <img src="${prod.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(prod.name)}" loading="lazy" class="w-full h-full object-cover" />
-                        </div>
-                        <span class="absolute top-2.5 left-2.5 px-3 py-1 rounded-full bg-brand-yellow text-brand-ink text-[10px] font-extrabold uppercase tracking-wider shadow-2xs">
-                          ${prod.badge}
-                        </span>
-                      </div>
-
-                      <span class="text-[10px] font-extrabold uppercase tracking-wider text-brand-purple">
-                        ${getStoreNameById(prod.storeId)}
+              ${hotProducts.map(prod => `
+                <article onclick="openProductModal('${prod.id}')" class="card-tactile bg-white rounded-[24px] p-4 tablet:p-5 border border-brand-hairline shadow-editorial hover:border-brand-purple/40 cursor-pointer flex flex-col justify-between editorial-zoom">
+                  <div>
+                    <div class="relative aspect-[16/10] rounded-[16px] overflow-hidden shadow-xs bg-brand-canvas mb-3.5">
+                      <img src="${prod.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(prod.name)}" loading="lazy" class="w-full h-full object-cover" />
+                      <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-brand-yellow text-brand-ink text-[10px] font-extrabold uppercase tracking-wider shadow-2xs">
+                        ${prod.badge}
                       </span>
-                      <h3 class="font-editorial font-extrabold text-lg text-brand-ink leading-snug mt-0.5">
-                        ${prod.name}
-                      </h3>
-                      <p class="text-xs text-brand-muted line-clamp-2 mt-1">${prod.description}</p>
                     </div>
 
-                    <div class="pt-3.5 mt-3 border-t border-brand-canvas flex items-center justify-between">
-                      <span class="font-editorial font-extrabold text-xl text-brand-ink">${formatCurrency(prod.price)}</span>
-                      <div data-product-control="${prod.id}" data-variant="default">
-                        ${renderQuantityControlHTML(prod.id, 'default')}
-                      </div>
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-brand-purple">
+                      ${getStoreNameById(prod.storeId)}
+                    </span>
+                    <h3 class="font-editorial font-extrabold text-lg text-brand-ink leading-snug mt-0.5">
+                      ${prod.name}
+                    </h3>
+                    <p class="text-xs text-brand-muted line-clamp-2 mt-1">${prod.description}</p>
+                  </div>
+
+                  <div class="pt-3.5 mt-3 border-t border-brand-canvas flex items-center justify-between">
+                    <span class="font-editorial font-extrabold text-xl text-brand-ink">${formatCurrency(prod.price)}</span>
+                    <div data-product-control="${prod.id}" data-variant="default">
+                      ${renderQuantityControlHTML(prod.id, 'default')}
                     </div>
-                  </article>
-                `;
-              }).join('')}
+                  </div>
+                </article>
+              `).join('')}
             </div>
           </section>
 
@@ -2146,22 +2095,22 @@
             </div>
 
             <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-5">
-              ${filteredStores.map((store, idx) => `
-                <article onclick="navigateTo('store-detail', { storeId: '${store.id}' })" class="card-tactile group bg-white rounded-[28px] overflow-hidden border border-brand-hairline shadow-editorial hover:border-brand-purple/40 cursor-pointer editorial-zoom">
-                  <div class="relative h-44 tablet:h-48 overflow-hidden bg-brand-ink">
-                    <img src="${store.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(store.name)}" loading="lazy" class="w-full h-full object-cover ${idx % 3 === 1 ? 'shape-blob-c scale-105' : ''}" />
+              ${filteredStores.map(store => `
+                <article onclick="navigateTo('store-detail', { storeId: '${store.id}' })" class="card-tactile group bg-white rounded-[24px] p-3 border border-brand-hairline shadow-editorial hover:border-brand-purple/40 cursor-pointer editorial-zoom">
+                  <div class="relative aspect-[16/10] rounded-[16px] overflow-hidden bg-brand-ink">
+                    <img src="${store.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(store.name)}" loading="lazy" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-ink/80 via-transparent to-transparent"></div>
                     <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/95 text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
                       ${store.categoryTag}
                     </span>
-                    <span class="absolute bottom-3 left-4 font-editorial font-extrabold text-xl text-white">
+                    <span class="absolute bottom-3 left-3.5 font-editorial font-extrabold text-xl text-white">
                       ${store.name}
                     </span>
                     <span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-full bg-brand-purple text-brand-yellow text-xs font-extrabold">
                       ★ ${store.rating}
                     </span>
                   </div>
-                  <div class="p-4 flex items-center justify-between gap-2">
+                  <div class="pt-3 px-1 pb-1 flex items-center justify-between gap-2">
                     <p class="text-xs text-brand-muted line-clamp-1">${store.tagline}</p>
                     <span class="text-[11px] font-extrabold text-brand-purple whitespace-nowrap shrink-0">${store.prepTime} →</span>
                   </div>
@@ -2171,7 +2120,7 @@
           </section>
 
           <!-- TRANSPARENT PRICING & WHATSAPP CONCIERGE BANNER -->
-          <section class="rounded-[28px] bg-brand-deep text-white p-5 tablet:p-7 flex flex-col tablet:flex-row items-start tablet:items-center justify-between gap-4">
+          <section class="rounded-[24px] bg-brand-deep text-white p-5 tablet:p-7 flex flex-col tablet:flex-row items-start tablet:items-center justify-between gap-4">
             <div class="space-y-1">
               <span class="px-3 py-1 rounded-full bg-brand-yellow text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
                 Radhanpur 385340 Promise
@@ -2214,23 +2163,23 @@
         <div class="pt-4 tablet:pt-7 space-y-5 tablet:space-y-7 animate-fade-up">
           <div class="flex items-end justify-between gap-3">
             <div>
-              <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink">
+              <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-brand-purple">
+                Radhanpur 385340 • ₹0 Delivery
+              </span>
+              <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink mt-0.5">
                 Stores
               </h1>
-              <p class="text-xs tablet:text-sm text-brand-muted mt-0.5">
-                ${state.stores.length} kitchens in Radhanpur 385340 • ₹0 delivery
-              </p>
             </div>
 
-            <button onclick="state.editorTab = 'stores'; openCatalogEditor('${state.stores[0].id}')" class="h-9 px-3.5 rounded-full bg-white border border-brand-hairline hover:border-brand-purple text-[11px] font-extrabold text-brand-purple btn-tactile shrink-0">
-              ✎ Manage
+            <button onclick="state.editorTab = 'stores'; openCatalogEditor('${state.stores[0].id}')" class="h-9 px-3.5 rounded-full bg-white border border-brand-hairline hover:border-brand-purple text-xs font-extrabold text-brand-purple btn-tactile">
+              ✎ Edit
             </button>
           </div>
 
-          <!-- Compact Filter Strip -->
+          <!-- Compact Search & Category Filter Bar -->
           <div class="space-y-2.5">
-            <div class="relative hidden desktop:block">
-              <input type="text" value="${escapeAttr(state.storesDirectorySearch)}" oninput="state.storesDirectorySearch = this.value; renderApp()" placeholder="Filter stores or dishes..." class="w-full h-11 pl-10 pr-4 rounded-full bg-white border border-brand-hairline focus:border-brand-purple focus:outline-none text-sm font-medium text-brand-ink" />
+            <div class="relative">
+              <input type="text" value="${escapeAttr(state.storesDirectorySearch)}" oninput="state.storesDirectorySearch = this.value; renderApp()" placeholder="Filter stores or dishes..." class="w-full h-11 pl-10 pr-4 rounded-2xl bg-white border border-brand-hairline focus:border-brand-purple focus:outline-none text-xs tablet:text-sm font-medium text-brand-ink shadow-2xs" />
               <svg class="w-4 h-4 text-brand-purple absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="7"></circle>
                 <path stroke-linecap="round" d="M20 20l-3.5-3.5"></path>
@@ -2241,7 +2190,7 @@
               ${categories.map(cat => {
                 const active = state.storesDirectoryFilter === cat;
                 return `
-                  <button onclick="state.storesDirectoryFilter = '${cat}'; renderApp()" class="h-9 px-4 rounded-full text-xs font-extrabold whitespace-nowrap transition-all btn-tactile ${active ? 'bg-brand-purple text-white shadow-pill' : 'bg-white border border-brand-hairline text-brand-ink hover:border-brand-purple/30'}">
+                  <button onclick="state.storesDirectoryFilter = '${cat}'; renderApp()" class="h-9 px-4 rounded-full text-xs font-extrabold whitespace-nowrap transition-all btn-tactile ${active ? 'bg-brand-purple text-white shadow-pill' : 'bg-white border border-brand-hairline text-brand-ink hover:border-brand-purple/40'}">
                     ${cat}
                   </button>
                 `;
@@ -2249,19 +2198,19 @@
             </div>
           </div>
 
-          <!-- Clean Stores Grid -->
+          <!-- Clean Store Cards -->
           ${filteredStores.length === 0 ? `
-            <div class="bg-white rounded-[28px] p-10 text-center border border-brand-hairline">
+            <div class="bg-white rounded-[24px] p-10 text-center border border-brand-hairline">
               <p class="font-editorial font-bold text-base text-brand-ink">No matching stores found</p>
-              <button onclick="state.storesDirectorySearch = ''; state.storesDirectoryFilter = 'All'; renderApp()" class="mt-3 h-10 px-5 rounded-full bg-brand-purple text-white text-xs font-bold">
+              <button onclick="state.storesDirectorySearch = ''; state.storesDirectoryFilter = 'All'; renderApp()" class="mt-3 h-10 px-5 rounded-full bg-brand-purple text-white text-xs font-bold btn-tactile">
                 Show All Stores
               </button>
             </div>
           ` : `
-            <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-4 tablet:gap-6">
+            <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-5">
               ${filteredStores.map(store => `
-                <article onclick="navigateTo('store-detail', { storeId: '${store.id}' })" class="card-tactile group bg-white rounded-[26px] overflow-hidden border border-brand-hairline shadow-editorial hover:border-brand-purple/40 cursor-pointer editorial-zoom">
-                  <div class="relative aspect-[16/9] overflow-hidden bg-brand-ink">
+                <article onclick="navigateTo('store-detail', { storeId: '${store.id}' })" class="card-tactile group bg-white rounded-[24px] p-3 border border-brand-hairline shadow-editorial hover:border-brand-purple/40 cursor-pointer editorial-zoom">
+                  <div class="relative aspect-[16/10] rounded-[16px] overflow-hidden bg-brand-ink">
                     <img src="${store.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(store.name)}" loading="lazy" class="w-full h-full object-cover" />
                     <div class="absolute inset-0 bg-gradient-to-t from-brand-ink/70 via-transparent to-transparent"></div>
                     <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/95 text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
@@ -2272,17 +2221,12 @@
                     </span>
                   </div>
 
-                  <div class="p-4 tablet:p-5 flex items-center justify-between gap-3">
-                    <div class="min-w-0">
-                      <h2 class="font-editorial font-extrabold text-lg tablet:text-xl text-brand-ink group-hover:text-brand-purple transition-colors truncate">
-                        ${store.name}
-                      </h2>
-                      <p class="text-xs font-semibold text-brand-muted mt-0.5">
-                        ${store.prepTime} • ₹0 Delivery
-                      </p>
-                    </div>
-                    <span class="w-9 h-9 rounded-full bg-brand-canvas group-hover:bg-brand-purple group-hover:text-white text-brand-ink flex items-center justify-center font-bold text-sm transition-colors shrink-0">
-                      →
+                  <div class="pt-3 px-1 pb-1 flex items-center justify-between gap-3">
+                    <h2 class="font-editorial font-extrabold text-lg tablet:text-xl text-brand-ink group-hover:text-brand-purple transition-colors truncate">
+                      ${store.name}
+                    </h2>
+                    <span class="text-xs font-bold text-brand-muted whitespace-nowrap shrink-0">
+                      ${store.prepTime} • <strong class="text-emerald-600">₹0</strong>
                     </span>
                   </div>
                 </article>
@@ -2294,7 +2238,7 @@
     }
 
     // -----------------------------------------------------------------------
-    // 9. STORE DETAIL VIEW (COMPACT HERO + CLEAN PRODUCT BROWSING)
+    // 9. STORE DETAIL VIEW (COMPACT HERO & CLEAN MENU)
     // -----------------------------------------------------------------------
     function toggleProductDescription(productId, event) {
       if (event) event.stopPropagation();
@@ -2308,11 +2252,10 @@
       if (state.isLoadingStore) {
         return `
           <div class="pt-5 space-y-5">
-            <div class="h-44 tablet:h-56 w-full rounded-[28px] skeleton-shimmer"></div>
+            <div class="h-56 tablet:h-72 w-full rounded-[24px] skeleton-shimmer"></div>
             <div class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-5">
-              <div class="h-56 rounded-3xl skeleton-shimmer"></div>
-              <div class="h-56 rounded-3xl skeleton-shimmer"></div>
-              <div class="h-56 rounded-3xl skeleton-shimmer"></div>
+              <div class="h-56 rounded-[24px] skeleton-shimmer"></div>
+              <div class="h-56 rounded-[24px] skeleton-shimmer"></div>
             </div>
           </div>
         `;
@@ -2328,81 +2271,71 @@
       });
 
       return `
-        <div class="pt-3.5 tablet:pt-6 space-y-5 tablet:space-y-7 animate-fade-up">
+        <div class="pt-3.5 tablet:pt-6 space-y-5 tablet:space-y-7 animate-slide-push">
           
-          <!-- Desktop Back Bar -->
-          <div class="hidden desktop:flex items-center justify-between gap-3">
-            <button onclick="navigateBack()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline hover:border-brand-purple/40 text-xs font-bold text-brand-ink btn-tactile">
+          <!-- Desktop Back & Edit Bar -->
+          <div class="flex items-center justify-between gap-3">
+            <button onclick="navigateBack()" class="hidden desktop:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline hover:border-brand-purple/40 text-xs font-bold text-brand-ink btn-tactile">
               <span>←</span>
               <span>Back to Stores</span>
             </button>
 
-            <button onclick="state.editorTab = 'stores'; openCatalogEditor('${store.id}')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-brand-hairline hover:border-brand-purple text-xs font-extrabold text-brand-purple btn-tactile">
+            <button onclick="state.editorTab = 'stores'; openCatalogEditor('${store.id}')" class="ml-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white border border-brand-hairline hover:border-brand-purple text-xs font-extrabold text-brand-purple btn-tactile">
               <span>✎ Edit Menu</span>
             </button>
           </div>
 
           <!-- Compact Store Hero Card -->
-          <section class="bg-white rounded-[26px] overflow-hidden border border-brand-hairline shadow-editorial">
+          <section class="bg-white rounded-[24px] overflow-hidden border border-brand-hairline shadow-editorial">
             <div class="grid grid-cols-1 desktop:grid-cols-12">
-              <div class="desktop:col-span-5 relative h-44 tablet:h-56 desktop:h-auto overflow-hidden bg-brand-ink">
-                <img src="${store.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(store.name)}" class="w-full h-full object-cover" />
-                <div class="absolute inset-0 bg-gradient-to-t from-brand-ink/75 via-transparent to-transparent desktop:hidden"></div>
-                <span class="desktop:hidden absolute bottom-3 left-4 px-2.5 py-1 rounded-full bg-brand-purple text-brand-yellow text-xs font-extrabold">
-                  ★ ${store.rating}
-                </span>
+              <div class="desktop:col-span-5 p-3 pb-0 desktop:pb-3">
+                <div class="relative h-44 tablet:h-56 desktop:h-full min-h-[200px] rounded-[20px] overflow-hidden bg-brand-ink">
+                  <img src="${store.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(store.name)}" class="w-full h-full object-cover" />
+                  <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-white/95 text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
+                    ${store.categoryTag}
+                  </span>
+                </div>
               </div>
 
-              <div class="desktop:col-span-7 p-4 tablet:p-7 flex flex-col justify-between">
+              <div class="desktop:col-span-7 p-4 tablet:p-6 flex flex-col justify-between gap-3">
                 <div>
                   <div class="flex items-center justify-between gap-2">
-                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-brand-purple">
-                      ${store.categoryTag}
+                    <h1 class="font-editorial font-extrabold text-2xl tablet:text-3xl text-brand-ink leading-tight">
+                      ${store.name}
+                    </h1>
+                    <span class="px-2.5 py-1 rounded-full bg-brand-purple text-brand-yellow text-xs font-extrabold shrink-0">
+                      ★ ${store.rating}
                     </span>
-                    <div class="flex items-center gap-2">
-                      <span class="hidden desktop:inline-flex px-2.5 py-0.5 rounded-full bg-brand-purple/10 text-brand-purple text-xs font-extrabold">
-                        ★ ${store.rating}
-                      </span>
-                      <button onclick="state.editorTab = 'stores'; openCatalogEditor('${store.id}')" class="desktop:hidden text-[11px] font-extrabold text-brand-purple">
-                        ✎ Edit
-                      </button>
-                    </div>
                   </div>
-
-                  <h1 class="font-editorial font-extrabold text-2xl tablet:text-3xl text-brand-ink mt-1">
-                    ${store.name}
-                  </h1>
-                  <p class="text-xs tablet:text-sm text-brand-muted mt-1 line-clamp-2">
-                    ${store.tagline}
+                  <p class="mt-1.5 text-xs tablet:text-sm text-brand-muted leading-relaxed line-clamp-2">
+                    ${store.story}
                   </p>
                 </div>
 
-                <div class="mt-4 pt-3 border-t border-brand-canvas flex items-center gap-4 text-xs font-bold text-brand-ink">
-                  <span>⏱ ${store.prepTime}</span>
-                  <span class="text-brand-hairline">•</span>
-                  <span class="text-emerald-600 font-extrabold">₹0 Delivery</span>
-                  <span class="text-brand-hairline">•</span>
-                  <span class="text-brand-muted">385340</span>
+                <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-brand-canvas text-xs font-bold">
+                  <span class="px-3 py-1 rounded-full bg-brand-canvas text-brand-ink">⏱ ${store.prepTime}</span>
+                  <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700">₹0 Delivery</span>
+                  <span class="px-3 py-1 rounded-full bg-brand-canvas text-brand-muted">PIN 385340</span>
                 </div>
               </div>
             </div>
           </section>
 
-          <!-- Clean Category Tabs & In-Store Search -->
-          <div class="flex flex-col desktop:flex-row desktop:items-center justify-between gap-3">
-            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
+          <!-- Sticky Category & Compact In-Store Search -->
+          <div class="bg-white p-3 rounded-[22px] border border-brand-hairline space-y-2.5">
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
               ${store.categories.map(cat => {
                 const active = state.activeStoreCategory === cat;
                 return `
-                  <button onclick="state.activeStoreCategory = '${cat}'; renderApp()" class="h-9 px-4 rounded-full text-xs font-extrabold whitespace-nowrap transition-all btn-tactile ${active ? 'bg-brand-purple text-white shadow-pill' : 'bg-white border border-brand-hairline text-brand-ink hover:border-brand-purple/30'}">
+                  <button onclick="state.activeStoreCategory = '${cat}'; renderApp()" class="h-9 px-3.5 rounded-full text-xs font-extrabold whitespace-nowrap transition-all btn-tactile ${active ? 'bg-brand-purple text-white shadow-pill' : 'bg-brand-canvas text-brand-ink hover:bg-brand-hairline'}">
                     ${cat}
                   </button>
                 `;
               }).join('')}
             </div>
 
-            <div class="relative desktop:w-64 shrink-0">
-              <input type="text" oninput="state.storeSearchQuery = this.value; renderApp()" value="${escapeAttr(state.storeSearchQuery)}" placeholder="Search in ${escapeAttr(store.name)}..." class="w-full h-10 pl-9 pr-3.5 rounded-full bg-white border border-brand-hairline focus:border-brand-purple focus:outline-none text-xs font-medium text-brand-ink" />
+            <div class="relative">
+              <input type="text" oninput="state.storeSearchQuery = this.value; renderApp()" value="${escapeAttr(state.storeSearchQuery)}" placeholder="Search dishes in ${escapeAttr(store.name)}..." class="w-full h-10 pl-9 pr-3.5 rounded-xl bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-xs font-medium text-brand-ink" />
               <svg class="w-3.5 h-3.5 text-brand-purple absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="7"></circle>
                 <path stroke-linecap="round" d="M20 20l-3.5-3.5"></path>
@@ -2412,36 +2345,34 @@
 
           <!-- Clean Product Cards -->
           ${filteredProducts.length === 0 ? `
-            <div class="bg-white rounded-[26px] p-9 text-center border border-brand-hairline">
+            <div class="bg-white rounded-[24px] p-8 text-center border border-brand-hairline">
               <p class="font-editorial font-bold text-base text-brand-ink">No matching dishes in ${store.name}</p>
-              <button onclick="state.activeStoreCategory = 'All'; state.storeSearchQuery = ''; renderApp()" class="mt-3 h-9 px-4 rounded-full bg-brand-purple text-white text-xs font-bold">
-                Show All Items
+              <button onclick="state.activeStoreCategory = 'All'; state.storeSearchQuery = ''; renderApp()" class="mt-3 h-10 px-4 rounded-full bg-brand-purple text-white text-xs font-bold btn-tactile">
+                Reset Filters
               </button>
             </div>
           ` : `
-            <section class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-4 tablet:gap-6">
+            <section class="grid grid-cols-1 tablet:grid-cols-2 desktop:grid-cols-3 gap-4 tablet:gap-5">
               ${filteredProducts.map(product => {
                 const isExpanded = !!state.expandedProducts[product.id];
                 return `
-                  <article onclick="openProductModal('${product.id}')" class="card-tactile group bg-white rounded-[24px] overflow-hidden border border-brand-hairline shadow-editorial hover:border-brand-purple/35 cursor-pointer flex flex-col justify-between editorial-zoom">
+                  <article onclick="openProductModal('${product.id}')" class="card-tactile group bg-white rounded-[24px] p-3 border border-brand-hairline shadow-editorial hover:border-brand-purple/35 cursor-pointer flex flex-col justify-between editorial-zoom">
                     <div>
-                      <div class="relative aspect-[16/10] overflow-hidden bg-brand-canvas">
+                      <div class="relative aspect-[16/10] rounded-[16px] overflow-hidden bg-brand-canvas">
                         <img src="${product.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(product.name)}" loading="lazy" class="w-full h-full object-cover" />
-                        ${product.isHot ? `
-                          <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-brand-yellow text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
-                            ${product.badge}
-                          </span>
-                        ` : ''}
+                        <span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-white/95 text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
+                          ${product.badge}
+                        </span>
                       </div>
 
-                      <div class="p-4 pb-2.5">
-                        <h3 class="font-editorial font-extrabold text-base tablet:text-lg text-brand-ink group-hover:text-brand-purple transition-colors leading-snug">
+                      <div class="pt-3 px-1 pb-2">
+                        <h3 class="font-editorial font-extrabold text-base tablet:text-lg text-brand-ink group-hover:text-brand-purple transition-colors">
                           ${product.name}
                         </h3>
                         <p class="mt-1 text-xs text-brand-muted leading-relaxed ${isExpanded ? '' : 'line-clamp-1'}">
                           ${product.description}
                         </p>
-                        ${product.description.length > 55 ? `
+                        ${product.description.length > 72 ? `
                           <button type="button" onclick="toggleProductDescription('${product.id}', event)" class="mt-1 text-[11px] font-bold text-brand-purple hover:underline">
                             ${isExpanded ? 'Less' : 'More'}
                           </button>
@@ -2449,10 +2380,10 @@
                       </div>
                     </div>
 
-                    <div class="px-4 pb-4 pt-2.5 flex items-center justify-between border-t border-brand-canvas mt-1">
+                    <div class="pt-2.5 px-1 pb-1 flex items-center justify-between border-t border-brand-canvas mt-1">
                       <span class="font-editorial font-extrabold text-lg text-brand-ink">${formatCurrency(product.price)}</span>
-                      <div data-product-control="${product.id}" data-variant="compact">
-                        ${renderQuantityControlHTML(product.id, 'compact')}
+                      <div data-product-control="${product.id}" data-variant="default">
+                        ${renderQuantityControlHTML(product.id, 'default')}
                       </div>
                     </div>
                   </article>
@@ -2465,44 +2396,50 @@
     }
 
     // -----------------------------------------------------------------------
-    // 10. VIEW 3: ORDERS (ACTIVE PRIORITY + COMPACT HISTORY + DEDICATED DETAIL VIEW)
+    // 10. VIEW 3: ORDERS & DEDICATED ORDER DETAIL SCREEN
     // -----------------------------------------------------------------------
     function renderOrdersView() {
       const activeOrders = state.orders.filter(o => o.status !== 'Delivered');
       const pastOrders = state.orders.filter(o => o.status === 'Delivered');
 
       return `
-        <div class="pt-4 tablet:pt-8 max-w-4xl mx-auto space-y-7 animate-fade-up">
-          <div>
-            <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink">
-              Orders
-            </h1>
-            <p class="text-xs tablet:text-sm text-brand-muted mt-0.5">
-              Live tracking &amp; order history in Radhanpur 385340
-            </p>
+        <div class="pt-4 tablet:pt-7 max-w-4xl mx-auto space-y-6 animate-fade-up">
+          <div class="flex items-end justify-between gap-3">
+            <div>
+              <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-brand-purple">
+                Radhanpur 385340
+              </span>
+              <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink mt-0.5">
+                Orders
+              </h1>
+            </div>
+            <a href="https://wa.me/919875299621" target="_blank" rel="noopener noreferrer" class="h-9 px-3.5 rounded-full bg-white border border-brand-hairline text-xs font-bold text-brand-ink inline-flex items-center gap-1.5 btn-tactile">
+              <span class="w-2 h-2 rounded-full bg-[#25D366]"></span>
+              <span>Help</span>
+            </a>
           </div>
 
-          <!-- Priority: Active Orders -->
-          <section class="space-y-3.5">
-            <h2 class="font-editorial font-extrabold text-sm uppercase tracking-wider text-brand-purple flex items-center gap-2">
+          <!-- Active Orders Priority Section -->
+          <section class="space-y-3">
+            <h2 class="font-editorial font-extrabold text-base tablet:text-lg text-brand-ink flex items-center gap-2">
               <span class="w-2 h-2 rounded-full bg-brand-orange animate-ping"></span>
               <span>Active Orders (${activeOrders.length})</span>
             </h2>
 
             ${activeOrders.length === 0 ? `
-              <div class="bg-white rounded-[24px] p-6 border border-brand-hairline flex items-center justify-between gap-4">
+              <div class="bg-white rounded-[24px] p-5 border border-brand-hairline flex items-center justify-between gap-4">
                 <div>
                   <p class="font-editorial font-bold text-sm tablet:text-base text-brand-ink">No active orders</p>
-                  <p class="text-xs text-brand-muted mt-0.5">Ready when you are.</p>
+                  <p class="text-xs text-brand-muted mt-0.5">Ready for your next meal in 385340.</p>
                 </div>
-                <button onclick="navigateTo('stores')" class="h-10 px-5 rounded-full bg-brand-purple text-white text-xs font-extrabold shadow-pill btn-tactile shrink-0">
+                <button onclick="navigateTo('stores')" class="h-10 px-4 rounded-full bg-brand-purple text-white text-xs font-extrabold shadow-pill shrink-0 btn-tactile">
                   Order Now
                 </button>
               </div>
             ` : `
               <div class="grid grid-cols-1 desktop:grid-cols-2 gap-4">
                 ${activeOrders.map(order => `
-                  <div onclick="navigateTo('order-detail', { orderId: '${order.orderId}' })" class="bg-brand-deep text-white rounded-[26px] p-5 shadow-editorial space-y-4 cursor-pointer btn-tactile">
+                  <div onclick="navigateTo('order-detail', { orderId: '${order.orderId}' })" class="card-tactile bg-brand-deep text-white rounded-[24px] p-5 shadow-editorial space-y-4 cursor-pointer">
                     <div class="flex items-center justify-between">
                       <span class="px-3 py-1 rounded-full bg-brand-yellow text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
                         ${order.status}
@@ -2510,22 +2447,21 @@
                       <span class="text-xs font-bold text-white/75">#${order.orderId}</span>
                     </div>
 
-                    <div>
-                      <p class="font-editorial font-extrabold text-base tablet:text-lg line-clamp-1">
-                        ${order.items.map(i => `${i.qty}× ${i.name}`).join(', ')}
-                      </p>
-                      <p class="text-xs text-white/70 mt-0.5">${order.date}</p>
-                    </div>
+                    <p class="font-editorial font-extrabold text-base tablet:text-lg line-clamp-1">
+                      ${order.items.map(i => `${i.qty}× ${i.name}`).join(', ')}
+                    </p>
 
-                    <!-- Clean Status Timeline -->
-                    <div class="space-y-1.5">
-                      <div class="h-1.5 w-full rounded-full bg-white/15 overflow-hidden">
-                        <div class="h-full w-2/3 rounded-full bg-brand-yellow"></div>
+                    <!-- Clean 3-Step Order Status Timeline -->
+                    <div class="space-y-2">
+                      <div class="grid grid-cols-3 gap-1.5">
+                        <div class="h-1.5 rounded-full bg-brand-yellow"></div>
+                        <div class="h-1.5 rounded-full bg-brand-yellow"></div>
+                        <div class="h-1.5 rounded-full bg-white/20"></div>
                       </div>
-                      <div class="flex justify-between text-[10px] font-bold text-white/75">
+                      <div class="flex justify-between text-[10px] font-bold text-white/80">
                         <span class="text-brand-yellow">Confirmed</span>
                         <span class="text-brand-yellow">Preparing</span>
-                        <span>On the way</span>
+                        <span>Arriving</span>
                       </div>
                     </div>
 
@@ -2539,41 +2475,43 @@
             `}
           </section>
 
-          <!-- Compact Past Orders -->
-          <section class="space-y-3.5">
-            <h2 class="font-editorial font-extrabold text-sm uppercase tracking-wider text-brand-muted">
+          <!-- Compact Past Orders List -->
+          <section class="space-y-3">
+            <h2 class="font-editorial font-extrabold text-base tablet:text-lg text-brand-ink">
               Past Orders (${pastOrders.length})
             </h2>
 
             <div class="space-y-3">
-              ${pastOrders.map(order => `
-                <div onclick="navigateTo('order-detail', { orderId: '${order.orderId}' })" class="bg-white rounded-[22px] p-4 tablet:p-5 border border-brand-hairline hover:border-brand-purple/35 transition-all cursor-pointer flex items-center justify-between gap-3">
-                  <div class="min-w-0">
-                    <div class="flex items-center gap-2">
-                      <span class="font-editorial font-extrabold text-sm text-brand-ink">#${order.orderId}</span>
-                      <span class="text-[11px] font-bold text-emerald-600">• ${order.status}</span>
-                      <span class="text-[11px] text-brand-muted hidden xs:inline">• ${order.date}</span>
+              ${pastOrders.map(order => {
+                const firstProd = state.products.find(p => p.id === order.items[0]?.productId);
+                return `
+                  <div onclick="navigateTo('order-detail', { orderId: '${order.orderId}' })" class="card-tactile bg-white rounded-[22px] p-4 border border-brand-hairline hover:border-brand-purple/35 cursor-pointer flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <img src="${firstProd ? firstProd.image : FALLBACK_FOOD_IMG}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="Order #${order.orderId}" class="w-12 h-12 rounded-[12px] object-cover shrink-0 bg-brand-canvas" />
+                      <div class="min-w-0 space-y-0.5">
+                        <div class="flex items-center gap-2">
+                          <span class="text-[11px] font-extrabold text-emerald-600">✓ Delivered</span>
+                          <span class="text-[11px] text-brand-muted">• ${order.date}</span>
+                        </div>
+                        <p class="font-editorial font-bold text-sm tablet:text-base text-brand-ink truncate">
+                          ${order.items.map(i => `${i.qty}× ${i.name}`).join(', ')}
+                        </p>
+                        <p class="text-xs font-extrabold text-brand-ink">${formatCurrency(order.bill.grandTotal)}</p>
+                      </div>
                     </div>
-                    <p class="text-xs text-brand-muted truncate mt-1">
-                      ${order.items.map(i => `${i.qty}× ${i.name}`).join(', ')}
-                    </p>
-                  </div>
 
-                  <div class="flex items-center gap-2.5 shrink-0">
-                    <span class="font-editorial font-extrabold text-sm text-brand-ink">${formatCurrency(order.bill.grandTotal)}</span>
-                    <button onclick="event.stopPropagation(); reorderItems('${order.orderId}')" class="h-9 px-3.5 rounded-full bg-brand-purple hover:bg-brand-deep text-white text-xs font-extrabold btn-tactile">
+                    <button onclick="event.stopPropagation(); reorderItems('${order.orderId}')" class="h-10 px-4 rounded-full bg-brand-purple hover:bg-brand-deep text-white text-xs font-extrabold shrink-0 btn-tactile">
                       ↻ Reorder
                     </button>
                   </div>
-                </div>
-              `).join('')}
+                `;
+              }).join('')}
             </div>
           </section>
         </div>
       `;
     }
 
-    // Dedicated Full-Page Order Detail Screen (Supports Back Navigation cleanly)
     function renderOrderDetailView() {
       const order = state.orders.find(o => o.orderId === state.activeOrderId) || state.orders[0];
       if (!order) {
@@ -2584,59 +2522,47 @@
       const isActive = order.status !== 'Delivered';
 
       return `
-        <div class="pt-4 tablet:pt-8 max-w-2xl mx-auto space-y-5 animate-fade-up">
+        <div class="pt-4 tablet:pt-7 max-w-2xl mx-auto space-y-5 animate-slide-push">
           <button onclick="navigateBack()" class="hidden desktop:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline text-xs font-bold text-brand-ink btn-tactile">
             ← Back to Orders
           </button>
 
           <!-- Status Card -->
-          <div class="bg-white rounded-[26px] p-5 tablet:p-6 border border-brand-hairline shadow-editorial space-y-4">
+          <div class="bg-white rounded-[24px] p-5 border border-brand-hairline shadow-editorial space-y-3">
             <div class="flex items-center justify-between">
-              <div>
-                <span class="px-3 py-1 rounded-full ${isActive ? 'bg-brand-yellow text-brand-ink' : 'bg-emerald-50 text-emerald-700'} text-[10px] font-extrabold uppercase tracking-wider">
-                  ${order.status}
-                </span>
-                <h1 class="font-editorial font-extrabold text-2xl text-brand-ink mt-2">
-                  Order #${order.orderId}
-                </h1>
-              </div>
-              <span class="text-xs font-semibold text-brand-muted">${order.date}</span>
+              <span class="px-3 py-1 rounded-full ${isActive ? 'bg-brand-yellow text-brand-ink' : 'bg-emerald-50 text-emerald-700'} text-[11px] font-extrabold uppercase tracking-wider">
+                ${order.status}
+              </span>
+              <span class="text-xs font-bold text-brand-muted">#${order.orderId} • ${order.date}</span>
             </div>
 
-            ${isActive ? `
-              <div class="space-y-1.5 pt-1">
-                <div class="h-2 w-full rounded-full bg-brand-canvas overflow-hidden">
-                  <div class="h-full w-2/3 rounded-full bg-brand-purple"></div>
-                </div>
-                <div class="flex justify-between text-[11px] font-bold text-brand-muted">
-                  <span class="text-brand-purple">Confirmed</span>
-                  <span class="text-brand-purple">Preparing</span>
-                  <span>Arriving in 385340</span>
-                </div>
-              </div>
-            ` : ''}
-
-            <div class="pt-3 border-t border-brand-canvas text-xs space-y-1">
+            <div class="text-xs space-y-1 pt-1">
               <p class="font-bold text-brand-ink">Delivery Address</p>
               <p class="text-brand-muted">${order.landmark}</p>
               <p class="text-brand-muted pt-1">Paid via <strong class="text-brand-ink">${order.paymentMethod}</strong></p>
             </div>
           </div>
 
-          <!-- Items & Bill Breakdown -->
-          <div class="bg-white rounded-[26px] p-5 tablet:p-6 border border-brand-hairline shadow-editorial space-y-4">
+          <!-- Items & Billing Breakdown -->
+          <div class="bg-white rounded-[24px] p-5 border border-brand-hairline shadow-editorial space-y-4">
             <h2 class="font-editorial font-extrabold text-base text-brand-ink">Items &amp; Receipt</h2>
 
-            <div class="space-y-3 pb-4 border-b border-brand-hairline">
-              ${order.items.map(i => `
-                <div class="flex items-center justify-between text-sm">
-                  <div>
-                    <p class="font-bold text-brand-ink">${i.qty} × ${i.name}</p>
-                    <p class="text-[11px] text-brand-muted">${i.storeName}</p>
+            <div class="space-y-3 pb-3 border-b border-brand-hairline">
+              ${order.items.map(i => {
+                const prod = state.products.find(p => p.id === i.productId);
+                return `
+                  <div class="flex items-center justify-between gap-3 text-xs tablet:text-sm">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <img src="${prod ? prod.image : FALLBACK_FOOD_IMG}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(i.name)}" class="w-11 h-11 rounded-[12px] object-cover shrink-0 bg-brand-canvas" />
+                      <div class="min-w-0">
+                        <p class="font-bold text-brand-ink truncate">${i.qty} × ${i.name}</p>
+                        <p class="text-[11px] text-brand-muted">${i.storeName}</p>
+                      </div>
+                    </div>
+                    <span class="font-editorial font-bold text-brand-ink shrink-0">${formatCurrency(i.subtotal)}</span>
                   </div>
-                  <span class="font-editorial font-bold text-brand-ink">${formatCurrency(i.subtotal)}</span>
-                </div>
-              `).join('')}
+                `;
+              }).join('')}
             </div>
 
             <div class="space-y-2 text-xs">
@@ -2685,6 +2611,7 @@
     }
 
     function reorderItems(orderId) {
+      triggerHaptic('medium');
       const order = state.orders.find(o => o.orderId === orderId);
       if (!order) return;
 
@@ -2704,10 +2631,10 @@
     }
 
     // -----------------------------------------------------------------------
-    // 11. VIEW 4: PROFILE (GROUPED NAVIGATION LIST + DEDICATED SUBPAGES)
+    // 11. VIEW 4: CLEAN PROFILE & DEDICATED SUB-SCREENS
     // -----------------------------------------------------------------------
     function renderProfileView() {
-      const menuGroups = [
+      const rows = [
         {
           id: 'address',
           icon: '📍',
@@ -2718,13 +2645,13 @@
           id: 'personal',
           icon: '👤',
           title: 'Personal Information',
-          subtitle: state.user ? `${state.user.name} • +91 ${state.user.phone}` : 'Guest browsing • Sign in with +91'
+          subtitle: state.user ? `${state.user.name} • +91 ${state.user.phone}` : 'Guest mode • Tap to sign in with +91'
         },
         {
           id: 'support',
           icon: '💬',
-          title: 'WhatsApp Care & Support',
-          subtitle: '+91 9875299621 • Direct assistance'
+          title: 'WhatsApp Care',
+          subtitle: '+91 9875299621 • Direct support'
         },
         {
           id: 'app',
@@ -2735,20 +2662,28 @@
       ];
 
       return `
-        <div class="pt-4 tablet:pt-8 max-w-2xl mx-auto space-y-6 animate-fade-up">
-          
+        <div class="pt-4 tablet:pt-7 max-w-2xl mx-auto space-y-5 animate-fade-up">
+          <div>
+            <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-brand-purple">
+              Account
+            </span>
+            <h1 class="font-editorial font-extrabold text-2xl tablet:text-4xl text-brand-ink mt-0.5">
+              Profile
+            </h1>
+          </div>
+
           <!-- Clean Account Header Card -->
-          <div class="bg-white rounded-[28px] p-5 tablet:p-6 border border-brand-hairline shadow-editorial flex items-center justify-between gap-4">
+          <div class="bg-white rounded-[24px] p-5 border border-brand-hairline shadow-editorial flex items-center justify-between gap-4">
             <div class="flex items-center gap-3.5 min-w-0">
-              <div class="w-14 h-14 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xl flex items-center justify-center shrink-0 shadow-pill">
+              <div class="w-12 h-12 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-lg flex items-center justify-center shrink-0">
                 ${state.user ? (state.user.name || 'Z').charAt(0).toUpperCase() : 'Z'}
               </div>
               <div class="min-w-0">
-                <h1 class="font-editorial font-extrabold text-xl tablet:text-2xl text-brand-ink truncate">
-                  ${state.user ? (state.user.name || 'Radhanpur Patron') : 'Welcome to Zatpatgo'}
-                </h1>
-                <p class="text-xs font-semibold text-brand-muted mt-0.5 truncate">
-                  ${state.user ? `+91 ${state.user.phone} • Radhanpur 385340` : 'Exclusively serving Radhanpur 385340'}
+                <h2 class="font-editorial font-extrabold text-lg text-brand-ink truncate">
+                  ${state.user ? (state.user.name || 'Radhanpur Patron') : 'Radhanpur Guest'}
+                </h2>
+                <p class="text-xs font-medium text-brand-muted truncate">
+                  ${state.user ? `+91 ${state.user.phone} • Verified` : 'Radhanpur 385340'}
                 </p>
               </div>
             </div>
@@ -2757,24 +2692,20 @@
               <button onclick="state.pendingCheckoutAfterOtp = false; openOtpModal()" class="h-10 px-4 rounded-full bg-brand-purple text-white text-xs font-extrabold shadow-pill shrink-0 btn-tactile">
                 Sign In
               </button>
-            ` : `
-              <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-extrabold uppercase shrink-0">
-                Verified
-              </span>
-            `}
+            ` : ''}
           </div>
 
-          <!-- Grouped Action Rows -->
-          <div class="bg-white rounded-[28px] border border-brand-hairline shadow-editorial divide-y divide-brand-hairline overflow-hidden">
-            ${menuGroups.map(item => `
-              <button onclick="navigateTo('profile-sub', { profileSection: '${item.id}' })" class="w-full p-4 tablet:p-5 flex items-center justify-between gap-3.5 text-left hover:bg-brand-canvas/70 transition-colors btn-tactile">
+          <!-- Grouped Navigation Rows -->
+          <div class="bg-white rounded-[24px] border border-brand-hairline shadow-editorial divide-y divide-brand-hairline overflow-hidden">
+            ${rows.map(row => `
+              <button onclick="navigateTo('profile-sub', { profileSection: '${row.id}' })" class="w-full p-4 tablet:p-5 flex items-center justify-between gap-3 text-left hover:bg-brand-canvas/60 transition-colors btn-tactile">
                 <div class="flex items-center gap-3.5 min-w-0">
-                  <span class="w-10 h-10 rounded-2xl bg-brand-canvas flex items-center justify-center text-base shrink-0">
-                    ${item.icon}
+                  <span class="w-10 h-10 rounded-xl bg-brand-canvas flex items-center justify-center text-base shrink-0">
+                    ${row.icon}
                   </span>
                   <div class="min-w-0">
-                    <p class="font-editorial font-bold text-sm tablet:text-base text-brand-ink">${item.title}</p>
-                    <p class="text-xs text-brand-muted truncate mt-0.5">${item.subtitle}</p>
+                    <p class="font-editorial font-bold text-sm tablet:text-base text-brand-ink">${row.title}</p>
+                    <p class="text-xs text-brand-muted truncate mt-0.5">${row.subtitle}</p>
                   </div>
                 </div>
                 <span class="text-brand-muted font-bold text-sm shrink-0">→</span>
@@ -2782,108 +2713,82 @@
             `).join('')}
           </div>
 
-          <!-- Quick WhatsApp Direct Pill -->
-          <div class="flex items-center justify-between gap-3 pt-1">
-            <a href="https://wa.me/919875299621" target="_blank" rel="noopener noreferrer" class="flex-1 h-12 rounded-2xl bg-[#25D366] text-brand-ink font-editorial font-extrabold text-xs flex items-center justify-center gap-2 shadow-2xs btn-tactile">
-              <span>Chat on WhatsApp (+91 9875299621)</span>
-              <span>↗</span>
-            </a>
-
-            ${state.user ? `
-              <button onclick="logoutUser()" class="h-12 px-5 rounded-2xl bg-white border border-brand-hairline hover:bg-brand-orange/10 text-xs font-extrabold text-brand-orange btn-tactile">
-                Logout
-              </button>
-            ` : ''}
-          </div>
+          ${state.user ? `
+            <button onclick="logoutUser()" class="w-full h-12 rounded-2xl bg-white border border-brand-hairline hover:bg-brand-orange/10 text-xs font-extrabold text-brand-orange transition-colors btn-tactile">
+              Logout from Account
+            </button>
+          ` : ''}
         </div>
       `;
     }
 
     function renderProfileSubView() {
-      const section = state.activeProfileSection || 'address';
-      let contentHTML = '';
+      const sec = state.activeProfileSection || 'address';
+      let contentHtml = '';
 
-      if (section === 'address') {
-        contentHTML = `
-          <div class="bg-white rounded-[28px] p-5 tablet:p-7 border border-brand-hairline shadow-editorial space-y-4">
-            <div class="flex items-center justify-between">
-              <h2 class="font-editorial font-extrabold text-lg text-brand-ink">Saved Delivery Location</h2>
-              <span class="px-3 py-1 rounded-full bg-brand-purple/10 text-brand-purple text-xs font-extrabold">PIN 385340</span>
+      if (sec === 'address') {
+        contentHtml = `
+          <div class="bg-white rounded-[24px] p-5 tablet:p-6 border border-brand-hairline shadow-editorial space-y-4">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-brand-muted">Service Zone</span>
+              <strong class="text-brand-purple font-extrabold">Radhanpur, Gujarat — 385340</strong>
             </div>
-
-            <div class="grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-brand-muted mb-1">Town &amp; State</label>
-                <input type="text" value="Radhanpur, Gujarat" disabled class="w-full px-3.5 py-2.5 rounded-xl bg-brand-canvas border border-brand-hairline text-xs font-bold text-brand-ink" />
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold uppercase text-brand-muted mb-1">PIN Code</label>
-                <input type="text" value="385340" disabled class="w-full px-3.5 py-2.5 rounded-xl bg-brand-canvas border border-brand-hairline text-xs font-extrabold text-brand-purple" />
-              </div>
-            </div>
-
             <div>
-              <label class="block text-[11px] font-bold uppercase text-brand-muted mb-1">Street / Society / Landmark</label>
-              <input id="profile-landmark-input" type="text" value="${escapeAttr(state.deliveryLandmark)}" class="w-full px-4 py-3 rounded-2xl bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-sm font-medium text-brand-ink" />
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-brand-muted mb-1.5">Saved Street / Landmark</label>
+              <input type="text" value="${escapeAttr(state.deliveryLandmark)}" onchange="state.deliveryLandmark = this.value; localStorage.setItem('zatpatgo_address_v2', this.value); showToast('Address saved');" class="w-full h-11 px-4 rounded-xl bg-brand-canvas border border-brand-hairline text-xs tablet:text-sm font-semibold text-brand-ink focus:border-brand-purple focus:bg-white focus:outline-none" />
             </div>
-
-            <button onclick="const val = document.getElementById('profile-landmark-input').value.trim(); if (val) { state.deliveryLandmark = val; localStorage.setItem('zatpatgo_address_v2', val); showToast('Address saved'); navigateBack(); }" class="w-full h-12 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
-              Save Delivery Address
+            <button onclick="showToast('Delivery address saved!'); navigateBack()" class="w-full h-11 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
+              Save Address
             </button>
           </div>
         `;
-      } else if (section === 'personal') {
-        contentHTML = `
-          <div class="bg-white rounded-[28px] p-5 tablet:p-7 border border-brand-hairline shadow-editorial space-y-5">
+      } else if (sec === 'personal') {
+        contentHtml = `
+          <div class="bg-white rounded-[24px] p-5 tablet:p-6 border border-brand-hairline shadow-editorial space-y-4">
             ${state.user ? `
-              <div class="space-y-3">
-                <div>
-                  <label class="block text-[10px] font-bold uppercase text-brand-muted mb-1">Full Name</label>
-                  <input id="profile-name-edit" type="text" value="${escapeAttr(state.user.name || '')}" class="w-full px-4 py-3 rounded-2xl bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-sm font-bold text-brand-ink" />
+              <div class="space-y-3 text-xs tablet:text-sm">
+                <div class="flex justify-between py-2 border-b border-brand-canvas">
+                  <span class="text-brand-muted">Full Name</span>
+                  <strong class="text-brand-ink">${state.user.name || 'Radhanpur Patron'}</strong>
                 </div>
-                <div>
-                  <label class="block text-[10px] font-bold uppercase text-brand-muted mb-1">Verified Mobile</label>
-                  <input type="text" value="+91 ${state.user.phone}" disabled class="w-full px-4 py-3 rounded-2xl bg-brand-canvas border border-brand-hairline text-sm font-bold text-brand-muted" />
+                <div class="flex justify-between py-2">
+                  <span class="text-brand-muted">Mobile Number</span>
+                  <strong class="text-brand-ink">+91 ${state.user.phone}</strong>
                 </div>
               </div>
-              <button onclick="const n = document.getElementById('profile-name-edit').value.trim(); if (n) { state.user.name = n; localStorage.setItem('zatpatgo_user_v2', JSON.stringify(state.user)); showToast('Name updated'); navigateBack(); }" class="w-full h-12 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
-                Save Changes
+              <button onclick="logoutUser(); navigateBack()" class="w-full h-11 rounded-2xl border border-brand-hairline text-xs font-extrabold text-brand-orange btn-tactile">
+                Logout
               </button>
             ` : `
-              <div class="text-center py-4 space-y-3">
-                <h2 class="font-editorial font-extrabold text-xl text-brand-ink">Sign in with +91 Mobile</h2>
-                <p class="text-xs text-brand-muted">Verify your Indian mobile number via instant OTP to save orders and checkout faster.</p>
-                <button onclick="state.pendingCheckoutAfterOtp = false; openOtpModal()" class="w-full h-12 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
-                  Continue with +91 OTP
-                </button>
-              </div>
+              <p class="text-xs tablet:text-sm text-brand-muted">Sign in with your +91 mobile number to save your profile and track orders.</p>
+              <button onclick="state.pendingCheckoutAfterOtp = false; openOtpModal()" class="w-full h-11 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
+                Sign In with +91 OTP
+              </button>
             `}
           </div>
         `;
-      } else if (section === 'support') {
-        contentHTML = `
-          <div class="bg-brand-deep text-white rounded-[28px] p-6 tablet:p-7 shadow-editorial space-y-4">
-            <span class="inline-block px-3 py-1 rounded-full bg-white/10 text-brand-yellow text-[10px] font-extrabold uppercase tracking-widest">
-              WhatsApp Concierge
+      } else if (sec === 'support') {
+        contentHtml = `
+          <div class="bg-brand-deep text-white rounded-[24px] p-6 shadow-editorial space-y-4">
+            <span class="inline-block px-3 py-1 rounded-full bg-white/10 text-brand-yellow text-[10px] font-extrabold uppercase tracking-wider">
+              WhatsApp Only Care
             </span>
-            <h2 class="font-editorial font-extrabold text-2xl leading-snug">
-              Need help with your order?
-            </h2>
-            <p class="text-xs tablet:text-sm text-white/80 leading-relaxed">
-              Our Radhanpur 385340 support team responds directly on WhatsApp at <strong>+91 9875299621</strong>.
+            <h2 class="font-editorial font-extrabold text-xl">Official Support: +91 9875299621</h2>
+            <p class="text-xs text-white/80 leading-relaxed">
+              Message us directly on WhatsApp for instant help with orders or deliveries in Radhanpur 385340.
             </p>
-            <a href="https://wa.me/919875299621" target="_blank" rel="noopener noreferrer" class="w-full h-12 rounded-2xl bg-[#25D366] text-brand-ink font-editorial font-extrabold text-sm flex items-center justify-center gap-2 shadow-lg btn-tactile">
-              <span>Message on WhatsApp</span>
+            <a href="https://wa.me/919875299621" target="_blank" rel="noopener noreferrer" class="w-full h-12 rounded-2xl bg-[#25D366] text-brand-ink font-editorial font-extrabold text-xs flex items-center justify-center gap-2 btn-tactile">
+              <span>Chat on WhatsApp Now</span>
               <span>↗</span>
             </a>
           </div>
         `;
       } else {
-        contentHTML = `
-          <div class="bg-white rounded-[28px] p-6 border border-brand-hairline shadow-editorial space-y-4">
+        contentHtml = `
+          <div class="bg-white rounded-[24px] p-6 border border-brand-hairline shadow-editorial space-y-4">
             <h2 class="font-editorial font-extrabold text-xl text-brand-ink">Install Zatpatgo PWA</h2>
-            <p class="text-xs tablet:text-sm text-brand-muted leading-relaxed">
-              Add Zatpatgo to your home screen for one-tap access, full-screen app layout, and cached menu browsing.
+            <p class="text-xs text-brand-muted leading-relaxed">
+              Add Zatpatgo to your mobile home screen for faster launch and full-screen app navigation.
             </p>
             <button onclick="triggerPwaInstall()" class="w-full h-12 rounded-2xl bg-brand-purple text-white font-editorial font-extrabold text-xs shadow-pill btn-tactile">
               Add to Home Screen
@@ -2893,11 +2798,11 @@
       }
 
       return `
-        <div class="pt-4 tablet:pt-8 max-w-xl mx-auto space-y-5 animate-fade-up">
+        <div class="pt-4 tablet:pt-7 max-w-xl mx-auto space-y-5 animate-slide-push">
           <button onclick="navigateBack()" class="hidden desktop:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline text-xs font-bold text-brand-ink btn-tactile">
             ← Back to Profile
           </button>
-          ${contentHTML}
+          ${contentHtml}
         </div>
       `;
     }
@@ -2906,6 +2811,7 @@
     // 12. EDITABLE OFFERS STRIP, STORE & PRODUCT STUDIO
     // -----------------------------------------------------------------------
     function openCatalogEditor(storeId) {
+      triggerHaptic('light');
       const store = state.stores.find(s => s.id === storeId) || state.stores[0];
       const storeProducts = state.products.filter(p => p.storeId === store.id);
       const modal = document.getElementById('catalog-editor-modal');
@@ -2963,7 +2869,7 @@
                 <div class="p-3.5 rounded-[22px] bg-brand-canvas border border-brand-hairline space-y-2.5">
                   <div class="flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2 min-w-0 flex-1">
-                      <img src="${off.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(off.title)}" class="w-12 h-12 rounded-xl object-cover shrink-0" />
+                      <img src="${off.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(off.title)}" class="w-12 h-12 rounded-[12px] object-cover shrink-0" />
                       <div class="min-w-0 flex-1">
                         <span class="text-[10px] font-extrabold uppercase text-brand-orange">${off.badge}</span>
                         <input type="text" value="${escapeAttr(off.title)}" onchange="updateOfferField('${off.id}', 'title', this.value)" class="w-full bg-white px-2.5 py-1 rounded-lg border border-brand-hairline text-xs font-extrabold text-brand-ink mt-0.5" />
@@ -3189,7 +3095,7 @@
     }
 
     // -----------------------------------------------------------------------
-    // 13. CHECKOUT, PAYMENT SCREEN & ORDER SUCCESS SCREEN
+    // 13. DISTRACTION-FREE CHECKOUT & CLEAN SUCCESS SCREEN
     // -----------------------------------------------------------------------
     function renderCheckoutView() {
       if (!state.user) {
@@ -3208,10 +3114,17 @@
       const isOffline = !navigator.onLine;
 
       return `
-        <div class="pt-4 tablet:pt-8 max-w-4xl mx-auto space-y-5 animate-fade-up">
+        <div class="pt-4 tablet:pt-7 max-w-4xl mx-auto space-y-5 animate-slide-push">
           <button onclick="navigateBack()" class="hidden desktop:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-brand-hairline text-xs font-bold text-brand-ink btn-tactile">
             ← Back
           </button>
+
+          <div>
+            <span class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-brand-purple">Radhanpur 385340</span>
+            <h1 class="font-editorial font-extrabold text-2xl tablet:text-3xl text-brand-ink mt-0.5">
+              Checkout
+            </h1>
+          </div>
 
           <div class="grid grid-cols-1 desktop:grid-cols-12 gap-5 tablet:gap-7">
             
@@ -3219,36 +3132,30 @@
               <!-- Compact Delivery Address Section -->
               <div class="bg-white rounded-[24px] p-4 tablet:p-6 border border-brand-hairline shadow-editorial space-y-3">
                 <div class="flex items-center justify-between">
-                  <h2 class="font-editorial font-extrabold text-base text-brand-ink">Delivery Details</h2>
-                  <span class="px-2.5 py-0.5 rounded-full bg-brand-purple/10 text-[11px] font-extrabold text-brand-purple">Radhanpur 385340</span>
+                  <span class="font-editorial font-extrabold text-sm tablet:text-base text-brand-ink">Delivery Address</span>
+                  <span class="px-2.5 py-0.5 rounded-full bg-brand-canvas text-[11px] font-extrabold text-brand-purple">PIN 385340</span>
                 </div>
 
-                <p class="text-xs font-semibold text-brand-muted">
-                  ${state.user.name || 'Radhanpur Patron'} • +91 ${state.user.phone}
+                <input id="checkout-landmark" type="text" oninput="state.deliveryLandmark = this.value; localStorage.setItem('zatpatgo_address_v2', this.value)" value="${escapeAttr(state.deliveryLandmark)}" placeholder="Street / Society / Landmark in Radhanpur *" class="w-full h-11 px-4 rounded-xl bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-xs tablet:text-sm font-medium text-brand-ink" />
+                <p class="text-[11px] text-brand-muted">
+                  Delivering to <strong class="text-brand-ink">${state.user.name || 'Patron'}</strong> (+91 ${state.user.phone})
                 </p>
-
-                <div>
-                  <label for="checkout-landmark" class="block text-[10px] font-bold uppercase text-brand-muted mb-1">
-                    Landmark / Society / Street *
-                  </label>
-                  <input id="checkout-landmark" type="text" oninput="state.deliveryLandmark = this.value; localStorage.setItem('zatpatgo_address_v2', this.value)" value="${escapeAttr(state.deliveryLandmark)}" placeholder="e.g. Near Highway Char Rasta, Radhanpur" class="w-full px-3.5 py-2.5 rounded-xl bg-brand-canvas border border-brand-hairline focus:border-brand-purple focus:bg-white focus:outline-none text-sm font-medium text-brand-ink" />
-                </div>
               </div>
 
-              <!-- Compact Payment Method Section -->
+              <!-- Compact Payment Method Selector -->
               <div class="bg-white rounded-[24px] p-4 tablet:p-6 border border-brand-hairline shadow-editorial space-y-3">
-                <h2 class="font-editorial font-extrabold text-base text-brand-ink">Payment Method</h2>
+                <h2 class="font-editorial font-extrabold text-sm tablet:text-base text-brand-ink">Payment Method</h2>
                 <div class="space-y-2.5">
                   ${[
-                    { id: 'upi', title: 'UPI Instant Pay', sub: 'GPay, PhonePe, Paytm' },
-                    { id: 'card', title: 'Credit / Debit Card', sub: 'Visa, Mastercard, RuPay' },
-                    { id: 'other', title: 'Pay on Delivery / NetBanking', sub: 'Available in 385340' }
+                    { id: 'upi', title: 'UPI Instant Pay', sub: 'GPay • PhonePe • Paytm' },
+                    { id: 'card', title: 'Credit / Debit Card', sub: 'Visa • Mastercard • RuPay' },
+                    { id: 'other', title: 'Pay on Delivery / NetBanking', sub: 'Available across 385340' }
                   ].map(m => {
                     const selected = state.paymentMethod === m.id;
                     return `
-                      <label data-haptic-explicit="true" onclick="triggerHaptic('medium'); state.paymentMethod = '${m.id}'; renderApp()" class="btn-tactile flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all ${selected ? 'border-brand-purple bg-brand-purple/[0.04]' : 'border-brand-hairline hover:border-brand-purple/30'}">
-                        <div class="pr-3">
-                          <p class="font-editorial font-bold text-sm text-brand-ink">${m.title}</p>
+                      <label onclick="triggerHaptic('medium'); state.paymentMethod = '${m.id}'; renderApp()" class="flex items-center justify-between p-3.5 rounded-2xl border cursor-pointer transition-all btn-tactile ${selected ? 'border-brand-purple bg-brand-purple/[0.04]' : 'border-brand-hairline hover:border-brand-purple/30'}">
+                        <div>
+                          <p class="font-editorial font-bold text-xs tablet:text-sm text-brand-ink">${m.title}</p>
                           <p class="text-[11px] text-brand-muted">${m.sub}</p>
                         </div>
                         <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${selected ? 'border-brand-purple' : 'border-brand-muted/40'}">
@@ -3265,16 +3172,19 @@
             <div class="desktop:col-span-5">
               <div class="bg-white rounded-[24px] p-4 tablet:p-6 border border-brand-hairline shadow-editorial sticky top-24 space-y-4">
                 <h2 class="font-editorial font-extrabold text-base text-brand-ink">
-                  Order Summary (${bill.totalCount} ${bill.totalCount === 1 ? 'item' : 'items'})
+                  Summary (${bill.totalCount} ${bill.totalCount === 1 ? 'item' : 'items'})
                 </h2>
 
-                <div class="space-y-2 max-h-44 overflow-y-auto pb-3 border-b border-brand-hairline">
+                <div class="space-y-2.5 max-h-48 overflow-y-auto pb-3 border-b border-brand-hairline">
                   ${state.cart.map(entry => {
                     const prod = state.products.find(p => p.id === entry.productId);
                     if (!prod) return '';
                     return `
                       <div class="flex items-center justify-between gap-3 text-xs">
-                        <span class="font-semibold text-brand-ink truncate">${entry.qty} × ${prod.name}</span>
+                        <div class="flex items-center gap-2.5 min-w-0">
+                          <img src="${prod.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(prod.name)}" class="w-10 h-10 rounded-[10px] object-cover shrink-0 bg-brand-canvas" />
+                          <span class="font-semibold text-brand-ink truncate">${entry.qty} × ${prod.name}</span>
+                        </div>
                         <span class="font-editorial font-bold text-brand-ink shrink-0">${formatCurrency(prod.price * entry.qty)}</span>
                       </div>
                     `;
@@ -3300,7 +3210,7 @@
                   </div>
                 </div>
 
-                <button id="pay-now-btn" onclick="handlePayNow()" ${isOffline ? 'disabled' : ''} class="w-full h-12 rounded-2xl ${isOffline ? 'bg-brand-muted cursor-not-allowed' : 'bg-brand-purple hover:bg-brand-deep shadow-pill'} text-white font-editorial font-extrabold text-sm tracking-wide transition-all btn-tactile">
+                <button data-haptic-explicit="true" id="pay-now-btn" onclick="handlePayNow()" ${isOffline ? 'disabled' : ''} class="w-full h-12 rounded-2xl ${isOffline ? 'bg-brand-muted cursor-not-allowed' : 'bg-brand-purple hover:bg-brand-deep shadow-pill'} text-white font-editorial font-extrabold text-sm tracking-wide transition-all btn-tactile">
                   ${isOffline ? 'Reconnect Internet to Pay' : `Pay Now • ${formatCurrency(bill.grandTotal)}`}
                 </button>
               </div>
@@ -3348,7 +3258,7 @@
       const methodLabels = {
         upi: 'UPI Instant Pay',
         card: 'Credit / Debit Card',
-        other: 'NetBanking / Pay on Delivery'
+        other: 'Pay on Delivery / NetBanking'
       };
 
       setTimeout(() => {
@@ -3369,7 +3279,7 @@
         saveCart();
         triggerHaptic('success');
         navigateTo('success');
-      }, 650);
+      }, 600);
     }
 
     function renderSuccessView() {
@@ -3381,7 +3291,7 @@
 
       return `
         <div class="pt-6 tablet:pt-12 max-w-md mx-auto animate-fade-up">
-          <div class="bg-white rounded-[30px] p-6 tablet:p-8 border border-brand-hairline shadow-editorial text-center space-y-5">
+          <div class="bg-white rounded-[28px] p-6 tablet:p-8 border border-brand-hairline shadow-editorial text-center space-y-5">
             <div class="w-16 h-16 rounded-full bg-brand-purple mx-auto flex items-center justify-center shadow-pill animate-success-ring">
               <svg class="w-8 h-8 text-brand-yellow" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="48" stroke-dashoffset="48" class="animate-check-draw" d="M5 13l4 4L19 7"/>
@@ -3393,17 +3303,17 @@
                 Order #${order.orderId}
               </span>
               <h1 class="font-editorial font-extrabold text-2xl text-brand-ink mt-3">
-                Order Placed!
+                Order Confirmed!
               </h1>
               <p class="text-xs text-brand-muted mt-1">
-                Preparing fresh for Radhanpur 385340.
+                Preparing now for delivery in Radhanpur 385340.
               </p>
             </div>
 
             <div class="p-4 rounded-2xl bg-brand-canvas border border-brand-hairline text-left space-y-2 text-xs">
               <div class="flex justify-between">
                 <span class="text-brand-muted">Amount Paid</span>
-                <strong class="text-brand-purple font-editorial text-sm">${formatCurrency(order.bill.grandTotal)}</strong>
+                <strong class="font-editorial font-extrabold text-brand-purple">${formatCurrency(order.bill.grandTotal)}</strong>
               </div>
               <div class="flex justify-between">
                 <span class="text-brand-muted">Payment</span>
@@ -3441,7 +3351,6 @@
     }
 
     function closeCartDrawer() {
-      triggerHaptic('light');
       const overlay = document.getElementById('cart-drawer-overlay');
       const drawer = document.getElementById('cart-drawer');
       overlay.classList.add('opacity-0');
@@ -3479,23 +3388,23 @@
             const prod = state.products.find(p => p.id === entry.productId);
             if (!prod) return '';
             return `
-              <div data-cart-row="${prod.id}" class="flex gap-3.5 p-3 rounded-2xl bg-brand-canvas/80 border border-brand-hairline transition-all duration-200">
-                <img src="${prod.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(prod.name)}" class="w-20 h-20 rounded-xl object-cover shrink-0 bg-white" />
+              <div data-cart-row="${prod.id}" class="flex gap-3.5 p-3 rounded-2xl bg-brand-canvas/80 border border-brand-hairline">
+                <img src="${prod.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(prod.name)}" class="w-20 h-20 rounded-[12px] object-cover shrink-0 bg-white" />
                 <div class="flex-1 min-w-0 flex flex-col justify-between">
                   <div class="flex items-start justify-between gap-2">
                     <div class="min-w-0">
                       <span class="text-[10px] font-bold uppercase text-brand-purple block">${getStoreNameById(prod.storeId)}</span>
                       <h4 class="font-editorial font-bold text-sm text-brand-ink truncate">${prod.name}</h4>
                     </div>
-                    <button data-haptic-explicit="true" onclick="removeFromCart('${prod.id}')" class="text-brand-muted hover:text-brand-orange text-xs p-1 btn-tactile">✕</button>
+                    <button data-haptic-explicit="true" onclick="removeFromCart('${prod.id}')" class="text-brand-muted hover:text-brand-orange text-xs p-1">✕</button>
                   </div>
 
                   <div class="flex items-center justify-between mt-2">
                     <span class="font-editorial font-extrabold text-sm text-brand-ink">${formatCurrency(prod.price * entry.qty)}</span>
                     <div class="inline-flex items-center bg-white border border-brand-hairline rounded-full p-0.5">
-                      <button data-haptic-explicit="true" onclick="updateCartQty('${prod.id}', -1)" class="w-7 h-7 rounded-full hover:bg-brand-canvas font-bold text-sm btn-tactile">−</button>
+                      <button data-haptic-explicit="true" onclick="updateCartQty('${prod.id}', -1)" class="w-7 h-7 rounded-full hover:bg-brand-canvas font-bold text-sm">−</button>
                       <span class="min-w-[24px] text-center font-editorial font-extrabold text-xs">${entry.qty}</span>
-                      <button data-haptic-explicit="true" onclick="updateCartQty('${prod.id}', 1)" class="w-7 h-7 rounded-full hover:bg-brand-canvas font-bold text-sm text-brand-purple btn-tactile">+</button>
+                      <button data-haptic-explicit="true" onclick="updateCartQty('${prod.id}', 1)" class="w-7 h-7 rounded-full hover:bg-brand-canvas font-bold text-sm text-brand-purple">+</button>
                     </div>
                   </div>
                 </div>
@@ -3539,7 +3448,7 @@
 
       const isOffline = !navigator.onLine;
       footer.innerHTML = `
-        <button data-haptic-explicit="true" onclick="handleProceedToPay()" ${isOffline ? 'disabled' : ''} class="w-full py-4 rounded-2xl ${isOffline ? 'bg-brand-muted cursor-not-allowed' : 'bg-brand-purple hover:bg-brand-deep shadow-pill'} text-white font-editorial font-bold text-sm tracking-wide transition-all flex items-center justify-between px-5 btn-tactile">
+        <button onclick="handleProceedToPay()" ${isOffline ? 'disabled' : ''} class="w-full py-4 rounded-2xl ${isOffline ? 'bg-brand-muted cursor-not-allowed' : 'bg-brand-purple hover:bg-brand-deep shadow-pill'} text-white font-editorial font-bold text-sm tracking-wide transition-all flex items-center justify-between px-5 btn-tactile">
           <span>${isOffline ? 'Offline — Cannot Checkout' : 'Proceed to Pay'}</span>
           <span class="bg-white/15 px-3 py-1 rounded-xl font-extrabold">${formatCurrency(bill.grandTotal)} →</span>
         </button>
@@ -3562,6 +3471,7 @@
       }
     }
 
+    // OTP Login/Signup Handlers
     function openOtpModal() {
       triggerHaptic('light');
       const modal = document.getElementById('otp-modal');
@@ -3572,7 +3482,6 @@
     }
 
     function closeOtpModal() {
-      triggerHaptic('light');
       const modal = document.getElementById('otp-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
@@ -3609,7 +3518,7 @@
     }
 
     function autoFillDemoOtp() {
-      triggerHaptic('medium');
+      triggerHaptic('light');
       const boxes = document.querySelectorAll('.otp-box');
       state.currentDemoOtp.split('').forEach((d, i) => {
         if (boxes[i]) boxes[i].value = d;
@@ -3646,13 +3555,14 @@
     }
 
     function logoutUser() {
-      triggerHaptic('light');
+      triggerHaptic('medium');
       state.user = null;
       localStorage.removeItem('zatpatgo_user_v2');
       showToast('Logged out successfully');
       renderApp();
     }
 
+    // Search Modal
     function openSearchModal() {
       triggerHaptic('light');
       const modal = document.getElementById('search-modal');
@@ -3665,7 +3575,6 @@
     }
 
     function closeSearchModal() {
-      triggerHaptic('light');
       document.getElementById('search-modal').classList.add('hidden');
       syncBodyScrollLock();
     }
@@ -3694,7 +3603,7 @@
             <div class="grid grid-cols-1 tablet:grid-cols-3 gap-2">
               ${matchedStores.map(s => `
                 <button onclick="closeSearchModal(); navigateTo('store-detail', { storeId: '${s.id}' })" class="flex items-center gap-2.5 p-2 rounded-2xl bg-brand-canvas hover:bg-brand-purple/10 text-left btn-tactile">
-                  <img src="${s.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(s.name)}" class="w-10 h-10 rounded-xl object-cover shrink-0" />
+                  <img src="${s.heroImage}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(s.name)}" class="w-10 h-10 rounded-[12px] object-cover shrink-0" />
                   <div class="min-w-0">
                     <p class="font-editorial font-bold text-xs text-brand-ink truncate">${s.name}</p>
                     <p class="text-[10px] text-brand-muted truncate">${s.categoryTag}</p>
@@ -3712,7 +3621,7 @@
               ${matchedProducts.map(p => `
                 <div onclick="closeSearchModal(); openProductModal('${p.id}')" class="flex items-center justify-between gap-3 p-2 rounded-2xl hover:bg-brand-canvas cursor-pointer">
                   <div class="flex items-center gap-3 min-w-0">
-                    <img src="${p.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(p.name)}" class="w-12 h-12 rounded-xl object-cover shrink-0" />
+                    <img src="${p.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(p.name)}" class="w-12 h-12 rounded-[12px] object-cover shrink-0" />
                     <div class="min-w-0">
                       <span class="text-[10px] font-bold text-brand-purple uppercase">${getStoreNameById(p.storeId)}</span>
                       <p class="font-editorial font-bold text-sm text-brand-ink truncate">${p.name}</p>
@@ -3730,25 +3639,28 @@
       `;
     }
 
+    // Product Quick-View Bottom Sheet / Modal
     function openProductModal(productId) {
+      triggerHaptic('light');
       const product = state.products.find(p => p.id === productId);
       if (!product) return;
 
-      triggerHaptic('light');
       const modal = document.getElementById('product-modal');
       const card = document.getElementById('product-modal-card');
       const storeName = getStoreNameById(product.storeId);
 
       card.innerHTML = `
-        <div class="relative aspect-[16/10] bg-brand-canvas shrink-0">
-          <img src="${product.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(product.name)}" class="w-full h-full object-cover" />
-          <button onclick="closeProductModal()" aria-label="Close" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-brand-ink/75 text-white flex items-center justify-center btn-tactile">✕</button>
-          <span class="absolute bottom-3.5 left-3.5 px-3 py-1 rounded-full bg-brand-yellow text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
-            ${product.badge}
-          </span>
+        <div class="p-3.5 pb-0 shrink-0">
+          <div class="relative aspect-[16/10] rounded-[20px] overflow-hidden bg-brand-canvas">
+            <img src="${product.image}" onerror="this.src='${FALLBACK_FOOD_IMG}'" alt="${escapeAttr(product.name)}" class="w-full h-full object-cover" />
+            <button onclick="closeProductModal()" aria-label="Close" class="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-brand-ink/75 text-white flex items-center justify-center btn-tactile">✕</button>
+            <span class="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-brand-yellow text-brand-ink text-[10px] font-extrabold uppercase tracking-wider">
+              ${product.badge}
+            </span>
+          </div>
         </div>
 
-        <div class="p-6 overflow-y-auto space-y-3.5">
+        <div class="p-6 pt-4 overflow-y-auto space-y-3.5">
           <div class="flex items-center justify-between">
             <button onclick="closeProductModal(); navigateTo('store-detail', { storeId: '${product.storeId}' })" class="text-xs font-extrabold uppercase tracking-widest text-brand-purple hover:underline">
               ${storeName} →
@@ -3781,7 +3693,6 @@
     }
 
     function closeProductModal() {
-      triggerHaptic('light');
       const modal = document.getElementById('product-modal');
       modal.classList.add('hidden');
       modal.classList.remove('flex');
@@ -3885,17 +3796,14 @@
           break;
       }
 
-      const viewContainer = root.firstElementChild;
-      if (viewContainer) {
-        viewContainer.classList.remove('animate-fade-up', 'animate-slide-push', 'animate-slide-pop');
-        const animClass =
-          state.transitionType === 'push'
-            ? 'animate-slide-push'
-            : state.transitionType === 'pop'
-              ? 'animate-slide-pop'
-              : 'animate-fade-up';
-        viewContainer.classList.add(animClass);
+      if (state.transitionType === 'pop') {
+        const firstChild = root.firstElementChild;
+        if (firstChild) {
+          firstChild.classList.remove('animate-fade-up', 'animate-slide-push');
+          firstChild.classList.add('animate-slide-pop');
+        }
       }
+      state.transitionType = 'fade';
 
       updateGlobalChrome();
     }

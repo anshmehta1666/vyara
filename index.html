@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Zatpatgo — A New Taste of Convenience | Radhanpur 385340</title>
   <meta name="description" content="Apple-inspired minimalist food delivery Progressive Web App exclusively serving Radhanpur 385340, Gujarat with ₹0 delivery." />
   <meta name="theme-color" content="#F7FAE9" />
@@ -713,7 +716,7 @@
       <!-- Tab 1: Home -->
       <button data-mobile-tab="home" onclick="navigateTo('home')" class="mobile-nav-btn flex-1 h-[48px] rounded-full flex items-center justify-center gap-1.5 text-white/75 transition-all duration-200 btn-tactile" aria-label="Home">
         <svg class="w-[19px] h-[19px] shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1v-9.5z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5L12 3l9 7.5V20a1 1 0 01-1 1h-5v6H9v6H4a1 1 0 01-1-1v-9.5z"/>
         </svg>
         <span class="nav-label text-xs font-extrabold tracking-tight hidden">Home</span>
       </button>
@@ -747,6 +750,26 @@
 
     </div>
   </nav>
+
+  <!-- =====================================================================
+       PWA LIVE UPDATE NOTIFICATION BANNER (NON-INTRUSIVE, PRESERVES SESSION)
+  ====================================================================== -->
+  <div id="pwa-update-banner" role="status" aria-live="polite" class="hidden fixed bottom-24 desktop:bottom-6 left-4 right-4 desktop:left-6 desktop:right-auto desktop:max-w-sm z-50 animate-fade-up">
+    <div class="bg-brand-ink text-white rounded-full p-2 pl-4 shadow-float border border-white/15 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="w-2 h-2 rounded-full bg-brand-lime shrink-0"></span>
+        <span class="text-xs font-bold truncate">New version available</span>
+      </div>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button id="pwa-update-now-btn" type="button" onclick="applyPwaUpdateNow()" class="h-8 px-3.5 rounded-full bg-brand-lime hover:bg-brand-limeHover text-brand-ink font-editorial font-extrabold text-[11px] tracking-wide btn-tactile">
+          Update Now
+        </button>
+        <button type="button" onclick="dismissPwaUpdateBanner()" aria-label="Dismiss update notification" class="w-7 h-7 rounded-full hover:bg-white/10 text-white/70 hover:text-white text-xs flex items-center justify-center btn-tactile">
+          ✕
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- =====================================================================
        TOAST NOTIFICATION CONTAINER
@@ -989,11 +1012,340 @@
     }
 
     // -----------------------------------------------------------------------
-    // 1. PWA MANIFEST (CANVAS PNG ICONS IN NEW LIME & CHARCOAL), INSTALL & OFFLINE
+    // 1. PWA MANIFEST, GITHUB PAGES SERVICE WORKER & IPHONE LIVE UPDATE ENGINE
     // -----------------------------------------------------------------------
+    const ZTG_BUILD_ID = 'ztg-ghpages-2026-11-27-v3';
+    const ZTG_RELOAD_GUARD_KEY = 'ztg_sw_reloaded_build';
     let deferredInstallPrompt = null;
+    let swRegistrationRef = null;
+    let waitingWorkerRef = null;
+    let isUpdatingApp = false;
+    let lastSwCheckTimestamp = 0;
     const loadedImageUrls = new Set();
     const preloadingPromises = new Map();
+
+    function isHttpPageContext() {
+      return window.location.protocol === 'http:' || window.location.protocol === 'https:';
+    }
+
+    function getAppScopeBaseUrl() {
+      try {
+        if (isHttpPageContext()) {
+          return new URL('./', window.location.href).href;
+        }
+        const origin = window.location.origin;
+        if (origin && origin !== 'null' && (origin.startsWith('http://') || origin.startsWith('https://'))) {
+          return origin.endsWith('/') ? origin : origin + '/';
+        }
+      } catch (_) {}
+      return 'https://localhost/';
+    }
+
+    function getAppEntryUrl() {
+      try {
+        if (isHttpPageContext()) {
+          const url = new URL(window.location.href);
+          url.hash = '';
+          url.search = '';
+          return url.href;
+        }
+      } catch (_) {}
+      return getAppScopeBaseUrl();
+    }
+
+    function showPwaUpdateBanner(worker) {
+      if (worker) waitingWorkerRef = worker;
+      const banner = document.getElementById('pwa-update-banner');
+      if (banner) banner.classList.remove('hidden');
+    }
+
+    function dismissPwaUpdateBanner() {
+      const banner = document.getElementById('pwa-update-banner');
+      if (banner) banner.classList.add('hidden');
+    }
+
+    function performSingleSafeReload(targetBuildId) {
+      try {
+        if (sessionStorage.getItem(ZTG_RELOAD_GUARD_KEY) === targetBuildId) {
+          return;
+        }
+        sessionStorage.setItem(ZTG_RELOAD_GUARD_KEY, targetBuildId);
+      } catch (_) {}
+      window.location.reload();
+    }
+
+    function applyPwaUpdateNow() {
+      if (isUpdatingApp) return;
+      isUpdatingApp = true;
+      triggerHaptic();
+      const btn = document.getElementById('pwa-update-now-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Updating...';
+      }
+
+      const targetWorker = waitingWorkerRef || (swRegistrationRef && swRegistrationRef.waiting);
+      if (targetWorker) {
+        targetWorker.postMessage({ type: 'SKIP_WAITING' });
+        setTimeout(() => {
+          performSingleSafeReload(ZTG_BUILD_ID + '-forced');
+        }, 1800);
+      } else {
+        performSingleSafeReload(ZTG_BUILD_ID + '-manual');
+      }
+    }
+
+    async function checkForServiceWorkerUpdates(reason = 'manual') {
+      if (!('serviceWorker' in navigator) || !isHttpPageContext() || !navigator.onLine) return;
+      const now = Date.now();
+      if (reason !== 'boot' && now - lastSwCheckTimestamp < 12000) return;
+      lastSwCheckTimestamp = now;
+
+      try {
+        const reg = swRegistrationRef || await navigator.serviceWorker.getRegistration(getAppScopeBaseUrl());
+        if (!reg) return;
+        swRegistrationRef = reg;
+        await reg.update();
+        if (reg.waiting) {
+          showPwaUpdateBanner(reg.waiting);
+        }
+      } catch (_) {}
+    }
+
+    function buildInlineServiceWorkerSource(buildId) {
+      return `
+        const ZTG_SW_VERSION = ${JSON.stringify(buildId)};
+        const SHELL_CACHE = 'ztg-shell-' + ZTG_SW_VERSION;
+        const ASSET_CACHE = 'ztg-assets-' + ZTG_SW_VERSION;
+        const IMAGE_CACHE = 'ztg-images-v1';
+        const ACTIVE_CACHES = [SHELL_CACHE, ASSET_CACHE, IMAGE_CACHE];
+
+        self.addEventListener('install', (event) => {
+          event.waitUntil((async () => {
+            try {
+              const cache = await caches.open(SHELL_CACHE);
+              const scopeUrl = self.registration ? self.registration.scope : self.location.href;
+              const req = new Request(scopeUrl, { cache: 'no-store' });
+              const res = await fetch(req);
+              if (res && res.ok) {
+                await cache.put(scopeUrl, res.clone());
+              }
+            } catch (_) {}
+          })());
+        });
+
+        self.addEventListener('activate', (event) => {
+          event.waitUntil((async () => {
+            const keys = await caches.keys();
+            await Promise.all(
+              keys.map((key) => (ACTIVE_CACHES.includes(key) ? Promise.resolve() : caches.delete(key)))
+            );
+            await self.clients.claim();
+          })());
+        });
+
+        self.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'SKIP_WAITING') {
+            self.skipWaiting();
+          }
+        });
+
+        function isHtmlNavigation(request) {
+          if (request.mode === 'navigate') return true;
+          const accept = request.headers.get('accept') || '';
+          return accept.includes('text/html');
+        }
+
+        function isApiOrDynamicData(url) {
+          if (url.pathname.includes('/api/')) return true;
+          if (url.searchParams.has('live') || url.searchParams.has('t')) return true;
+          return false;
+        }
+
+        function isImageRequest(request, url) {
+          if (request.destination === 'image') return true;
+          return /\\.(png|jpg|jpeg|webp|gif|svg|ico)(\\?.*)?$/i.test(url.pathname) ||
+            url.hostname.includes('images.unsplash.com');
+        }
+
+        function isStaticAsset(request, url) {
+          if (['style', 'script', 'font'].includes(request.destination)) return true;
+          return /\\.(js|css|woff2?|ttf|otf)(\\?.*)?$/i.test(url.pathname) ||
+            url.hostname.includes('fonts.googleapis.com') ||
+            url.hostname.includes('fonts.gstatic.com') ||
+            url.hostname.includes('cdn.tailwindcss.com');
+        }
+
+        self.addEventListener('fetch', (event) => {
+          const request = event.request;
+          if (request.method !== 'GET') return;
+
+          const url = new URL(request.url);
+          if (url.protocol !== 'http:' && url.protocol !== 'https:') return;
+
+          // 1. Network-first for HTML & app entry points (prevents stale GitHub Pages index.html)
+          if (isHtmlNavigation(request)) {
+            event.respondWith((async () => {
+              const cache = await caches.open(SHELL_CACHE);
+              const scopeUrl = self.registration ? self.registration.scope : request.url;
+              try {
+                const freshResponse = await fetch(new Request(request.url, { cache: 'no-store' }));
+                if (freshResponse && freshResponse.ok) {
+                  await cache.put(scopeUrl, freshResponse.clone());
+                  return freshResponse;
+                }
+              } catch (_) {}
+              const cached = await cache.match(request, { ignoreSearch: true }) || await cache.match(scopeUrl);
+              return cached || new Response('Offline — please reconnect to load Zatpatgo.', {
+                status: 503,
+                headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+              });
+            })());
+            return;
+          }
+
+          // 2. Network-only / Network-first without stale persistence for API/live data
+          if (isApiOrDynamicData(url)) {
+            event.respondWith(fetch(request));
+            return;
+          }
+
+          // 3. Stale-while-revalidate for images (ensures updated images + offline support)
+          if (isImageRequest(request, url)) {
+            event.respondWith((async () => {
+              const cache = await caches.open(IMAGE_CACHE);
+              const cached = await cache.match(request);
+              const networkPromise = fetch(request).then((res) => {
+                if (res && (res.ok || res.type === 'opaque')) {
+                  cache.put(request, res.clone());
+                }
+                return res;
+              }).catch(() => null);
+              return cached || (await networkPromise) || Response.error();
+            })());
+            return;
+          }
+
+          // 4. Cache-first for static CSS/JS/font assets
+          if (isStaticAsset(request, url)) {
+            event.respondWith((async () => {
+              const cache = await caches.open(ASSET_CACHE);
+              const cached = await cache.match(request);
+              if (cached) return cached;
+              try {
+                const res = await fetch(request);
+                if (res && (res.ok || res.type === 'opaque')) {
+                  await cache.put(request, res.clone());
+                }
+                return res;
+              } catch (_) {
+                return Response.error();
+              }
+            })());
+          }
+        });
+      `;
+    }
+
+    async function initServiceWorkerAndLiveUpdates() {
+      if (!('serviceWorker' in navigator) || !isHttpPageContext()) return;
+
+      // Clear legacy/obsolete caches from earlier versions without touching localStorage/user session
+      if ('caches' in window) {
+        try {
+          const keys = await caches.keys();
+          await Promise.all(
+            keys.map((k) => {
+              if (!k.includes(ZTG_BUILD_ID) && k !== 'ztg-images-v1') {
+                return caches.delete(k);
+              }
+              return Promise.resolve();
+            })
+          );
+        } catch (_) {}
+      }
+
+      let hadControllerAtBoot = !!navigator.serviceWorker.controller;
+      let controllerReloadTriggered = false;
+
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!hadControllerAtBoot) {
+          hadControllerAtBoot = true;
+          return;
+        }
+        if (controllerReloadTriggered) return;
+        controllerReloadTriggered = true;
+        performSingleSafeReload(ZTG_BUILD_ID);
+      });
+
+      const bindRegistrationLifecycle = (reg) => {
+        if (!reg) return;
+        swRegistrationRef = reg;
+        if (reg.waiting) {
+          showPwaUpdateBanner(reg.waiting);
+        }
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showPwaUpdateBanner(newWorker);
+            }
+          });
+        });
+      };
+
+      // Try registering root/relative sw.js first if present in repo, else register versioned inline SW
+      const swCandidates = [
+        new URL('./sw.js', getAppScopeBaseUrl()).href
+      ];
+
+      let registered = false;
+      for (const candidateUrl of swCandidates) {
+        try {
+          const probe = await fetch(candidateUrl, { method: 'HEAD', cache: 'no-store' });
+          if (probe.ok) {
+            const reg = await navigator.serviceWorker.register(candidateUrl, {
+              scope: getAppScopeBaseUrl(),
+              updateViaCache: 'none'
+            });
+            bindRegistrationLifecycle(reg);
+            registered = true;
+            break;
+          }
+        } catch (_) {}
+      }
+
+      if (!registered) {
+        try {
+          const swSource = buildInlineServiceWorkerSource(ZTG_BUILD_ID);
+          const swBlob = new Blob([swSource], { type: 'application/javascript' });
+          const swBlobUrl = URL.createObjectURL(swBlob);
+          const reg = await navigator.serviceWorker.register(swBlobUrl, {
+            scope: getAppScopeBaseUrl(),
+            updateViaCache: 'none'
+          });
+          bindRegistrationLifecycle(reg);
+          registered = true;
+        } catch (_) {}
+      }
+
+      // Check immediately and whenever iOS Home Screen PWA resumes into foreground
+      checkForServiceWorkerUpdates('boot');
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          checkForServiceWorkerUpdates('visibility');
+        }
+      });
+      window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+          checkForServiceWorkerUpdates('pageshow');
+        }
+      });
+      window.addEventListener('focus', () => {
+        checkForServiceWorkerUpdates('focus');
+      });
+    }
 
     function preloadImageUrl(url) {
       const targetUrl = url || FALLBACK_FOOD_IMG;
@@ -1168,11 +1520,15 @@
         const appleIconEl = document.getElementById('pwa-apple-icon');
         if (appleIconEl && icon192) appleIconEl.href = icon192;
 
+        const baseScope = getAppScopeBaseUrl();
+        const entryStartUrl = getAppEntryUrl();
         const manifest = {
+          id: baseScope,
           name: 'Zatpatgo — A New Taste of Convenience',
           short_name: 'Zatpatgo',
           description: 'Premium food delivery in Radhanpur 385340, Gujarat.',
-          start_url: location.href,
+          scope: baseScope,
+          start_url: entryStartUrl,
           display: 'standalone',
           background_color: '#F7FAE9',
           theme_color: '#F7FAE9',
@@ -1217,6 +1573,7 @@
     window.addEventListener('online', () => {
       updateOnlineStatusUI();
       showToast('Back online! Ready to order in 385340');
+      checkForServiceWorkerUpdates('online');
       if (state.view === 'checkout') renderApp();
     });
     window.addEventListener('offline', () => {
@@ -2253,7 +2610,7 @@
           }`;
         }
         if (label) {
-          label.className = `text-[11px] tablet:text-xs font-extrabold tracking-tight ${isActive ? 'text-brand-ink' : 'text-brand-muted'}`;
+          label.className = `text-[11px] tablet:text-xs font-extrabold tracking-tight ${active ? 'text-brand-ink' : 'text-brand-muted'}`;
         }
       });
 
@@ -3986,6 +4343,22 @@
         syncBodyScrollLock();
       }
     }
+
+    function closeProductModal() {
+      const modal = document.getElementById('product-modal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      syncBodyScrollLock();
+    }
+
+    function closeCatalogEditor() {
+      const modal = document.getElementById('catalog-editor-modal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      syncBodyScrollLock();
+    }
     // -----------------------------------------------------------------------
     // 14. HERO SLIDER, SWIPE & MAIN RENDER ORCHESTRATOR
     // -----------------------------------------------------------------------
@@ -4134,6 +4507,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       initPwaManifestAndIcons();
+      initServiceWorkerAndLiveUpdates();
       preloadCriticalCatalogImages();
       updateOnlineStatusUI();
       startCountdownTimer();
